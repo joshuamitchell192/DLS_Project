@@ -1,6 +1,7 @@
 #include "registers.h"
 
 void Delay(unsigned int);
+void Setup(void);
 
 extern void SensorADCSetup(void);
 
@@ -16,6 +17,8 @@ void Delay(unsigned int numLoops)
 void Setup(void)
 {
 	SensorADCSetup();
+	
+	// 
 	
 }
 

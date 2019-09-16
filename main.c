@@ -1,13 +1,14 @@
 #include "registers.h"
 
 extern void DelayMs(unsigned int);
-
+extern void Setup(void);
+void readValue(void);
 	
 int main(void)
 {	  
-	
-	
-	
-		while(1);
+	Setup();
+	while(1)
+	{
+	}
 }
 

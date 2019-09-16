@@ -43,6 +43,9 @@ void SensorADCSetup(void)
 	// NVIC for IRQ 17
 	NVIC_EN0 |= (1<<17);
 	
+	// enable sensor port
+	GPIOE_DEN |= 0x8;
+	
 	EnableInterrupts();
 	
 	// Clear interrupts for sequencer 3
@@ -55,8 +58,8 @@ void SensorADCSetup(void)
 void SensorGPIOSetup(void)
 {
 	// Enable GPIO Clock for port E
-	SYSCTL_RCGCGPIO |= 0x4;
-	while ((SYSCTL_PRGPIO & 0x4) != 0x4);
+	SYSCTL_RCGCGPIO |= 0x10;
+	while ((SYSCTL_PRGPIO & 0x10) != 0x10);
 	
 	// Disable and wait until ADC is setup
 	GPIOE_DEN &= ~0x8;

@@ -1,13 +1,13 @@
 void EnableInterrupts(void);
 void DisableInterrupts(void);
 
-void EnableInterrupts(void){ 
-	__asm ("    CPSIE  I\n" 
-			"    BX     LR\n");
+static inline void EnableInterrupts(void)
+{ 
+	 __asm("CPSIE i");
 }
 
 
-void DisableInterrupts(void){ 
-	__asm ("    CPSID  I\n" 
-			"    BX     LR\n");
+static inline void DisableInterrupts(void)
+{ 
+	__asm("CPSID i");
 }
