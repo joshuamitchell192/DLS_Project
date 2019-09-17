@@ -8,4 +8,6 @@ void ISR_Seq3ADC0(void)
 	
 	// Get Data from FIFO
 	int sensorData = ADC0_SSFIFO3 & 0xF;
+	
+	
 }
