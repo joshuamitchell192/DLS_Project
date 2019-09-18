@@ -4,6 +4,7 @@ void Delay(unsigned int);
 void Setup(void);
 
 extern void SensorADCSetup(void);
+extern void Uart0TerminalSetup(void);
 
 void Delay(unsigned int numLoops)
 {
@@ -18,7 +19,7 @@ void Setup(void)
 {
 	SensorADCSetup();
 	
-	// 
+	Uart0TerminalSetup(); 
 	
 }
 
