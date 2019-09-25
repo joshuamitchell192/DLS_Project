@@ -36,7 +36,10 @@ void SensorADCSetup(void)
 	ADC0_SSMUX3 &= ~0xF;
 
 
-	
+	/* 
+	* Set control config for sequencer 3 to set END0 for last 
+	* sample on single input and enable sample interrupts (IE0)
+	*/
 	ADC0_SSCTL3 &= ~0xF;
 	ADC0_SSCTL3 |= 0x6;
 	
@@ -86,25 +89,9 @@ void SensorTimerSetup(void)
 	*	
 	*	We're using Timer0 A with GPIO on port F. When the timer reaches 0
 	*	It'll set off an interrupt to pulse the sensor and receive the data
-	* 	In sequencer 3's FIFO.
+	* 	in sequencer 3's FIFO sample queue from the single input on sequencer 3.
 	*
 	*/
-
-	// GPIO Setup for Timer0A
-//	SYSCTL_RCGCGPIO |= 0x2;
-//	while ((SYSCTL_PRGPIO & 0x2) != 0x2);
-//	
-//	GPIOB_DEN &= ~0x40;
-//	
-//	GPIOB_DIR |= 0x40;
-//	
-//	GPIOB_AFSEL |= 0x40;
-//	
-//	GPIOB_PCTL &= ~0xF000000;
-//	
-//	GPIOB_PCTL |= 0x7000000;
-//	
-//	GPIOB_DEN |= 0x40;
 	
 	// Setup for timer 
 	SYSCTL_RCGCTIMER |= 0x1;
@@ -120,8 +107,8 @@ void SensorTimerSetup(void)
 	// Set to periodic timer
 	TIMER0_TAMR |= 0x2;
 	
-	// Set delay of 1000
-	TIMER0_TAILR = 10000;
+	// Set delay of 1000 clock cycles (6.25x10^-5 seconds)
+	TIMER0_TAILR = 1000;
 	
 	// Clear interrupts
 	TIMER0_ICR |= 0x1;
@@ -155,7 +142,7 @@ void Uart0TerminalSetup(void)
 	UART0_IBRD = 34;
 	UART0_FBRD = 46;
 	
-	UART0_LCRH |= 0x4A;
+	UART0_LCRH |= 0x6A;
 	
 	UART0_CTL |= 0x321;
 }

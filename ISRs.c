@@ -9,8 +9,10 @@ void ADC0SS3_Handler (void)
 	ADC0_ISC |= 0x8;
 	
 	// Get Data from FIFO
-	unsigned int sensorData = ADC0_SSFIFO3 & 0xF;
-	unsigned int delayValue = sensorData;
+	unsigned int sensorData = ADC0_SSFIFO3;
+	unsigned int delayValue = sensorData & 0xF;
+	
+	
 	
 	// Write variable to terminal
 	
