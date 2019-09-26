@@ -11,13 +11,11 @@ void ADC0SS3_Handler (void)
 	// Get Data from FIFO
 	unsigned int sensorData = ADC0_SSFIFO3;
 	unsigned int delayValue = sensorData & 0xF;
-	
-	
-	
+
 	// Write variable to terminal
 	
 	// Wait for transmission queue to be empty
-	//while ((UART0_FR & 0x20) == 0x20);
+	while ((UART0_FR & 0x20) == 0x20);
 
 	WriteChar(0x21);
 	Delay(delayValue);

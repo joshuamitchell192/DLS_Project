@@ -3,6 +3,7 @@
 void EnableInterrupts(void);
 void DisableInterrupts(void);
 void WriteChar(unsigned int);
+unsigned int ReadChar();
 
 static inline void EnableInterrupts(void)
 { 
@@ -17,7 +18,16 @@ static inline void DisableInterrupts(void)
 
 void WriteChar(unsigned int value)
 {
-	while ((UART0_FR & 0x20) != 0);
+	while ((UART0_FR & 0x20) == 0x20);
 	UART0_DR |= value;
-	UART0_DR &= ~0xFF;
+	
+}
+
+unsigned int ReadChar()
+{
+	while ((UART0_FR & 0x10) == 0x10);
+	unsigned int data = (unsigned int)UART0_DR;
+	UART0_FR &= ~0x10;
+	return data;
+	
 }

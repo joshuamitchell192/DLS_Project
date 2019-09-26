@@ -113,8 +113,7 @@ void SensorTimerSetup(void)
 	// Clear interrupts
 	TIMER0_ICR |= 0x1;
 	
-	// Enable Timer output trigger for ADC and enable timer
-	TIMER0_CTL |= 0x21;
+	
 }
 
 void Uart0TerminalSetup(void)

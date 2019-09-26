@@ -2,7 +2,8 @@
 
 extern void Delay(unsigned int);
 extern void Setup(void);
-void WriteChar(unsigned int);
+extern void WriteChar(unsigned int);
+extern unsigned int ReadChar();
 	
 int main(void)
 {	  
@@ -11,11 +12,14 @@ int main(void)
 	WriteChar(0x47);
 	WriteChar(0x4F);
 	
-	
-	//Delay(1000);
 	while(1)
 	{
+		unsigned int input = ReadChar();
 		
+		WriteChar(input);
+
+		// Enable Timer output trigger for ADC and enable timer
+		//TIMER0_CTL |= 0x21;
 	}
 }
 
