@@ -9,7 +9,7 @@ class SerialConnection:
 
     def __init__(self, port):
 
-        self.ser = serial.Serial(port='COM8', baudrate=56700, bytesize=serial.EIGHTBITS, parity=serial.PARITY_ODD, stopbits=serial.STOPBITS_TWO, xonxoff=False, timeout=20)
+        self.ser = serial.Serial(port=port, baudrate=56700, bytesize=serial.EIGHTBITS, parity=serial.PARITY_ODD, stopbits=serial.STOPBITS_TWO, xonxoff=False, timeout=20)
         self.connectionTest()
 
         # self.sendInstruction(Instructions.CALIBRATE)
