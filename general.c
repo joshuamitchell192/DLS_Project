@@ -6,13 +6,16 @@ void Setup(void);
 extern void SensorADCSetup(void);
 extern void Uart0TerminalSetup(void);
 
+extern void DriverGPIOSetup(void);
+extern void LimitSwitchesGPIOSetup(void);
+
 void Delay(unsigned int numLoops)
 {
 	volatile unsigned int lp;
 	volatile unsigned int i;
 
 	for(lp=0; lp<numLoops; lp++)
-		for (i=0; i<=0xFFFF; i++) ;
+		for (i=0; i<=0xA00; i++) ;
 }
 
 void Setup(void)
@@ -21,9 +24,8 @@ void Setup(void)
 	
 	Uart0TerminalSetup(); 
 	
+	DriverGPIOSetup();
+	
+	LimitSwitchesGPIOSetup();
+	
 }
-
-
-
-
-

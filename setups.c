@@ -3,11 +3,34 @@
 void SensorADCSetup(void);
 void SensorGPIOSetup(void);
 void SensorTimerSetup(void);
+
 void Uart0TerminalSetup(void);
+
+void DriverGPIOSetup(void);
+void LimitSwitchesGPIOSetup(void);
 
 extern void EnableInterrupts(void);
 extern void DisableInterrupts(void);
 extern void ADC0SS3_Handler(void);
+
+//PA2,3,4,5
+void DriverGPIOSetup(void){
+	SYSCTL_RCGCGPIO |= 0x1;
+	while((SYSCTL_PRGPIO & 0x1) != 0x1);
+	GPIOA_DIR |= 0x3C;
+	GPIOA_AFSEL &= ~0x3C;
+	GPIOA_DEN |= 0x3C;
+}
+
+//PB0,1
+void LimitSwitchesGPIOSetup(void){
+	SYSCTL_RCGCGPIO |= 0x2;
+	while((SYSCTL_PRGPIO & 0x2) != 0x2);
+	
+	GPIOB_DIR &= ~0x3;
+	GPIOB_AFSEL &= ~0x3;
+	GPIOB_DEN |= 0x3;
+}
 
 void SensorADCSetup(void)
 {

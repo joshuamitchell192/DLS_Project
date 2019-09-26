@@ -411,6 +411,11 @@
               <FileType>1</FileType>
               <FilePath>.\helpers.c</FilePath>
             </File>
+            <File>
+              <FileName>motorDriver.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\motorDriver.c</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>
