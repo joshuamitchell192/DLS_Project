@@ -26,7 +26,7 @@ class View(QMainWindow):
         self.y += 30
 
         self.SmpDuration_Label = QLabel(self)
-        self.SmpDuration_Label.setGeometry(30, self.y, 100, 30)
+        self.SmpDuration_Label.setGeometry(30, self.y, 150, 30)
         self.SmpDuration_Label.setText("Step Size (mm)")
 
         self.y += 30

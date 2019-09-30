@@ -12,15 +12,15 @@ class Controller:
 
     def handleScanBetween(self, P1, P2, sampleDuration, stepSize):
         self.serialConnection.sendInstruction(self.Instructions.TWOPOS_SCAN)
-        self.serialConnection(P1)
-        self.serialConnection(P2)
-        self.serialConnection(sampleDuration)
+        self.serialConnection.sendValue(P1)
+        self.serialConnection.sendValue(P2)
+        self.serialConnection.sendValue(sampleDuration)
         if (stepSize == "Full"):
-            self.serialConnection(1)
+            self.serialConnection.sendValue(1)
         if (stepSize == "Half"):
-            self.serialConnection(2)
+            self.serialConnection.sendValue(2)
         if (stepSize == "Quarter"):
-            self.serialConnection(4)
+            self.serialConnection.sendValue(4)
 
     def handleStop(self):
         self.serialConnection.sendInstruction(self.Instructions.STOP)
