@@ -9,16 +9,17 @@ class SerialConnection:
 
     def __init__(self, port):
 
-        self.ser = serial.Serial(port=port, baudrate=56700, bytesize=serial.EIGHTBITS, parity=serial.PARITY_ODD, stopbits=serial.STOPBITS_TWO, xonxoff=False, timeout=20)
+        self.ser = serial.Serial(port=port.upper(), baudrate=56700, bytesize=serial.EIGHTBITS, parity=serial.PARITY_ODD, stopbits=serial.STOPBITS_TWO, xonxoff=False, timeout=20)
         self.connectionTest()
 
         # self.sendInstruction(Instructions.CALIBRATE)
 
     def connectionTest(self):
+        print("Turn on the Tiva")
         g_byte = self.ser.read(1)
         o_byte = self.ser.read(1)
 
-        if (g_byte.decode("ascii") != "G") | (o_byte.decode("ascii") != "O") :
+        if (g_byte.decode("ascii") != "G") | (o_byte.decode("ascii") != "O"):
             print("Unsuccessful Serial Connection to Tiva, Try Again")
         else:
             print("Successful Serial Connection to Tiva")
