@@ -10,7 +10,7 @@ class SerialConnection:
     def __init__(self, port):
 
         self.ser = serial.Serial(port=port.upper(), baudrate=56700, bytesize=serial.EIGHTBITS, parity=serial.PARITY_ODD, stopbits=serial.STOPBITS_TWO, xonxoff=False, timeout=20)
-        self.connectionTest()
+        
 
         # self.sendInstruction(Instructions.CALIBRATE)
 
@@ -36,8 +36,8 @@ class SerialConnection:
 
     def sendValue(self, value):
 
-        print(f'Sending: {instruction}\n')
-        self.ser.write(value)
+        print(f'Sending: {value}\n')
+        self.ser.write(bytes([value]))
 
         ser_bytes = self.ser.read(1)
         print(f'Receiving\nraw data: {ser_bytes}')

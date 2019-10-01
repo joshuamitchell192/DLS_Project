@@ -9,6 +9,8 @@ void Uart0TerminalSetup(void);
 void DriverGPIOSetup(void);
 void LimitSwitchesGPIOSetup(void);
 
+void DriverTimerSetup(void);
+
 extern void EnableInterrupts(void);
 extern void DisableInterrupts(void);
 extern void ADC0SS3_Handler(void);
@@ -20,6 +22,16 @@ void DriverGPIOSetup(void){
 	GPIOA_DIR |= 0x3C;
 	GPIOA_AFSEL &= ~0x3C;
 	GPIOA_DEN |= 0x3C;
+}
+
+void DriverTimerSetup(void){
+	SYSCTL_RCGCTIMER |= 0x2;
+	while((SYSCTL_PRTIMER & 0x2) != 0x2);
+	TIMER1_CTL &= ~0x1;
+	TIMER1_CFG = 4;
+	TIMER1_TAMR &= 3;
+	TIMER1_TAMR |= 2;
+	
 }
 
 //PB0,1
@@ -73,6 +85,7 @@ void SensorADCSetup(void)
 	
 	// NVIC for IRQ 17 (ADC0 Sequencer 3)
 	NVIC_EN0 |= (1<<17);
+	
 	
 	EnableInterrupts();
 	
@@ -161,10 +174,28 @@ void Uart0TerminalSetup(void)
 	// Disable UART 0 for setup
 	UART0_CTL &= ~0x1;
 	
+	// Set baud rate for 567000
 	UART0_IBRD = 34;
 	UART0_FBRD = 46;
 	
+	// Set line control register to odd parity, 2 stop bits, and word length of 8 bits
 	UART0_LCRH |= 0x6A;
+
+	DisableInterrupts();
+
+	// Set interrupt to trigger when FIFO is 1/8 full
+	UART0_IFLS &= ~0x1;
+	
+	// Enable receive interrupts on UART0
+	UART0_IM |= 0x10;
+
+	// Enable Interrupts for UART0
+	NVIC_EN0 |= (1<<5);
+	
+	EnableInterrupts();
+	
+	// Clear interrupts on uart
+	UART0_ICR |= 0x10;
 	
 	UART0_CTL |= 0x321;
 }
