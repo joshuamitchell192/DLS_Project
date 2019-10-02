@@ -28,9 +28,12 @@ class SerialConnection:
 
         print(f'Sending: {instruction}\n')
         self.ser.write(instruction.encode("ascii"))
+        
+        self.ser.reset_input_buffer()
 
         ser_bytes = self.ser.read(1)
         print(f'Receiving\nraw data: {ser_bytes}')
+
         decoded_bytes = (ser_bytes.decode("ascii"))
         print(f'Ascii Value: {decoded_bytes}', flush=True)
 
@@ -41,7 +44,46 @@ class SerialConnection:
 
         ser_bytes = self.ser.read(1)
         print(f'Receiving\nraw data: {ser_bytes}')
+
+
         decoded_bytes = (ser_bytes.decode("ascii"))
+           
         print(f'Ascii Value: {decoded_bytes}', flush=True)
+
+    def readSample(self):
+
+        ser_bytes_sample1 = self.ser.read(1)
+
+        print(f'Receiving\nraw sample: {ser_bytes_sample1}')
+
+        ser_bytes_sample2 = self.ser.read(1)
+        ser_bytes_total = int.from_bytes(ser_bytes_sample1, byteorder='little', signed=False) + (int.from_bytes(ser_bytes_sample2, byteorder='little', signed=False) << 8)
+
+
+        print(f'Receiving\nraw sample: {ser_bytes_sample2}')
+
+
+
+
+        # decoded_bytes = (ser_bytes.decode("ascii"))
+        # print(f'Ascii Value: {decoded_bytes}', flush=True)
+
+        # print(f'Sending Ackt: {value}\n')
+        # self.ser.write(bytes([value]))
+
+        return ser_bytes_total
+
+    def sendStopInstruction(self, instruction):
+
+        print(f'Sending: {instruction}\n')
+        self.ser.write(instruction.encode("ascii"))
+
+        #while (self.ser.in_waiting > 1):
+        self.ser.reset_input_buffer()
+        ser_bytes = self.ser.read(1)
+        #print(f'Receiving\nraw data: {ser_bytes}')
+
+        #decoded_bytes = (ser_bytes.decode("ascii"))
+        #print(f'Ascii Value: {decoded_bytes}', flush=True)
 
 

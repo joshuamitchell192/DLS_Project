@@ -6,6 +6,10 @@ extern void WriteChar(unsigned int);
 extern unsigned int ReadChar();
 extern int calibrate(void);
 extern void sampleTwoPoints(double sampleDuration, int point1, int point2);
+extern void goTo(int point);
+extern void sampleHere(int duration,int avgInterval);
+
+
 void wait(void);
 
 unsigned int instruction;
@@ -13,6 +17,7 @@ unsigned int point1;
 unsigned int point2;
 unsigned int sampleDuration;
 unsigned int stepSize;
+unsigned int avgInt;
 
 unsigned int ALREADY_READ=0;
 
@@ -36,37 +41,40 @@ int main(void)
 
 void wait (void)
 {
-	while (1)
-	{
-		if (instruction == '*')
-		{
-			STOP = 0;
-			WriteChar(instruction);
-			calibrate();
-			instruction = 0;
-		}
-		if (instruction == (unsigned int)0x3A)//sample 2 points : opcode
-		{
-			ALREADY_READ = 0;
-			
-			sampleTwoPoints((double)sampleDuration, point1*stepsPerMM, point2*stepsPerMM);
-			//sampleTwoPoints((double)0.001,100, 300);
-			instruction = 0;
-			
-		}
-		if (instruction == (unsigned int)0x2E) 
-		{
-			ALREADY_READ = 0;
-			STOP = 0;
-			WriteChar(instruction);
-			UART0_ICR |= 0x10;
-	//		ReadChar();
-	//		TIMER0_CTL &= ~0x21;
-	//		TIMER1_ICR &= ~1;
-			instruction = 0;
-			
-		}
-		//STOP = 0;
-		
-	}
+    while (1)
+    {
+        if (instruction == '*')
+        {
+            STOP = 0;
+            WriteChar(instruction);
+            calibrate();
+            instruction = 0;
+        }
+        if (instruction == ':')//sample 2 points : opcode
+        {
+            ALREADY_READ = 0;
+            STOP = 0;
+            sampleTwoPoints((double)sampleDuration, point1*stepsPerMM, point2*stepsPerMM);
+            //sampleTwoPoints((double)0.001,100, 300);
+            instruction = 0;
+
+        }
+        if (instruction == '.') 
+        {
+            ALREADY_READ = 0;
+            sampleHere(sampleDuration, avgInt);
+
+
+            instruction = 0;
+        }
+        if (instruction == '>')
+        {
+            ALREADY_READ = 0;
+            goTo(point1*stepsPerMM);
+            instruction=0;
+
+        }
+        STOP = 0;
+
+    }
 }

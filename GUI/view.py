@@ -1,8 +1,11 @@
 from PyQt5.QtWidgets import (QMainWindow, QSlider,
-    QLabel, QApplication, QSpinBox, QPushButton, QComboBox)
-from PyQt5.QtCore import Qt
+    QLabel, QApplication, QSpinBox, QPushButton, QComboBox, QMenu, QWidget)
+from PyQt5.QtCore import Qt, QSize
+from PyQt5 import QtWidgets
 from PyQt5.QtGui import QPixmap
 import sys
+
+from dynamicCanvas import DynamicMplCanvas
 
 class View(QMainWindow):
 
@@ -10,12 +13,14 @@ class View(QMainWindow):
         super(View, self).__init__()
         self.serialConnection = serialConnection
         self.controller = controller
+
+        self.setAttribute(Qt.WA_DeleteOnClose)
         
-        self.y = 20
+        self.y = 100
 
         self.SmpDuration_Label = QLabel(self)
         self.SmpDuration_Label.setGeometry(30, self.y, 220, 30)
-        self.SmpDuration_Label.setText("Sample Duration (mm)")
+        self.SmpDuration_Label.setText("Sample Duration (ms)")
 
         self.y += 40
 
@@ -43,12 +48,16 @@ class View(QMainWindow):
 
         self.y += 40
 
-        self.StepSize_ComboBox = QComboBox()
+        self.StepSize_ComboBox_Widget = QWidget(self)
+        self.StepSize_ComboBox_Widget.setGeometry(30, self.y, 120, 35)
+        # self.setCentralWidget(StepSize_ComboBox_Widget)
+
+        self.StepSize_ComboBox = QComboBox(self.StepSize_ComboBox_Widget)
+        self.StepSize_ComboBox.setObjectName(("StepSize_ComboBox"))
         self.StepSize_ComboBox.addItem("Full")
         self.StepSize_ComboBox.addItem("Half")
         self.StepSize_ComboBox.addItem("Quarter")
         self.StepSize_ComboBox.currentIndexChanged.connect(self.__updateStepSizeComboBox)
-        self.StepSize_ComboBox.setGeometry(30, self.y, 120, 25)
 
         self.y += 100
 
@@ -80,6 +89,7 @@ class View(QMainWindow):
 
         self.P2_Slider = QSlider(Qt.Horizontal, self)
         self.P2_Slider.setFocusPolicy(Qt.NoFocus)
+        self.P2_Slider.setRange(0, 55)
         self.P2_Slider.setGeometry(30, self.y, 400, 15)
         self.P2_Slider.valueChanged[int].connect(self.__updateP2SpinBox)
 
@@ -90,7 +100,7 @@ class View(QMainWindow):
         self.P2_SpinBox.setRange(0, 55)
         self.P2_SpinBox.valueChanged[int].connect(self.__updateP2Slider)
 
-        self.y += 190
+        self.y += 200
         
         self.Calibrate_Button = QPushButton(self)
         self.Calibrate_Button.setGeometry(30, self.y, 100, 35)
@@ -108,28 +118,31 @@ class View(QMainWindow):
         self.Stop_Button.clicked.connect(lambda: self.controller.handleStop())
 
         self.GoTo_Button = QPushButton(self)
-        self.GoTo_Button.setGeometry(410, self.y, 150, 35)
-        self.GoTo_Button.setText("Go To Point")
+        self.GoTo_Button.setGeometry(410, self.y, 180, 35)
+        self.GoTo_Button.setText("Go To Position 1")
         self.GoTo_Button.clicked.connect(lambda: self.controller.handleGoToPoint(self.P1_Slider.value()))
 
         self.ScanAtPoint_Button = QPushButton(self)
-        self.ScanAtPoint_Button.setGeometry(580, self.y, 150, 35)
-        self.ScanAtPoint_Button.setText("Scan At Point")
-        self.ScanAtPoint_Button.clicked.connect(lambda: self.controller.handleScanAtPoint(self.P1_Slider.value(), self.AvgInterval_SpinBox.value()))
+        self.ScanAtPoint_Button.setGeometry(610, self.y, 180, 35)
+        self.ScanAtPoint_Button.setText("Start Sampling")
+        self.ScanAtPoint_Button.clicked.connect(lambda: self.controller.handleStartSample(self.SmpDuration_SpinBox.value(), self.AvgInterval_SpinBox.value()))
 
-        # self.main_widget = QtWidgets.QWidget(self)
+        self.graph_widget = QtWidgets.QWidget(self)
 
-        # l = QtWidgets.QVBoxLayout(self.main_widget)
-        # sc = MyStaticMplCanvas(self.main_widget, width=5, height=4, dpi=100)
-        # dc = MyDynamicMplCanvas(self.main_widget, width=5, height=4, dpi=100)
-        # l.addWidget(sc)
-        # l.addWidget(dc)
+        l = QtWidgets.QVBoxLayout(self.graph_widget)
+        dc = DynamicMplCanvas(self.graph_widget, self.controller.samples, width=5, height=4, dpi=100)
+        l.addWidget(dc)
 
-
+        self.graph_widget.setGeometry(600, 50, 650, 500)
 
 
+        self.file_menu = QMenu('&File', self)
+        self.file_menu.addAction('&Quit', self.fileQuit,
+                                 Qt.CTRL + Qt.Key_Q)
+        self.menuBar().addMenu(self.file_menu)
 
 
+        self.setMinimumSize(QSize(1280, 720)) 
         self.setGeometry(300, 300, 1280, 720)
         self.setWindowTitle('Linear Stage Controller')
 
@@ -153,3 +166,10 @@ class View(QMainWindow):
 
     def __updateP2Slider(self, value):
         self.P2_Slider.setValue(value)
+
+
+    def fileQuit(self):
+            self.close()
+
+    def closeEvent(self, ce):
+        self.fileQuit()

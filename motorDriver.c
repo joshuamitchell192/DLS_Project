@@ -9,6 +9,8 @@ extern int getPrescaler(double seconds);
 int calibrate(void);
 void setDriverTimer(double seconds);
 void stepMotor(void);
+void sampleHere(int duration,int avgInterval);
+void goTo(int point);
 
 extern int currentPosition;
 extern float stepsPerMM;
@@ -19,7 +21,7 @@ int numSamples;
 
 void sampleTwoPoints(double sampleDuration, int point1, int point2){
 	sampleDuration *= 0.001;
-	setDriverTimer(sampleDuration);
+	setDriverTimer(0.001);
 	//get first
 	
 	if (point2 < point1){
@@ -27,6 +29,7 @@ void sampleTwoPoints(double sampleDuration, int point1, int point2){
 			point1 = point2;
 			point2 = temp;
 	}
+	
 	int dir;
 	if (currentPosition > point1-1){
 			GPIOA_DATA &= ~0x8;
@@ -40,8 +43,12 @@ void sampleTwoPoints(double sampleDuration, int point1, int point2){
 			currentPosition += dir;
 			stepMotor();
 	}
+	
+	setDriverTimer(sampleDuration);
 	dir = 1;
 	GPIOA_DATA |= 0x8;
+	
+	Delay(100);
 	
 	//Turn on adc timer for sampling
 	TIMER0_CTL |= 0x21;
@@ -52,12 +59,23 @@ void sampleTwoPoints(double sampleDuration, int point1, int point2){
 		
 			stepMotor();
 			if (numSamples>0){
-				int avgSample = sampleTotal / numSamples;
+				unsigned int avgSample = sampleTotal / numSamples;
 				//SEND BACK SAMPLE
+				unsigned int avgSample_lowerHalf = (0xFF & avgSample); 
+				unsigned int avgSample_upperHalf = (0xF00 & avgSample) >> 8;
+				
+				
+				WriteChar(avgSample_lowerHalf);
+				WriteChar(avgSample_upperHalf);
+				//unsigned int sampleAckt = ReadChar();
 			}
 			
 	}
+	
 	TIMER0_CTL &= ~0x21;
+	
+	WriteChar(0xFF);
+	WriteChar(0xFF);
 }
 
 void setDriverTimer(double seconds){
@@ -107,4 +125,41 @@ int calibrate(void){
 	float mm = 60.0;
 	stepsPerMM = numSteps/mm;
 	return numSteps;
+}
+
+void sampleHere(int duration,int avgInterval){
+    sampleTotal = 0;
+    numSamples = 0;
+    TIMER0_CTL |= 0x21;
+    setDriverTimer(duration);
+    TIMER1_ICR |= 1;
+    while((TIMER1_RIS & 0x1) != 0x1){
+        if (numSamples >= avgInterval){
+            int avgSample = sampleTotal / numSamples;
+            sampleTotal = 0;
+            numSamples = 0;
+            //SEND BACK SAMPLE
+
+        }
+    }
+    TIMER0_CTL &= ~0x21;
+}
+
+void goTo(int point){
+    setDriverTimer(0.0007);
+    int dir;
+    if (currentPosition > point-1){
+            GPIOA_DATA &= ~0x8;
+            dir = -1;
+    }else{
+        GPIOA_DATA |= 0x8;
+            dir = 1;
+    }
+    while (currentPosition != point-1 && !STOP){
+            currentPosition += dir;
+            stepMotor();
+    }
+    GPIOA_DATA |= 0x8;
+    stepMotor();
+    currentPosition ++;
 }

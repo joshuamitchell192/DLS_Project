@@ -21,6 +21,7 @@ extern int numSamples;
 
 int numSteps;
 extern int STOP;
+extern unsigned int avgInt;
 
 int currentPosition;
 int prio = 0;
@@ -38,40 +39,50 @@ void ADC0SS3_Handler (void)
 
 void UART0_Handler (void)
 {
-	if (ALREADY_READ) return;
-	
-	instruction = ReadChar();	
-	
-	if (instruction == (unsigned int)0x3A)//sample 2 points : opcode
-	{
-		STOP = 0;
-		WriteChar(instruction);
-		point1 = ReadChar();
-		WriteChar(point1);
-		point2 = ReadChar();
-		WriteChar(point2);
-		sampleDuration = ReadChar();
-		WriteChar(sampleDuration);
-		stepSize = ReadChar();
-		WriteChar(stepSize);
-		ALREADY_READ = 1;
-	}
-		
+    if (ALREADY_READ) return;
 
-	if (instruction == (unsigned int)0x21)
-	{
-		STOP = 1;
-		WriteChar(instruction);
-		instruction = 0;
-		//TIMER1_ICR &= ~1;
-		//TIMER1_CTL &= ~0x1;
-		//wait();
-		ALREADY_READ = 0;
-	}
+    instruction = ReadChar();
 
+    if (instruction == (unsigned int)0x3A)//sample 2 points : opcode
+    {
+        STOP = 0;
+        WriteChar(instruction);
+        point1 = ReadChar();
+        WriteChar(point1);
+        point2 = ReadChar();
+        WriteChar(point2);
+        sampleDuration = ReadChar();
+        WriteChar(sampleDuration);
+        stepSize = ReadChar();
+        WriteChar(stepSize);
+        ALREADY_READ = 1;
+    }
+    if (instruction == '.'){
+            STOP = 0;
+            WriteChar(instruction);
+            sampleDuration = ReadChar();
+            WriteChar(sampleDuration);
+            avgInt = ReadChar();
+            WriteChar(avgInt);
+            ALREADY_READ = 1;
+    }
+    if (instruction == '>'){
+            STOP = 0;
+            WriteChar(instruction);
+            point1 = ReadChar();
+            WriteChar(point1);
+            ALREADY_READ = 1;
+    }
 
-	
-	
-	
+    if (instruction == (unsigned int)0x21)
+    {
+        STOP = 1;
+        WriteChar(instruction);
+        instruction = 0;
+        //TIMER1_ICR &= ~1;
+        //TIMER1_CTL &= ~0x1;
+        //wait();
+        ALREADY_READ = 0;
+    }
 }
 
