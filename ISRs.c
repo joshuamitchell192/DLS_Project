@@ -8,9 +8,22 @@ extern int calibrate(void);
 extern void wait(void);
 extern void sampleTwoPoints(double sampleDuration, int point1, int point2);
 
+extern unsigned int instruction;
+extern unsigned int instruction;
+extern unsigned int point1;
+extern unsigned int point2;
+extern unsigned int sampleDuration;
+extern unsigned int stepSize;
+extern unsigned int ALREADY_READ;
+
+extern int sampleTotal;
+extern int numSamples;
+
 int numSteps;
-float stepsPerMM;
+extern int STOP;
+
 int currentPosition;
+int prio = 0;
 
 void ADC0SS3_Handler (void)
 {
@@ -18,60 +31,47 @@ void ADC0SS3_Handler (void)
 	
 	// Get Data from FIFO
 	unsigned int sensorData = ADC0_SSFIFO3;
-	unsigned int delayValue = sensorData & 0xF;
-
-	// Write variable to terminal
-	
-	// Wait for transmission queue to be empty
-	while ((UART0_FR & 0x20) == 0x20);
-
-	WriteChar(0x21);
-	Delay(delayValue);
+	sampleTotal += sensorData;
+	numSamples++;
 	
 }
 
 void UART0_Handler (void)
 {
-	unsigned int input = ReadChar();
+	if (ALREADY_READ) return;
 	
-	if (input == (unsigned int)0x2A)
+	instruction = ReadChar();	
+	
+	if (instruction == (unsigned int)0x3A)//sample 2 points : opcode
 	{
-		WriteChar(input);
-		numSteps = calibrate();
-		stepsPerMM = numSteps/55;
-
-	}
-	if (input == (unsigned int)0x21)
-	{
-		WriteChar(input);
-		TIMER1_ICR &= ~1;
-		TIMER1_CTL &= ~0x1;
-		wait();
-	}
-
-	if (input == (unsigned int)0x3A)//sample 2 points : opcode
-	{
-		WriteChar(input);
-			volatile unsigned int point1 = ReadChar();
+		STOP = 0;
+		WriteChar(instruction);
+		point1 = ReadChar();
 		WriteChar(point1);
-			volatile unsigned int point2 = ReadChar();
+		point2 = ReadChar();
 		WriteChar(point2);
-			volatile unsigned int sampleDuration = ReadChar();
+		sampleDuration = ReadChar();
 		WriteChar(sampleDuration);
-			unsigned int stepSize = ReadChar();
+		stepSize = ReadChar();
 		WriteChar(stepSize);
+		ALREADY_READ = 1;
+	}
 		
-		sampleTwoPoints((double)sampleDuration * 0.001, point1*stepsPerMM, point2*stepsPerMM);
-	}
 
-	if (input == (unsigned int)0x2E) 
+	if (instruction == (unsigned int)0x21)
 	{
-		WriteChar(input);
-//		ReadChar();
-//		TIMER0_CTL &= ~0x21;
-//		TIMER1_ICR &= ~1;
-
+		STOP = 1;
+		WriteChar(instruction);
+		instruction = 0;
+		//TIMER1_ICR &= ~1;
+		//TIMER1_CTL &= ~0x1;
+		//wait();
+		ALREADY_READ = 0;
 	}
+
+
+	
+	
 	
 }
 

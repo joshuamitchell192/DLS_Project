@@ -191,6 +191,7 @@ void Uart0TerminalSetup(void)
 
 	// Enable Interrupts for UART0
 	NVIC_EN0 |= (1<<5);
+	//NVIC_PR |= (7<<13);
 	
 	EnableInterrupts();
 	

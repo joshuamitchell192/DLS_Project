@@ -30,7 +30,7 @@ class App (QApplication):
         self.view = View(self.serialConnection, self.controller)
         self.view.show()
 
-        self.serialConnection.connectionTest()
+        #self.serialConnection.connectionTest()
 
 if __name__ == '__main__':
     app = App(sys.argv)

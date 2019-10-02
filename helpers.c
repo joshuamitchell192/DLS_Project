@@ -32,8 +32,9 @@ unsigned int ReadChar()
 	unsigned int data = (unsigned int)UART0_DR;
 	UART0_FR &= ~0x10;
 	return data;
-	
 }
+
+
 
 int getPrescaler(double seconds){
 	double preload = 65535;

@@ -12,6 +12,7 @@
 #define NVIC_ST_CURRENT	(*((volatile unsigned long *)0xE000E018))
 
 #define NVIC_EN0 	(*((volatile unsigned long *)0xE000E100))
+#define NVIC_PR		(*((volatile unsigned long *)0xE000E404))
 #define NVIC_EN1 	(*((volatile unsigned long *)0xE000E104))
 
 #define GPIO_PORTF_UNLOCK 	(*((volatile unsigned long *)0x4C4F434B))
