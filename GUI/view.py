@@ -1,9 +1,10 @@
 from PyQt5.QtWidgets import (QMainWindow, QSlider,
-    QLabel, QApplication, QSpinBox, QPushButton, QComboBox, QMenu, QWidget)
+    QLabel, QApplication, QSpinBox, QPushButton, QComboBox, QMenu, QWidget, QFileDialog)
 from PyQt5.QtCore import Qt, QSize
 from PyQt5 import QtWidgets
 from PyQt5.QtGui import QPixmap
 import sys
+import csv
 
 from dynamicCanvas import DynamicMplCanvas
 
@@ -19,25 +20,29 @@ class View(QMainWindow):
         self.y = 100
 
         self.SmpDuration_Label = QLabel(self)
-        self.SmpDuration_Label.setGeometry(30, self.y, 220, 30)
-        self.SmpDuration_Label.setText("Sample Duration (ms)")
+        self.SmpDuration_Label.setGeometry(30, self.y, 250, 30)
+        self.SmpDuration_Label.setText("Sample Duration (0.1 ms)")
 
         self.y += 40
 
         self.SmpDuration_SpinBox = QSpinBox(self)
         self.SmpDuration_SpinBox.setGeometry(30, self.y, 120, 25)
+        self.SmpDuration_SpinBox.setRange(7, 10000)
+        self.SmpDuration_SpinBox.setValue(7)
         self.SmpDuration_SpinBox.valueChanged[int].connect(self.__updateSmpDurationSpinBox)
 
         self.y -= 40
 
-        self.AvgInterval_Spinbox = QLabel(self)
-        self.AvgInterval_Spinbox.setGeometry(300, self.y, 200, 30)
-        self.AvgInterval_Spinbox.setText("Averaging Interval")
+        self.AvgInterval_Label = QLabel(self)
+        self.AvgInterval_Label.setGeometry(300, self.y, 200, 30)
+        self.AvgInterval_Label.setText("Averaging Interval")
 
         self.y += 40
 
         self.AvgInterval_SpinBox = QSpinBox(self)
         self.AvgInterval_SpinBox.setGeometry(300, self.y, 120, 25)
+        self.AvgInterval_SpinBox.setRange(1, 1000)
+        self.AvgInterval_SpinBox.setValue(10)
         self.AvgInterval_SpinBox.valueChanged[int].connect(self.__updateAvgIntervalSpinBox)
         
         self.y += 40
@@ -70,6 +75,7 @@ class View(QMainWindow):
         self.P1_Slider = QSlider(Qt.Horizontal, self)
         self.P1_Slider.setFocusPolicy(Qt.NoFocus)
         self.P1_Slider.setGeometry(30, self.y, 400, 15)
+        self.P1_Slider.setRange(0, 55)
         self.P1_Slider.valueChanged[int].connect(self.__updateP1SpinBox)
 
         self.y -= 5
@@ -127,11 +133,17 @@ class View(QMainWindow):
         self.ScanAtPoint_Button.setText("Start Sampling")
         self.ScanAtPoint_Button.clicked.connect(lambda: self.controller.handleStartSample(self.SmpDuration_SpinBox.value(), self.AvgInterval_SpinBox.value()))
 
+        self.ClearGraph_Button = QPushButton(self)
+        self.ClearGraph_Button.setGeometry(810, self.y, 180, 35)
+        self.ClearGraph_Button.setText("Clear Samples")
+        # self.ClearGraph_Button.clicked.connect(lambda: self.controller.handleClearSamples())
+        self.ClearGraph_Button.clicked.connect(lambda: self.clearGraph())
+
         self.graph_widget = QtWidgets.QWidget(self)
 
         l = QtWidgets.QVBoxLayout(self.graph_widget)
-        dc = DynamicMplCanvas(self.graph_widget, self.controller.samples, width=5, height=4, dpi=100)
-        l.addWidget(dc)
+        self.dc = DynamicMplCanvas(self.graph_widget, self.controller.samples, width=5, height=4, dpi=100)
+        l.addWidget(self.dc)
 
         self.graph_widget.setGeometry(600, 50, 650, 500)
 
@@ -139,6 +151,8 @@ class View(QMainWindow):
         self.file_menu = QMenu('&File', self)
         self.file_menu.addAction('&Quit', self.fileQuit,
                                  Qt.CTRL + Qt.Key_Q)
+        self.file_menu.addAction('&Save Data', self.saveDataToCSV,
+                                 Qt.CTRL + Qt.Key_S)
         self.menuBar().addMenu(self.file_menu)
 
 
@@ -170,6 +184,25 @@ class View(QMainWindow):
 
     def fileQuit(self):
             self.close()
+
+    def saveDataToCSV(self):
+        options = QFileDialog.Options()
+        options |= QFileDialog.DontUseNativeDialog
+        fileName, _ = QFileDialog.getSaveFileName(self,"QFileDialog.getSaveFileName()","","CSV Files (*.csv)", options=options)
+
+        if (fileName != ""):
+            if (fileName[-4:] != ".csv"):
+                fileName = fileName + ".csv"
+            with open(fileName, 'w+' ) as newFile:
+                for s in self.controller.samples:
+                    newFile.write(str(s))
+                    newFile.write('\n')
+
+    def clearGraph(self):
+        self.controller.samples = []
+        self.dc.resetSamples(self.controller.samples)
+        self.dc.compute_initial_figure()
+        self.dc.update_figure()
 
     def closeEvent(self, ce):
         self.fileQuit()

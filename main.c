@@ -62,8 +62,8 @@ void wait (void)
         if (instruction == '.') 
         {
             ALREADY_READ = 0;
+			STOP = 0;
             sampleHere(sampleDuration, avgInt);
-
 
             instruction = 0;
         }

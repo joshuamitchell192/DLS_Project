@@ -14,12 +14,13 @@ class Controller:
         self.stop = False
 
     def handleCalibrate(self):
-        #self.handleStop()
+        self.handleStop()
         self.serialConnection.sendInstruction(self.Instructions.CALIBRATE)
 
 
 
     def handleScanBetween(self, P1, P2, sampleDuration, stepSize):
+        self.handleStop()
         self.stop = False
         self.serialConnection.sendInstruction(self.Instructions.TWOPOS_SCAN)
         self.serialConnection.sendValue(P1)
@@ -35,8 +36,8 @@ class Controller:
             self.serialConnection.sendValue(1)
 
         while(not self.stop):
-            if (len(self.samples) != 0):
-                print(self.samples[-1])
+            # if (len(self.samples) != 0):
+            #     print(self.samples[-1])
             currentSample = self.serialConnection.readSample()
             if currentSample == 0xFFFF:
                 break
@@ -52,16 +53,29 @@ class Controller:
 
 
     def handleGoToPoint(self, P1):
-        #self.handleStop()
+        self.handleStop()
         self.serialConnection.sendInstruction(self.Instructions.GOTO)
         self.serialConnection.sendValue(P1)
 
     def handleStartSample(self, sampleDuration, averageInterval):
-        #self.handleStop()
+        self.handleStop()
+        self.stop = False
         self.serialConnection.sendInstruction(self.Instructions.START_SAMPLE)
         self.serialConnection.sendValue(sampleDuration)
         self.serialConnection.sendValue(averageInterval)
+       
+        while(not self.stop):
+            currentSample = self.serialConnection.readSample()
+            # print("Current sample", currentSample)
+            if currentSample == 0xFFFF:
+                break
+            self.samples.append(currentSample)
+            # print(self.samples)
+            QApplication.processEvents()
 
-    def clearSamples(self):
+
+
+    def handleClearSamples(self):
         self.samples = []
+
 

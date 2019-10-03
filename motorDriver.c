@@ -20,8 +20,8 @@ int sampleTotal;
 int numSamples;
 
 void sampleTwoPoints(double sampleDuration, int point1, int point2){
-	sampleDuration *= 0.001;
-	setDriverTimer(0.001);
+	sampleDuration *= 0.0001;
+	setDriverTimer(0.0007);
 	//get first
 	
 	if (point2 < point1){
@@ -131,18 +131,27 @@ void sampleHere(int duration,int avgInterval){
     sampleTotal = 0;
     numSamples = 0;
     TIMER0_CTL |= 0x21;
-    setDriverTimer(duration);
-    TIMER1_ICR |= 1;
-    while((TIMER1_RIS & 0x1) != 0x1){
+//setDriverTimer(duration);
+  //  TIMER1_ICR |= 1;
+	//TIMER1_CTL |= 1;
+    while(!STOP){
         if (numSamples >= avgInterval){
-            int avgSample = sampleTotal / numSamples;
-            sampleTotal = 0;
-            numSamples = 0;
-            //SEND BACK SAMPLE
+            unsigned int avgSample = sampleTotal / numSamples;
 
+			unsigned int avgSample_lowerHalf = (0xFF & avgSample); 
+			unsigned int avgSample_upperHalf = (0xF00 & avgSample) >> 8;	
+			
+			WriteChar(avgSample_lowerHalf);
+			
+			WriteChar(avgSample_upperHalf);
+
+			sampleTotal = 0;
+            numSamples = 0;
         }
     }
     TIMER0_CTL &= ~0x21;
+	WriteChar(0xFF);
+	WriteChar(0xFF);
 }
 
 void goTo(int point){

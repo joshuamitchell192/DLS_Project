@@ -42,25 +42,31 @@ class SerialConnection:
         print(f'Sending: {value}\n')
         self.ser.write(bytes([value]))
 
+
+        self.ser.reset_input_buffer()
         ser_bytes = self.ser.read(1)
         print(f'Receiving\nraw data: {ser_bytes}')
 
-
+        
         decoded_bytes = (ser_bytes.decode("ascii"))
            
         print(f'Ascii Value: {decoded_bytes}', flush=True)
 
     def readSample(self):
 
+        #self.ser.reset_input_buffer()
+        # print("Waiting", self.ser.in_waiting)
         ser_bytes_sample1 = self.ser.read(1)
 
-        print(f'Receiving\nraw sample: {ser_bytes_sample1}')
 
         ser_bytes_sample2 = self.ser.read(1)
+
+        # print("BYTES RAW  ",ser_bytes_sample1,ser_bytes_sample2)
+        # print("BYTE INTS ", int.from_bytes(ser_bytes_sample1, byteorder='little') ,(int.from_bytes(ser_bytes_sample2, byteorder='little')))
+
         ser_bytes_total = int.from_bytes(ser_bytes_sample1, byteorder='little', signed=False) + (int.from_bytes(ser_bytes_sample2, byteorder='little', signed=False) << 8)
 
 
-        print(f'Receiving\nraw sample: {ser_bytes_sample2}')
 
 
 

@@ -23,7 +23,6 @@ void WriteChar(unsigned int value)
 {
 	while ((UART0_FR & 0x20) == 0x20);
 	UART0_DR |= value;
-	
 }
 
 unsigned int ReadChar()
