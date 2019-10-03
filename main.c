@@ -30,17 +30,15 @@ int main(void)
 {	  
 	STOP = 0;
 	Setup();
-
-//	WriteChar(0x47);
-//	WriteChar(0x4F);
-	
-	// Enable Timer output trigger for ADC and enable timer
-	//TIMER0_CTL |= 0x21;
 	wait();
 }
 
 void wait (void)
 {
+	
+	/*
+		Main program loop, waiting for instructions to be sent from the GUI
+	*/
     while (1)
     {
         if (instruction == '*')

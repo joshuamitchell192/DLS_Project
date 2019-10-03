@@ -12,6 +12,9 @@ extern void DriverTimerSetup(void);
 
 void Delay(unsigned int numLoops)
 {
+	/*
+		Simple delay function used to pause when reaching first position in scan between etc.
+	*/
 	volatile unsigned int lp;
 	volatile unsigned int i;
 
@@ -21,6 +24,9 @@ void Delay(unsigned int numLoops)
 
 void Setup(void)
 {
+	/*
+		Calls all setup functions and returns to main to wait for instructions
+	*/
 	SensorADCSetup();
 	
 	Uart0TerminalSetup(); 

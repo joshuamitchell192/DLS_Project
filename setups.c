@@ -154,6 +154,14 @@ void SensorTimerSetup(void)
 
 void Uart0TerminalSetup(void)
 {
+	/*
+		Sets up UART to communicate over usb to the python GUI application.
+	
+		Uses UART0 (only UART that can communicate over USB). Enable alternative function and select UART on PCTL for GPIOA 0, 1. 
+		Then set baud rate for UART communication, line control values to odd parity, 2 stop bits and word length of 8 bits. 
+		Finally setup interrutps on UART receive.
+	*/
+
 	// Setup GPIO for uart
 	SYSCTL_RCGCGPIO |= 0x1;
 	while((SYSCTL_PRGPIO & 0x1) != 0x1);
