@@ -19,16 +19,28 @@ extern void ADC0SS3_Handler(void);
 void DriverGPIOSetup(void){
 	SYSCTL_RCGCGPIO |= 0x1;
 	while((SYSCTL_PRGPIO & 0x1) != 0x1);
+	
+	// set GPIO A Direction to output on pins 2, 3, 4, 5
 	GPIOA_DIR |= 0x3C;
+	
+	// Turn off alternative function select
 	GPIOA_AFSEL &= ~0x3C;
+	
+	// Turn on the port if not already
 	GPIOA_DEN |= 0x3C;
 }
 
 void DriverTimerSetup(void){
+	
 	SYSCTL_RCGCTIMER |= 0x2;
 	while((SYSCTL_PRTIMER & 0x2) != 0x2);
+	
+	// Disable Timer 1
 	TIMER1_CTL &= ~0x1;
+	
+	// Select 16 bit timer configuration
 	TIMER1_CFG = 4;
+	
 	TIMER1_TAMR &= 3;
 	TIMER1_TAMR |= 2;
 	
