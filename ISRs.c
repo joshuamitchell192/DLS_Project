@@ -13,7 +13,7 @@ extern unsigned int instruction;
 extern unsigned int point1;
 extern unsigned int point2;
 extern unsigned int sampleDuration;
-extern unsigned int stepSize;
+extern float stepSize;
 extern unsigned int ALREADY_READ;
 
 extern int sampleTotal;
@@ -53,8 +53,13 @@ void UART0_Handler (void)
         WriteChar(point2);
         sampleDuration = ReadChar();
         WriteChar(sampleDuration);
-        stepSize = ReadChar();
-        WriteChar(stepSize);
+        unsigned int stepSizeLower = ReadChar();
+        WriteChar(stepSizeLower);
+		unsigned int stepSizeUpper = ReadChar();
+        WriteChar(stepSizeUpper);
+		
+		stepSize = (stepSizeUpper << 8) + stepSizeLower;
+		stepSize /= 1000;
         ALREADY_READ = 1;
     }
     if (instruction == '.'){

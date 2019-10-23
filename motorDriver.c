@@ -15,6 +15,7 @@ void goTo(int point);
 extern int currentPosition;
 extern float stepsPerMM;
 extern int STOP;
+extern float stepSize;
 
 int sampleTotal;
 int numSamples;
@@ -56,7 +57,7 @@ void sampleTwoPoints(double sampleDuration, int point1, int point2){
 			sampleTotal = 0;
 			numSamples = 0;
 			currentPosition += dir;
-		
+			setDriverTimer(sampleDuration);
 			stepMotor();
 			if (numSamples>0){
 				unsigned int avgSample = sampleTotal / numSamples;
@@ -69,6 +70,14 @@ void sampleTwoPoints(double sampleDuration, int point1, int point2){
 				WriteChar(avgSample_upperHalf);
 				//unsigned int sampleAckt = ReadChar();
 			}
+			
+			setDriverTimer(0.0007);
+			int movingSteps = stepSize/(float)(1/stepsPerMM);
+			for (int i = 0; i < movingSteps-1; i++){
+				currentPosition += dir;
+				stepMotor();
+			}
+			
 			
 	}
 	

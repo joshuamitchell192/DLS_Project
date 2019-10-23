@@ -35,14 +35,23 @@ class Controller:
         self.serialConnection.sendValue(P1)
         self.serialConnection.sendValue(P2)
         self.serialConnection.sendValue(sampleDuration)
-        if (stepSize == "Full"):
-            self.serialConnection.sendValue(1)
-        elif (stepSize == "Half"):
-            self.serialConnection.sendValue(2)
-        elif (stepSize == "Quarter"):
-            self.serialConnection.sendValue(4)
-        else:
-            self.serialConnection.sendValue(1)
+        stepSizeWhole = int(float(stepSize) * 1000)
+        print(type(stepSize),type(stepSizeWhole))
+        stepSizeLower = stepSizeWhole & 0xFF
+        stepSizeUpper = (stepSizeWhole & 0xFF00) >> 8
+        self.serialConnection.sendValue(stepSizeLower)
+        self.serialConnection.sendValue(stepSizeUpper)
+
+
+
+        # if (stepSize == "Full"):
+        #     self.serialConnection.sendValue(1)
+        # elif (stepSize == "Half"):
+        #     self.serialConnection.sendValue(2)
+        # elif (stepSize == "Quarter"):
+        #     self.serialConnection.sendValue(4)
+        # else:
+        #     self.serialConnection.sendValue(1)
 
         while(not self.stop):
             # if (len(self.samples) != 0):

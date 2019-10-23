@@ -16,7 +16,7 @@ unsigned int instruction;
 unsigned int point1;
 unsigned int point2;
 unsigned int sampleDuration;
-unsigned int stepSize;
+float stepSize;
 unsigned int avgInt;
 
 unsigned int ALREADY_READ=0;
