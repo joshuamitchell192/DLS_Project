@@ -54,24 +54,6 @@ class View(QMainWindow):
 
         self.y += 40
 
-        # self.StepSize_ComboBox_Widget = QWidget(self)
-        # self.StepSize_ComboBox_Widget.setGeometry(30, self.y, 120, 35)
-        # self.setCentralWidget(StepSize_ComboBox_Widget)
-
-        # self.StepSize_ComboBox = QComboBox(self.StepSize_ComboBox_Widget)
-        # self.StepSize_ComboBox.setObjectName(("StepSize_ComboBox"))
-        # self.StepSize_ComboBox.addItem("Full")
-        # self.StepSize_ComboBox.addItem("Half")
-        # self.StepSize_ComboBox.addItem("Quarter")
-        # self.StepSize_ComboBox.currentIndexChanged.connect(self.__updateStepSizeComboBox)
-
-        
-        # self.StepSize_SpinBox = QSpinBox(self)
-        # self.StepSize_SpinBox.setGeometry(30, self.y, 120, 25)
-        # self.StepSize_SpinBox.setRange(0.018, 5)
-        # self.StepSize_SpinBox.setValue(0.018)
-        # self.StepSize_SpinBox.valueChanged[float].connect(self.__updateStepSizeSpinBox)
-
         self.StepSize_LineEdit = QLineEdit(self)
         self.StepSize_LineEdit.setValidator(QDoubleValidator(0.018,5.0, 3))
         self.StepSize_LineEdit.setGeometry(30, self.y, 200, 25)
@@ -175,12 +157,6 @@ class View(QMainWindow):
 
     def __updateSmpDurationSpinBox(self, value):
         self.SmpDuration_SpinBox.setValue(value)
-
-    def __updateStepSizeComboBox(self, value):
-        self.StepSize_ComboBox.setValue(value)
-
-    def __updateStepSizeSpinBox(self, value):
-        self.StepSize_SpinBox.setValue(value)
     
     def __updateStepSizeEditLine(self):
         value = self.StepSize_LineEdit.text()
