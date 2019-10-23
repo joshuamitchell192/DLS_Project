@@ -5,6 +5,7 @@ from PyQt5 import QtWidgets
 from PyQt5.QtGui import QPixmap, QDoubleValidator
 import sys
 import csv
+import math
 
 from dynamicCanvas import DynamicMplCanvas
 
@@ -49,7 +50,7 @@ class View(QMainWindow):
 
         self.StepSize_Label = QLabel(self)
         self.StepSize_Label.setGeometry(30, self.y, 150, 30)
-        self.StepSize_Label.setText("Step Size (mm)")
+        self.StepSize_Label.setText("Step Size (mm - rounded to nearest motor step on enter)")
 
         self.y += 40
 
@@ -74,6 +75,7 @@ class View(QMainWindow):
         self.StepSize_LineEdit = QLineEdit(self)
         self.StepSize_LineEdit.setValidator(QDoubleValidator(0.018,5.0, 3))
         self.StepSize_LineEdit.setGeometry(30, self.y, 200, 25)
+        self.StepSize_LineEdit.editingFinished.connect(self.__updateStepSizeEditLine)
 
         self.y += 100
 
@@ -179,6 +181,14 @@ class View(QMainWindow):
 
     def __updateStepSizeSpinBox(self, value):
         self.StepSize_SpinBox.setValue(value)
+    
+    def __updateStepSizeEditLine(self):
+        value = self.StepSize_LineEdit.text()
+        if (value == ""):
+            return
+            
+        value = self.roundNearest(value, 0.018)
+        self.StepSize_LineEdit.setText(value)
 
     def __updateAvgIntervalSpinBox(self, value):
         self.AvgInterval_SpinBox.setValue(value)
@@ -220,3 +230,6 @@ class View(QMainWindow):
 
     def closeEvent(self, ce):
         self.fileQuit()
+
+    def roundNearest(self, value, a):
+        return str(round(round(float(value) / a) * a,  3))
