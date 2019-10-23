@@ -5,7 +5,7 @@ import time
 
 class Controller:
 
-    
+
 
     def __init__(self, serialConnection, Instructions):
         self.serialConnection = serialConnection
@@ -35,32 +35,19 @@ class Controller:
         self.serialConnection.sendValue(P1)
         self.serialConnection.sendValue(P2)
         self.serialConnection.sendValue(sampleDuration)
+
         stepSizeWhole = int(float(stepSize) * 1000)
-        print(type(stepSize),type(stepSizeWhole))
         stepSizeLower = stepSizeWhole & 0xFF
         stepSizeUpper = (stepSizeWhole & 0xFF00) >> 8
+
         self.serialConnection.sendValue(stepSizeLower)
         self.serialConnection.sendValue(stepSizeUpper)
 
-
-
-        # if (stepSize == "Full"):
-        #     self.serialConnection.sendValue(1)
-        # elif (stepSize == "Half"):
-        #     self.serialConnection.sendValue(2)
-        # elif (stepSize == "Quarter"):
-        #     self.serialConnection.sendValue(4)
-        # else:
-        #     self.serialConnection.sendValue(1)
-
         while(not self.stop):
-            # if (len(self.samples) != 0):
-            #     print(self.samples[-1])
             currentSample = self.serialConnection.readSample()
             if currentSample == 0xFFFF:
                 break
             self.samples.append(currentSample)
-            # print(self.samples)
             QApplication.processEvents()
 
     def handleStop(self):
@@ -68,10 +55,10 @@ class Controller:
         """ Sets the stop boolean to true so that we cease reading samples.
 
         """
-        self.stop = True 
+        self.stop = True
         self.serialConnection.sendStopInstruction(self.Instructions.STOP)
 
-        
+
 
 
     def handleGoToPoint(self, P1):
@@ -97,7 +84,7 @@ class Controller:
         self.serialConnection.sendInstruction(self.Instructions.START_SAMPLE)
         self.serialConnection.sendValue(sampleDuration)
         self.serialConnection.sendValue(averageInterval)
-       
+
         while(not self.stop):
             currentSample = self.serialConnection.readSample()
             # print("Current sample", currentSample)

@@ -17,7 +17,7 @@ class View(QMainWindow):
         self.controller = controller
 
         self.setAttribute(Qt.WA_DeleteOnClose)
-        
+
         self.y = 100
 
         self.SmpDuration_Label = QLabel(self)
@@ -45,7 +45,7 @@ class View(QMainWindow):
         self.AvgInterval_SpinBox.setRange(1, 1000)
         self.AvgInterval_SpinBox.setValue(10)
         self.AvgInterval_SpinBox.valueChanged[int].connect(self.__updateAvgIntervalSpinBox)
-        
+
         self.y += 40
 
         self.StepSize_Label = QLabel(self)
@@ -102,7 +102,7 @@ class View(QMainWindow):
         self.P2_SpinBox.valueChanged[int].connect(self.__updateP2Slider)
 
         self.y += 200
-        
+
         self.Calibrate_Button = QPushButton(self)
         self.Calibrate_Button.setGeometry(30, self.y, 100, 35)
         self.Calibrate_Button.setText("Calibrate")
@@ -151,18 +151,18 @@ class View(QMainWindow):
         self.menuBar().addMenu(self.file_menu)
 
 
-        self.setMinimumSize(QSize(1280, 720)) 
+        self.setMinimumSize(QSize(1280, 720))
         self.setGeometry(300, 300, 1280, 720)
         self.setWindowTitle('Linear Stage Controller')
 
     def __updateSmpDurationSpinBox(self, value):
         self.SmpDuration_SpinBox.setValue(value)
-    
+
     def __updateStepSizeEditLine(self):
         value = self.StepSize_LineEdit.text()
         if (value == ""):
             return
-            
+
         value = self.roundNearest(value, 0.018)
         self.StepSize_LineEdit.setText(value)
 

@@ -41,7 +41,7 @@ class SerialConnection:
         """
         print(f'Sending: {instruction}\n')
         self.ser.write(instruction.encode("ascii"))
-        
+
         self.ser.reset_input_buffer()
 
         ser_bytes = self.ser.read(1)
@@ -65,16 +65,16 @@ class SerialConnection:
         ser_bytes = self.ser.read(1)
         print(f'Receiving\nraw data: {ser_bytes}')
 
-        
+
         #decoded_bytes = (ser_bytes.decode("ascii"))
-           
+
         #print(f'Ascii Value: {decoded_bytes}', flush=True)
 
     def readSample(self):
 
         """ Waits to receive samples from the Tiva and combines bytes from separated writes
 
-            :return: combined bytes for whole sample value. 
+            :return: combined bytes for whole sample value.
         """
         ser_bytes_sample1 = self.ser.read(1)
         ser_bytes_sample2 = self.ser.read(1)
