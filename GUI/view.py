@@ -22,7 +22,7 @@ class View(QMainWindow):
 
         self.SmpDuration_Label = QLabel(self)
         self.SmpDuration_Label.setGeometry(30, self.y, 250, 30)
-        self.SmpDuration_Label.setText("Sample Duration (0.1 ms)")
+        self.SmpDuration_Label.setText("Sample Duration (ms)")
 
         self.y += 40
 
