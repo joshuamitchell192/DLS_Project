@@ -28,7 +28,7 @@ class View(QMainWindow):
 
         self.SmpDuration_SpinBox = QSpinBox(self)
         self.SmpDuration_SpinBox.setGeometry(30, self.y, 120, 25)
-        self.SmpDuration_SpinBox.setRange(7, 10000)
+        self.SmpDuration_SpinBox.setRange(7, 65536)
         self.SmpDuration_SpinBox.setValue(7)
         self.SmpDuration_SpinBox.valueChanged[int].connect(self.__updateSmpDurationSpinBox)
 

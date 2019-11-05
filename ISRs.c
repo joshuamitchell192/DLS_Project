@@ -51,24 +51,29 @@ void UART0_Handler (void)
         WriteChar(point1);
         point2 = ReadChar();
         WriteChar(point2);
-        sampleDuration = ReadChar();
-        WriteChar(sampleDuration);
+        //sampleDuration = ReadChar();
+				unsigned int sampleDurationLower = ReadChar();
+        WriteChar(sampleDurationLower);
+			  unsigned int sampleDurationUpper = ReadChar();
+				WriteChar(sampleDurationUpper);
         unsigned int stepSizeLower = ReadChar();
         WriteChar(stepSizeLower);
-		unsigned int stepSizeUpper = ReadChar();
+				unsigned int stepSizeUpper = ReadChar();
         WriteChar(stepSizeUpper);
 		
-		stepSize = (stepSizeUpper << 8) + stepSizeLower;
-		stepSize /= 1000;
-        ALREADY_READ = 1;
+				sampleDuration = (sampleDurationUpper << 8) + sampleDurationLower;
+				stepSize = (stepSizeUpper << 8) + stepSizeLower;
+				stepSize /= 1000;
+        
+				ALREADY_READ = 1;
     }
     if (instruction == '.'){
             STOP = 0;
             WriteChar(instruction);
-            sampleDuration = ReadChar();
-            WriteChar(sampleDuration);
-            avgInt = ReadChar();
-            WriteChar(avgInt);
+            //sampleDuration = ReadChar();
+            //WriteChar(sampleDuration);
+            //avgInt = ReadChar();
+            //WriteChar(avgInt);
             ALREADY_READ = 1;
     }
     if (instruction == '>'){

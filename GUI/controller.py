@@ -34,7 +34,10 @@ class Controller:
         self.serialConnection.sendInstruction(self.Instructions.TWOPOS_SCAN)
         self.serialConnection.sendValue(P1)
         self.serialConnection.sendValue(P2)
-        self.serialConnection.sendValue(sampleDuration)
+        sampleDurationLower = sampleDuration & 0xFF
+        sampleDurationUpper = (sampleDuration & 0xFF00) >> 8
+        self.serialConnection.sendValue(sampleDurationLower)
+        self.serialConnection.sendValue(sampleDurationUpper)
 
         stepSizeWhole = int(float(stepSize) * 1000)
         stepSizeLower = stepSizeWhole & 0xFF
@@ -82,8 +85,8 @@ class Controller:
         self.handleStop()
         self.stop = False
         self.serialConnection.sendInstruction(self.Instructions.START_SAMPLE)
-        self.serialConnection.sendValue(sampleDuration)
-        self.serialConnection.sendValue(averageInterval)
+        #self.serialConnection.sendValue(sampleDuration)
+        #self.serialConnection.sendValue(averageInterval)
 
         while(not self.stop):
             currentSample = self.serialConnection.readSample()

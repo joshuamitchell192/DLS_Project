@@ -143,6 +143,7 @@ void sampleHere(int duration,int avgInterval){
 //setDriverTimer(duration);
   //  TIMER1_ICR |= 1;
 	//TIMER1_CTL |= 1;
+		avgInterval = 10;
     while(!STOP){
         if (numSamples >= avgInterval){
             unsigned int avgSample = sampleTotal / numSamples;
