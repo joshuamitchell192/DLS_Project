@@ -11,6 +11,7 @@ void setDriverTimer(double seconds);
 void stepMotor(void);
 void sampleHere(int duration,int avgInterval);
 void goTo(int point);
+void setStepAmount(int stepAmount);
 
 extern int currentPosition;
 extern float stepsPerMM;
@@ -20,8 +21,25 @@ extern float stepSize;
 int sampleTotal;
 int numSamples;
 
+void setStepAmount(int stepAmount){
+	//M0 = A6, M1 = A7
+	if (stepAmount == 0){
+		GPIOA_DATA &= ~0x40;
+		GPIOA_DATA |= 0x80;
+	}else if(stepAmount == 1){
+		GPIOA_DATA |= 0x40;
+		GPIOA_DATA &= ~0x80;
+	}else if(stepAmount == 2){
+		GPIOA_DATA &= ~0x40;
+		GPIOA_DATA &= ~0x80;
+	}
+}
+
 void sampleTwoPoints(double sampleDuration, int point1, int point2){
-	sampleDuration *= 0.001;
+	//stepAmount - 0=Quarter, 1=Half, 2=Full
+	int stepAmount = 2;
+	setStepAmount(stepAmount);
+	volatile double v_sampleDuration = sampleDuration * 0.0001;
 	setDriverTimer(0.003);
 	//get first
 	
@@ -166,7 +184,7 @@ void sampleHere(int duration,int avgInterval){
 }
 
 void goTo(int point){
-    setDriverTimer(0.0007);
+    setDriverTimer(0.003);
     int dir;
     if (currentPosition > point-1){
             GPIOA_DATA &= ~0x8;

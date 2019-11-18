@@ -4,6 +4,7 @@ import os
 import random
 import matplotlib
 from PyQt5 import QtCore, QtWidgets
+import numpy as np
 matplotlib.use('Qt5Agg')
 
 from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
@@ -15,14 +16,16 @@ class MplCanvas(FigureCanvas):
 
     """
 
-    def __init__(self, parent=None, samples=[], width=5, height=4, dpi=100):
+    def __init__(self, parent=None, samples=[], times=[],width=5, height=4, dpi=100):
 
         """ Creates a matplot lib figure, subplot and links the data samples list.
             
         """
         fig = Figure(figsize=(width, height), dpi=dpi)
         self.axes = fig.add_subplot(111)
+        self.axes2 = self.axes.twiny()
         self.samples = samples
+        self.times = times
 
         self.compute_initial_figure()
 
@@ -54,14 +57,14 @@ class DynamicMplCanvas(MplCanvas):
         timer.timeout.connect(self.update_figure)
         timer.start(100)
 
-    def resetSamples(self, newSamples):
+    def resetSamples(self, newSamples, newTimes):
 
         """ Relinks the samples list for when the user clicks the clear samples button
 
             :param: newSamples - the samples list after it's been reinitialised to an empty list.
 
         """
-
+        self.times = newTimes
         self.samples = newSamples
 
     def compute_initial_figure(self):
@@ -71,6 +74,18 @@ class DynamicMplCanvas(MplCanvas):
         """
         self.axes.plot(self.samples, 'r')
 
+    def timeIntervals(self, time_tick_ints):
+        timeInts = []
+        if len(self.times) < 9:
+            intNum = len(self.times)
+        else:
+            intNum = 9
+        for t in range(intNum):
+            timeInts.append(self.times[t])
+        return timeInts
+
+
+
     def update_figure(self):
 
         """ Replots the samples list when the timer reaches zero, updating it on the GUI.
@@ -78,6 +93,16 @@ class DynamicMplCanvas(MplCanvas):
         """
         # Build a list of 4 random integers between 0 and 10 (both inclusive)
         # l = [random.randint(0, 10) for i in range(4)]
+        time_tick_locations = np.array([.1, .2, .3, .4, .5, .6, .7, .8, .9])
+
+
         self.axes.cla()
         self.axes.plot(self.samples, 'r')
+        self.axes.set_xlabel("Sample Numbers")
+        self.axes.set_ylabel("Sensor Value")
+        #self.axes2.set_xticks(time_tick_locations)
+        self.axes2.set_xticklabels(self.timeIntervals(time_tick_locations))
+        #self.axes2.set_xticklabels(time_tick_locations)
+        self.axes2.set_xlabel("Time (s)")
+        
         self.draw()

@@ -9,11 +9,14 @@ void Uart0TerminalSetup(void);
 void DriverGPIOSetup(void);
 void LimitSwitchesGPIOSetup(void);
 
+void StepSizeGPIOSetup(void);
+
 void DriverTimerSetup(void);
 
 extern void EnableInterrupts(void);
 extern void DisableInterrupts(void);
 extern void ADC0SS3_Handler(void);
+extern void setStepAmount(int stepAmount);
 
 //PA2,3,4,5
 void DriverGPIOSetup(void){
@@ -28,6 +31,14 @@ void DriverGPIOSetup(void){
 	
 	// Turn on the port if not already
 	GPIOA_DEN |= 0x3C;
+}
+
+// PA6,7 OUTPUT FOR SETTING MOTOR STEP SIZE 
+void StepSizeGPIOSetup(void){
+	GPIOA_DIR |= 0xC0;
+	GPIOA_DEN &= ~0xC0;
+	GPIOA_DEN |= 0xC0;
+	setStepAmount(2);
 }
 
 void DriverTimerSetup(void){

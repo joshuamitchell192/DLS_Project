@@ -9,6 +9,8 @@ extern void Uart0TerminalSetup(void);
 extern void DriverGPIOSetup(void);
 extern void LimitSwitchesGPIOSetup(void);
 extern void DriverTimerSetup(void);
+extern void StepSizeGPIOSetup(void);
+
 
 void Delay(unsigned int numLoops)
 {
@@ -34,6 +36,8 @@ void Setup(void)
 	DriverGPIOSetup();
 	
 	LimitSwitchesGPIOSetup();
+	
+	StepSizeGPIOSetup();
 
 	DriverTimerSetup();
 }

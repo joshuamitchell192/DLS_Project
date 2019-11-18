@@ -137,7 +137,7 @@ class View(QMainWindow):
         self.graph_widget = QtWidgets.QWidget(self)
 
         l = QtWidgets.QVBoxLayout(self.graph_widget)
-        self.dc = DynamicMplCanvas(self.graph_widget, self.controller.samples, width=5, height=4, dpi=100)
+        self.dc = DynamicMplCanvas(self.graph_widget, self.controller.samples, self.controller.times,width=5, height=4, dpi=100)
         l.addWidget(self.dc)
 
         self.graph_widget.setGeometry(600, 50, 650, 500)
@@ -200,7 +200,8 @@ class View(QMainWindow):
 
     def clearGraph(self):
         self.controller.samples = []
-        self.dc.resetSamples(self.controller.samples)
+        self.controller.times = []
+        self.dc.resetSamples(self.controller.samples, self.controller.times)
         self.dc.compute_initial_figure()
         self.dc.update_figure()
 

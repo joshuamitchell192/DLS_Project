@@ -11,6 +11,7 @@ class Controller:
         self.serialConnection = serialConnection
         self.Instructions = Instructions
         self.samples = []
+        self.times = []
         self.stop = False
 
     def handleCalibrate(self):
@@ -51,6 +52,8 @@ class Controller:
             if currentSample == 0xFFFF:
                 break
             self.samples.append(currentSample)
+            
+            self.times.append(20)
             QApplication.processEvents()
 
     def handleStop(self):
@@ -94,6 +97,7 @@ class Controller:
             if currentSample == 0xFFFF:
                 break
             self.samples.append(currentSample)
+            self.times.append(20)
             # print(self.samples)
             QApplication.processEvents()
 
