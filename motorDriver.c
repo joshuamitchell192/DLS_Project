@@ -17,9 +17,13 @@ extern int currentPosition;
 extern float stepsPerMM;
 extern int STOP;
 extern float stepSize;
+extern unsigned int stepAmount;
 
 int sampleTotal;
 int numSamples;
+
+int numMultiples;
+double remainder;
 
 void setStepAmount(int stepAmount){
 	//M0 = A6, M1 = A7
@@ -36,11 +40,11 @@ void setStepAmount(int stepAmount){
 }
 
 void sampleTwoPoints(double sampleDuration, int point1, int point2){
+	
 	//stepAmount - 0=Quarter, 1=Half, 2=Full
-	int stepAmount = 2;
 	setStepAmount(stepAmount);
-	volatile double v_sampleDuration = sampleDuration * 0.0001;
-	setDriverTimer(0.003);
+	volatile double v_sampleDuration = sampleDuration * 0.001;
+	setDriverTimer(0.0014);
 	//get first
 	
 	if (point2 < point1){
@@ -63,7 +67,7 @@ void sampleTwoPoints(double sampleDuration, int point1, int point2){
 			stepMotor();
 	}
 	
-	setDriverTimer(sampleDuration);
+	setDriverTimer(v_sampleDuration);
 	dir = 1;
 	GPIOA_DATA |= 0x8;
 	
@@ -75,7 +79,7 @@ void sampleTwoPoints(double sampleDuration, int point1, int point2){
 			sampleTotal = 0;
 			numSamples = 0;
 			currentPosition += dir;
-			setDriverTimer(sampleDuration);
+			setDriverTimer(v_sampleDuration);
 			stepMotor();
 			if (numSamples>0){
 				unsigned int avgSample = sampleTotal / numSamples;
@@ -89,7 +93,7 @@ void sampleTwoPoints(double sampleDuration, int point1, int point2){
 				//unsigned int sampleAckt = ReadChar();
 			}
 			
-			setDriverTimer(0.003);
+			setDriverTimer(0.0014);
 			int movingSteps = stepSize/(float)(1/stepsPerMM);
 			for (int i = 0; i < movingSteps-1; i++){
 				currentPosition += dir;
@@ -106,11 +110,23 @@ void sampleTwoPoints(double sampleDuration, int point1, int point2){
 }
 
 void setDriverTimer(double seconds){
+	
+	if (seconds > 1){
+		numMultiples = (int)seconds;
+		remainder = seconds - (int)seconds;
+		seconds = 1;
+	}else{
+		numMultiples = 1;
+	}
+	
+	
+	
 	int prescale = getPrescaler(seconds);
 	int preload = getPreload(seconds, prescale);
 	
-	TIMER1_TAILR = preload;
 	TIMER1_TAPR = prescale;
+	TIMER1_TAILR = preload;
+	
 
 	TIMER1_ICR |= 1;
 	TIMER1_CTL |= 1;
@@ -118,19 +134,30 @@ void setDriverTimer(double seconds){
 
 
 void stepMotor(void){
-		//while((TIMER1_RIS & 0x1) != 0x1);	
-		TIMER1_ICR |= 1;
-		GPIOA_DATA |= 0x4;
-		while((TIMER1_RIS & 0x1) != 0x1);	
+		for (int i = 0; i < numMultiples; i++){
+			while((TIMER1_RIS & 0x1) != 0x1);
+			TIMER1_ICR |= 1;
+		}
+		if (numMultiples > 1){
+			setDriverTimer(remainder);
+			while((TIMER1_RIS & 0x1) != 0x1);
+		}
+		
 		//TIMER1_ICR |= 1;
+		GPIOA_DATA |= 0x4;
+		//while((TIMER1_RIS & 0x1) != 0x1);		
+		TIMER1_ICR |= 1;
 		GPIOA_DATA &=~ 0x4;
+		
+	
+		
 }
 
 int calibrate(void){
+	setStepAmount(2);
 	GPIOA_DATA |= 0x8;
 
-	setDriverTimer(0.003);
-	//setDriverTimer(0.0007);
+	setDriverTimer(0.0014);
 	
 	while(!STOP){
 		stepMotor();

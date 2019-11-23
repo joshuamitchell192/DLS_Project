@@ -47,8 +47,8 @@ class SerialConnection:
         ser_bytes = self.ser.read(1)
         print(f'Receiving\nraw data: {ser_bytes}')
 
-        decoded_bytes = (ser_bytes.decode("ascii"))
-        print(f'Ascii Value: {decoded_bytes}', flush=True)
+        # decoded_bytes = (ser_bytes.decode("ascii"))
+        # print(f'Ascii Value: {decoded_bytes}', flush=True)
 
     def sendValue(self, value):
 

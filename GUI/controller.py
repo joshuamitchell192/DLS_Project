@@ -20,14 +20,14 @@ class Controller:
 
 
 
-    def handleScanBetween(self, P1, P2, sampleDuration, stepSize):
+    def handleScanBetween(self, P1, P2, sampleDuration, stepLength, stepMode):
 
         """ Sends the TWOPOS_SCAN instruction along with its associated values.
 
             :param: P1 - the first position from the top slider widget
             :param: P2 - the second position from the bottom slider widget
             :param: sampleDuration - the value from sampleDuration spinbox indicating how low to sample for at each step.
-            :param: stepSize - the value selected in the StepSize_combobox (Full, Half, or Quarter)
+            :param: stepLength - the value selected in the stepLength_combobox (Full, Half, or Quarter)
 
         """
         self.handleStop()
@@ -35,17 +35,31 @@ class Controller:
         self.serialConnection.sendInstruction(self.Instructions.TWOPOS_SCAN)
         self.serialConnection.sendValue(P1)
         self.serialConnection.sendValue(P2)
-        sampleDurationLower = sampleDuration & 0xFF
-        sampleDurationUpper = (sampleDuration & 0xFF00) >> 8
+
+        sampleDurationWhole = int(float(sampleDuration) * 1000)
+        sampleDurationLower = sampleDurationWhole & 0xFF
+        sampleDurationMiddle = (sampleDurationWhole & 0xFF00) >> 8
+        sampleDurationUpper = (sampleDurationWhole & 0xFF0000) >> 16
+
         self.serialConnection.sendValue(sampleDurationLower)
+        self.serialConnection.sendValue(sampleDurationMiddle)
         self.serialConnection.sendValue(sampleDurationUpper)
 
-        stepSizeWhole = int(float(stepSize) * 1000)
-        stepSizeLower = stepSizeWhole & 0xFF
-        stepSizeUpper = (stepSizeWhole & 0xFF00) >> 8
+        stepLengthWhole = int(float(stepLength) * 1000)
+        stepLengthLower = stepLengthWhole & 0xFF
+        stepLengthUpper = (stepLengthWhole & 0xFF00) >> 8
 
-        self.serialConnection.sendValue(stepSizeLower)
-        self.serialConnection.sendValue(stepSizeUpper)
+        self.serialConnection.sendValue(stepLengthLower)
+        self.serialConnection.sendValue(stepLengthUpper)
+
+        if (stepSize == "Full"):
+            self.serialConnection.sendValue(2)
+        elif (stepSize == "Half"):
+            self.serialConnection.sendValue(1)
+        elif (stepSize == "Quarter"):
+            self.serialConnection.sendValue(0)
+        else:
+            self.serialConnection.sendValue(2)
 
         while(not self.stop):
             currentSample = self.serialConnection.readSample()

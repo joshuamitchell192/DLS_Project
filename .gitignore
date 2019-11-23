@@ -78,3 +78,26 @@
 # To explicitly override the above, define any exceptions here; e.g.:
 # !my_customized_scatter_file.sct
 
+# react
+
+# dependencies
+GUI_2.0/node_modules
+GUI_2.0/.pnp
+.pnp.js
+
+# testing
+GUI_2.0/coverage
+
+# production
+GUI_2.0/build
+
+# misc
+.DS_Store
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*

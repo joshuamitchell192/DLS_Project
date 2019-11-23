@@ -26,11 +26,16 @@ class View(QMainWindow):
 
         self.y += 40
 
-        self.SmpDuration_SpinBox = QSpinBox(self)
-        self.SmpDuration_SpinBox.setGeometry(30, self.y, 120, 25)
-        self.SmpDuration_SpinBox.setRange(7, 65536)
-        self.SmpDuration_SpinBox.setValue(7)
-        self.SmpDuration_SpinBox.valueChanged[int].connect(self.__updateSmpDurationSpinBox)
+        # self.SmpDuration_SpinBox = QSpinBox(self)
+        # self.SmpDuration_SpinBox.setGeometry(30, self.y, 120, 25)
+        # self.SmpDuration_SpinBox.setRange(7, 65536)
+        # self.SmpDuration_SpinBox.setValue(7)
+        # self.SmpDuration_SpinBox.valueChanged[int].connect(self.__updateSmpDurationSpinBox)
+
+        self.SmpDuration_LineEdit = QLineEdit(self)
+        #self.SmpDuration_LineEdit.setValidator(QDoubleValidator(0.018,5.0, 3))
+        self.SmpDuration_LineEdit.setGeometry(30, self.y, 200, 25)
+        self.SmpDuration_LineEdit.editingFinished.connect(self.__updateSmpDurationEditLine)
 
         self.y -= 40
 
@@ -48,16 +53,38 @@ class View(QMainWindow):
 
         self.y += 40
 
-        self.StepSize_Label = QLabel(self)
-        self.StepSize_Label.setGeometry(30, self.y, 150, 30)
-        self.StepSize_Label.setText("Step Size (mm - rounded to nearest motor step on enter)")
+        self.StepLength_Label = QLabel(self)
+        self.StepLength_Label.setGeometry(30, self.y, 150, 30)
+        # rounded to nearest motor step on enter
+        self.StepLength_Label.setText("Step Length (mm)")
+
+        self.StepMode_Combo = QLabel(self)
+        self.StepMode_Combo.setGeometry(300, self.y, 150, 30)
+        self.StepMode_Combo.setText("Step Mode")
+
 
         self.y += 40
 
-        self.StepSize_LineEdit = QLineEdit(self)
-        self.StepSize_LineEdit.setValidator(QDoubleValidator(0.018,5.0, 3))
-        self.StepSize_LineEdit.setGeometry(30, self.y, 200, 25)
-        self.StepSize_LineEdit.editingFinished.connect(self.__updateStepSizeEditLine)
+
+
+        self.StepLength_LineEdit = QLineEdit(self)
+        self.StepLength_LineEdit.setValidator(QDoubleValidator(0.018,5.0, 3))
+        self.StepLength_LineEdit.setGeometry(30, self.y, 200, 25)
+        self.StepLength_LineEdit.editingFinished.connect(self.__updateStepModeEditLine)
+
+        self.StepMode_ComboBox_Widget = QWidget(self)
+        self.StepMode_ComboBox_Widget.setGeometry(30, self.y, 120, 35)
+        # self.setCentralWidget(StepMode_ComboBox_Widget)
+
+        self.StepMode_ComboBox = QComboBox(self.StepMode_ComboBox_Widget)
+        self.StepMode_ComboBox.setObjectName(("StepMode_ComboBox"))
+        self.StepMode_ComboBox.addItem("Full")
+        self.StepMode_ComboBox.addItem("Half")
+        self.StepMode_ComboBox.addItem("Quarter")
+        self.StepMode_ComboBox.setValue("Full")
+        self.StepMode_ComboBox.currentIndexChanged.connect(self.__updateStepModeComboBox)
+
+
 
         self.y += 100
 
@@ -111,7 +138,7 @@ class View(QMainWindow):
         self.ScanBetween_Button = QPushButton(self)
         self.ScanBetween_Button.setGeometry(150, self.y, 150, 35)
         self.ScanBetween_Button.setText("Scan Between")
-        self.ScanBetween_Button.clicked.connect(lambda: self.controller.handleScanBetween(self.P1_Slider.value(), self.P2_Slider.value(), self.SmpDuration_SpinBox.value(), self.StepSize_LineEdit.text()))
+        self.ScanBetween_Button.clicked.connect(lambda: self.controller.handleScanBetween(self.P1_Slider.value(), self.P2_Slider.value(), self.SmpDuration_LineEdit.text(), self.StepLength_LineEdit.text()))
 
         self.Stop_Button = QPushButton(self)
         self.Stop_Button.setGeometry(320, self.y, 70, 35)
@@ -155,16 +182,24 @@ class View(QMainWindow):
         self.setGeometry(300, 300, 1280, 720)
         self.setWindowTitle('Linear Stage Controller')
 
-    def __updateSmpDurationSpinBox(self, value):
-        self.SmpDuration_SpinBox.setValue(value)
+    # def __updateSmpDurationSpinBox(self, value):
+    #     self.SmpDuration_SpinBox.setValue(value)
 
-    def __updateStepSizeEditLine(self):
-        value = self.StepSize_LineEdit.text()
+    def __updateSmpDurationEditLine(self):
+        value = self.SmpDuration_LineEdit.text()
+        if (value == ""):
+            return
+
+    def __updateStepModeEditLine(self):
+        value = self.StepLength_LineEdit.text()
         if (value == ""):
             return
 
         value = self.roundNearest(value, 0.018)
-        self.StepSize_LineEdit.setText(value)
+        self.StepLength_LineEdit.setText(value)
+
+    def __updateStepModeComboBox(self, value):
+        self.StepMode_ComboBox.setValue(value)
 
     def __updateAvgIntervalSpinBox(self, value):
         self.AvgInterval_SpinBox.setValue(value)

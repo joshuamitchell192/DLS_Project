@@ -15,9 +15,10 @@ void wait(void);
 unsigned int instruction;
 unsigned int point1;
 unsigned int point2;
-unsigned int sampleDuration;
+float sampleDuration;
 float stepSize;
 unsigned int avgInt;
+unsigned int stepAmount;
 
 unsigned int ALREADY_READ=0;
 
