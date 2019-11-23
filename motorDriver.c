@@ -177,7 +177,7 @@ int calibrate(void){
 		}
 	}
 	currentPosition = 0;
-	float mm = 60.0;
+	float mm = 45.0;
 	stepsPerMM = numSteps/mm;
 	return numSteps;
 }

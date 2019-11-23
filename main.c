@@ -47,6 +47,11 @@ void wait (void)
             STOP = 0;
             WriteChar(instruction);
             calibrate();
+						unsigned int sendBackStepSize = stepsPerMM * 100;
+						unsigned int sendBackStepSizeLower = sendBackStepSize & 0xFF;
+						unsigned int sendBackStepSizeUpper = (sendBackStepSize & 0xFF00)>>8;
+						WriteChar(sendBackStepSizeLower);
+						WriteChar(sendBackStepSizeUpper);
             instruction = 0;
         }
         if (instruction == ':')//sample 2 points : opcode

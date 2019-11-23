@@ -13,14 +13,18 @@ class Controller:
         self.samples = []
         self.times = []
         self.stop = False
+        self.stepsPerMM = 0.018
 
     def handleCalibrate(self):
         self.handleStop()
         self.serialConnection.sendInstruction(self.Instructions.CALIBRATE)
+        
+        self.stepsPerMM = 1/(self.serialConnection.readSample() / 100)
+        print("NUMSTEPS ",self.stepsPerMM)
 
 
 
-    def handleScanBetween(self, P1, P2, sampleDuration, stepLength, stepMode):
+    def handleScanBetween(self, P1, P2, sampleDuration, stepLength, stepSize):
 
         """ Sends the TWOPOS_SCAN instruction along with its associated values.
 

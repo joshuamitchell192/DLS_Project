@@ -13,6 +13,8 @@ void StepSizeGPIOSetup(void);
 
 void DriverTimerSetup(void);
 
+void wideTimerSetup(void);
+
 extern void EnableInterrupts(void);
 extern void DisableInterrupts(void);
 extern void ADC0SS3_Handler(void);
@@ -33,6 +35,37 @@ void DriverGPIOSetup(void){
 	GPIOA_DEN |= 0x3C;
 }
 
+void wideTimerSetup(void){
+	//
+	SYSCTL_RCGCGPIO |= 0x8;
+	while ((SYSCTL_PRGPIO & 0x8) != 0x8);
+	
+	GPIOD_DIR |= 0x1;
+	GPIOD_AFSEL |= 0x1;
+	GPIOD_PCTL &= ~0xF;
+	GPIOD_PCTL |= 0x7;
+	GPIOD_DEN |= 0x1;
+
+	SYSCTL_RCGCTIMER |= 0x4;
+	while ((SYSCTL_PRTIMER & 0x4) != 0x4);
+	
+	TIMER2_CTL &= ~0x1;
+	TIMER2_CFG = 0x4;
+	TIMER2_TAMR |= 0x2;
+	TIMER2_TAILR = 0xFFFFFFFF;
+	TIMER2_TAPR |= 0xFFFF;
+	
+	TIMER2_ICR |= 0x1;
+	TIMER2_CTL |= 0x1;
+	
+	
+	while(1){
+		volatile int t = TIMER2_TAR;
+		volatile int p = TIMER2_TAV;
+	}
+	
+}
+
 // PA6,7 OUTPUT FOR SETTING MOTOR STEP SIZE 
 void StepSizeGPIOSetup(void){
 	GPIOA_DIR |= 0xC0;
@@ -50,7 +83,8 @@ void DriverTimerSetup(void){
 	TIMER1_CTL &= ~0x1;
 	
 	// Select 16 bit timer configuration
-	TIMER1_CFG = 4;
+	TIMER1_CFG &= ~7;
+	
 	
 	TIMER1_TAMR &= 3;
 	TIMER1_TAMR |= 2;

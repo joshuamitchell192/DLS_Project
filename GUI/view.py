@@ -138,7 +138,7 @@ class View(QMainWindow):
         self.ScanBetween_Button = QPushButton(self)
         self.ScanBetween_Button.setGeometry(150, self.y, 150, 35)
         self.ScanBetween_Button.setText("Scan Between")
-        self.ScanBetween_Button.clicked.connect(lambda: self.controller.handleScanBetween(self.P1_Slider.value(), self.P2_Slider.value(), self.SmpDuration_LineEdit.text(), self.StepLength_LineEdit.text()))
+        self.ScanBetween_Button.clicked.connect(lambda: self.controller.handleScanBetween(self.P1_Slider.value(), self.P2_Slider.value(), self.SmpDuration_LineEdit.text(), self.StepLength_LineEdit.text(), self.StepMode_ComboBox.currentText()))
 
         self.Stop_Button = QPushButton(self)
         self.Stop_Button.setGeometry(320, self.y, 70, 35)
@@ -199,7 +199,8 @@ class View(QMainWindow):
         self.StepLength_LineEdit.setText(value)
 
     def __updateStepModeComboBox(self, value):
-        self.StepMode_ComboBo.setValue(value)
+        pass
+        #self.StepMode_ComboBox.setValue(value)
 
     def __updateAvgIntervalSpinBox(self, value):
         self.AvgInterval_SpinBox.setValue(value)
