@@ -73,15 +73,15 @@ class View(QMainWindow):
         self.StepLength_LineEdit.editingFinished.connect(self.__updateStepModeEditLine)
 
         self.StepMode_ComboBox_Widget = QWidget(self)
-        self.StepMode_ComboBox_Widget.setGeometry(30, self.y, 120, 35)
+        self.StepMode_ComboBox_Widget.setGeometry(300, self.y, 120, 35)
         # self.setCentralWidget(StepMode_ComboBox_Widget)
 
         self.StepMode_ComboBox = QComboBox(self.StepMode_ComboBox_Widget)
         self.StepMode_ComboBox.setObjectName(("StepMode_ComboBox"))
-        self.StepMode_ComboBox.addItem("Full")
-        self.StepMode_ComboBox.addItem("Half")
         self.StepMode_ComboBox.addItem("Quarter")
-        self.StepMode_ComboBox.setValue("Full")
+        self.StepMode_ComboBox.addItem("Half")
+        self.StepMode_ComboBox.addItem("Full")
+        self.StepMode_ComboBox.setCurrentIndex(2)
         self.StepMode_ComboBox.currentIndexChanged.connect(self.__updateStepModeComboBox)
 
 
@@ -199,7 +199,7 @@ class View(QMainWindow):
         self.StepLength_LineEdit.setText(value)
 
     def __updateStepModeComboBox(self, value):
-        self.StepMode_ComboBox.setValue(value)
+        self.StepMode_ComboBo.setValue(value)
 
     def __updateAvgIntervalSpinBox(self, value):
         self.AvgInterval_SpinBox.setValue(value)
