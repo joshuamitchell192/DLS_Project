@@ -154,7 +154,7 @@ class View(QMainWindow):
         self.ScanAtPoint_Button = QPushButton(self)
         self.ScanAtPoint_Button.setGeometry(610, self.y, 180, 35)
         self.ScanAtPoint_Button.setText("Start Sampling")
-        self.ScanAtPoint_Button.clicked.connect(lambda: self.controller.handleStartSample(self.SmpDuration_SpinBox.value(), self.AvgInterval_SpinBox.value()))
+        self.ScanAtPoint_Button.clicked.connect(lambda: self.controller.handleStartSample(self.AvgInterval_SpinBox.value()))
 
         self.ClearGraph_Button = QPushButton(self)
         self.ClearGraph_Button.setGeometry(810, self.y, 180, 35)

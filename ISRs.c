@@ -53,44 +53,43 @@ void UART0_Handler (void)
         point2 = ReadChar();
         WriteChar(point2);
         //sampleDuration = ReadChar();
-		unsigned int sampleDurationLower = ReadChar();
+				unsigned int sampleDurationLower = ReadChar();
         WriteChar(sampleDurationLower);
-		unsigned int sampleDurationMid = ReadChar();
+				unsigned int sampleDurationMid = ReadChar();
         WriteChar(sampleDurationMid);
-		unsigned int sampleDurationUpper = ReadChar();
-		WriteChar(sampleDurationUpper);
-		
-		unsigned int stepSizeLower = ReadChar();
+				unsigned int sampleDurationUpper = ReadChar();
+				WriteChar(sampleDurationUpper);
+				unsigned int stepSizeLower = ReadChar();
         WriteChar(stepSizeLower);
-		unsigned int stepSizeUpper = ReadChar();
+				unsigned int stepSizeUpper = ReadChar();
         WriteChar(stepSizeUpper);
 		
-		stepAmount = ReadChar();
-		WriteChar(stepAmount);
-		
-		sampleDuration = (sampleDurationUpper << 16) + (sampleDurationMid << 8) + sampleDurationLower;
-		sampleDuration /= 1000;
+				stepAmount = ReadChar();
+				WriteChar(stepAmount);
+				
+				sampleDuration = (sampleDurationUpper << 16) + (sampleDurationMid << 8) + sampleDurationLower;
+				sampleDuration /= 1000;
 
-		stepSize = (stepSizeUpper << 8) + stepSizeLower;
-		stepSize /= 1000;
+				stepSize = (stepSizeUpper << 8) + stepSizeLower;
+				stepSize /= 1000;
 
-		ALREADY_READ = 1;
+				ALREADY_READ = 1;
     }
     if (instruction == '.'){
-            STOP = 0;
-            WriteChar(instruction);
-            //sampleDuration = ReadChar();
-            //WriteChar(sampleDuration);
-            //avgInt = ReadChar();
-            //WriteChar(avgInt);
-            ALREADY_READ = 1;
+				STOP = 0;
+				WriteChar(instruction);
+				//sampleDuration = ReadChar();
+				//WriteChar(sampleDuration);
+				//avgInt = ReadChar();
+				//WriteChar(avgInt);
+				ALREADY_READ = 1;
     }
     if (instruction == '>'){
-            STOP = 0;
-            WriteChar(instruction);
-            point1 = ReadChar();
-            WriteChar(point1);
-            ALREADY_READ = 1;
+				STOP = 0;
+				WriteChar(instruction);
+				point1 = ReadChar();
+				WriteChar(point1);
+				ALREADY_READ = 1;
     }
 
     if (instruction == (unsigned int)0x21)

@@ -19,6 +19,7 @@ float sampleDuration;
 float stepSize;
 unsigned int avgInt;
 unsigned int stepAmount;
+unsigned int timeElapsed;
 
 unsigned int ALREADY_READ=0;
 
@@ -26,6 +27,7 @@ int STOP;
 float stepsPerMM;
 
 extern int currentPosition;
+	
 	
 int main(void)
 {	  
@@ -66,7 +68,7 @@ void wait (void)
         if (instruction == '.') 
         {
             ALREADY_READ = 0;
-			STOP = 0;
+						STOP = 0;
             sampleHere(sampleDuration, avgInt);
 
             instruction = 0;

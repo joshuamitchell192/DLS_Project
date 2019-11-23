@@ -94,7 +94,7 @@ class Controller:
         self.serialConnection.sendInstruction(self.Instructions.GOTO)
         self.serialConnection.sendValue(P1)
 
-    def handleStartSample(self, sampleDuration, averageInterval):
+    def handleStartSample(self, averageInterval):
 
         """ Sends the START_SAMPLE instruction to turn on the ADC clock and wait to receive samples from the sensor through the tiva UART connection.
             Samples until the stop button is pressed.

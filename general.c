@@ -10,7 +10,9 @@ extern void DriverGPIOSetup(void);
 extern void LimitSwitchesGPIOSetup(void);
 extern void DriverTimerSetup(void);
 extern void StepSizeGPIOSetup(void);
-extern void wideTimerSetup(void);
+extern void sysTickSamplingTimerSetup(void);
+
+extern unsigned int timeElapsed;
 
 void Delay(unsigned int numLoops)
 {
@@ -22,6 +24,10 @@ void Delay(unsigned int numLoops)
 
 	for(lp=0; lp<numLoops; lp++)
 		for (i=0; i<=0xA00; i++) ;
+}
+
+void SysTick_Handler(void){
+	timeElapsed += 1048575;
 }
 
 void Setup(void)
@@ -41,6 +47,6 @@ void Setup(void)
 
 	DriverTimerSetup();
 	
-	//wideTimerSetup();
+	sysTickSamplingTimerSetup();
 	
 }
