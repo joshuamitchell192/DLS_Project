@@ -15,6 +15,7 @@ class View(QMainWindow):
         super(View, self).__init__()
         self.serialConnection = serialConnection
         self.controller = controller
+        self.currentStepsPerMM = self.controller.stepsPerMM
 
         self.setAttribute(Qt.WA_DeleteOnClose)
 
@@ -33,7 +34,7 @@ class View(QMainWindow):
         # self.SmpDuration_SpinBox.valueChanged[int].connect(self.__updateSmpDurationSpinBox)
 
         self.SmpDuration_LineEdit = QLineEdit(self)
-        #self.SmpDuration_LineEdit.setValidator(QDoubleValidator(0.018,5.0, 3))
+        self.SmpDuration_LineEdit.setValidator(QDoubleValidator(0.018,5.0, 3))
         self.SmpDuration_LineEdit.setGeometry(30, self.y, 200, 25)
         self.SmpDuration_LineEdit.editingFinished.connect(self.__updateSmpDurationEditLine)
 
@@ -68,9 +69,9 @@ class View(QMainWindow):
 
 
         self.StepLength_LineEdit = QLineEdit(self)
-        self.StepLength_LineEdit.setValidator(QDoubleValidator(0.018,5.0, 3))
+        #self.StepLength_LineEdit.setValidator(QDoubleValidator(self.controller.stepsPerMM,5.0, 7))
         self.StepLength_LineEdit.setGeometry(30, self.y, 200, 25)
-        self.StepLength_LineEdit.editingFinished.connect(self.__updateStepModeEditLine)
+        self.StepLength_LineEdit.editingFinished.connect(self.__updateStepLengthEditLine)
 
         self.StepMode_ComboBox_Widget = QWidget(self)
         self.StepMode_ComboBox_Widget.setGeometry(300, self.y, 120, 35)
@@ -190,17 +191,24 @@ class View(QMainWindow):
         if (value == ""):
             return
 
-    def __updateStepModeEditLine(self):
+    def __updateStepLengthEditLine(self):
         value = self.StepLength_LineEdit.text()
         if (value == ""):
             return
+        #self.StepLength_LineEdit.setValidator(QDoubleValidator(self.controller.stepsPerMM,5.0, 7))
 
-        value = self.roundNearest(value, 0.018)
+        value = self.roundNearest(value, self.currentStepsPerMM)
         self.StepLength_LineEdit.setText(value)
 
     def __updateStepModeComboBox(self, value):
-        pass
-        #self.StepMode_ComboBox.setValue(value)
+        print(value)
+        if value == 0:
+            self.currentStepsPerMM = self.controller.stepsPerMM / 4
+        elif value == 1:
+            self.currentStepsPerMM = self.controller.stepsPerMM / 2
+        elif value == 2:
+            self.currentStepsPerMM = self.controller.stepsPerMM
+        self.__updateStepLengthEditLine()
 
     def __updateAvgIntervalSpinBox(self, value):
         self.AvgInterval_SpinBox.setValue(value)
@@ -244,5 +252,6 @@ class View(QMainWindow):
     def closeEvent(self, ce):
         self.fileQuit()
 
-    def roundNearest(self, value, a):
-        return str(round(round(float(value) / a) * a,  3))
+    def roundNearest(self, value, a, prec=5):
+        print(round(a * round(float(value)/a),prec))
+        return str(max(round(a * round(float(value)/a),prec),round(a,5)))
