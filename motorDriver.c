@@ -81,7 +81,9 @@ void sampleTwoPoints(double sampleDuration, int point1, int point2){
 	setStepAmount(stepAmount);
 	//Turn on adc timer for sampling
 	TIMER0_CTL |= 0x21;
+	NVIC_ST_CURRENT |= 1;
 	timeElapsed = 0;
+	volatile unsigned int totalTime;
 	while (currentPosition <= (point2)*4 && !STOP){
 			sampleTotal = 0;
 			numSamples = 0;
@@ -96,8 +98,9 @@ void sampleTwoPoints(double sampleDuration, int point1, int point2){
 				WriteChar(avgSample_lowerHalf);
 				WriteChar(avgSample_upperHalf);
 				//SEND TIME
-				unsigned int totalTime = timeElapsed;
-				volatile float leftOverTime = (float)(NVIC_ST_RELOAD - NVIC_ST_CURRENT) / 16000000.0;
+				volatile float totalSecondsF = (float)timeElapsed;
+				volatile float leftOverTimeF = (float)(NVIC_ST_RELOAD - NVIC_ST_CURRENT) / 16000000.0;
+				totalTime = ((float)(totalSecondsF/1000000) + leftOverTimeF) * 1000;
 				unsigned int timeLower = (0xFF & totalTime);
 				unsigned int timeMid = (0xFF00 & totalTime) >> 8;
 				unsigned int timeUpper = (0xFF0000 & totalTime) >> 16;
@@ -128,14 +131,13 @@ void sampleTwoPoints(double sampleDuration, int point1, int point2){
 	setStepAmount(2);
 }
 
-void setDriverTimer(double seconds){
-	
+void setDriverTimer(volatile double seconds){
 	if (seconds > 1){
 		numMultiples = (int)seconds;
 		remainder = seconds - (int)seconds;
 		seconds = 1;
 	}else{
-		numMultiples = 1;
+		numMultiples = -1;
 	}
 	
 	
@@ -153,11 +155,14 @@ void setDriverTimer(double seconds){
 
 
 void stepMotor(void){
-		for (int i = 0; i < numMultiples; i++){
+		if (numMultiples == -1){
 			while((TIMER1_RIS & 0x1) != 0x1);
 			TIMER1_ICR |= 1;
-		}
-		if (numMultiples > 1){
+		}else{
+			for (int i = 0; i < numMultiples; i++){
+				while((TIMER1_RIS & 0x1) != 0x1);
+				TIMER1_ICR |= 1;
+			}
 			setDriverTimer(remainder);
 			while((TIMER1_RIS & 0x1) != 0x1);
 		}

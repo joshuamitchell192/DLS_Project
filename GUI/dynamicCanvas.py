@@ -81,7 +81,7 @@ class DynamicMplCanvas(MplCanvas):
         else:
             intNum = 9
         for t in range(intNum):
-            timeInts.append(self.times[t])
+            timeInts.append(self.times[int(t*len(self.times)/intNum)])
         return timeInts
 
 
@@ -100,9 +100,8 @@ class DynamicMplCanvas(MplCanvas):
         self.axes.plot(self.samples, 'r')
         self.axes.set_xlabel("Sample Numbers")
         self.axes.set_ylabel("Sensor Value")
-        #self.axes2.set_xticks(time_tick_locations)
-        self.axes2.set_xticklabels(self.timeIntervals(time_tick_locations))
-        #self.axes2.set_xticklabels(time_tick_locations)
+        self.axes2.set_xticks(time_tick_locations)
+        self.axes2.set_xticklabels(self.timeIntervals(self.times))
         self.axes2.set_xlabel("Time (s)")
         
         self.draw()

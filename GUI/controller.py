@@ -4,9 +4,6 @@ from PyQt5.QtWidgets import QApplication
 import time
 
 class Controller:
-
-
-
     def __init__(self, serialConnection, Instructions):
         self.serialConnection = serialConnection
         self.Instructions = Instructions
@@ -69,9 +66,11 @@ class Controller:
             currentSample = self.serialConnection.readSample()
             if currentSample == 0xFFFF:
                 break
+            currentTime = self.serialConnection.readTime()
+            print(currentTime)
             self.samples.append(currentSample)
             
-            self.times.append(20)
+            self.times.append(currentTime)
             QApplication.processEvents()
 
     def handleStop(self):

@@ -83,6 +83,14 @@ class SerialConnection:
 
         return ser_bytes_total
 
+    def readTime(self):
+        ser_bytes_lower = self.ser.read(1)
+        ser_bytes_mid = self.ser.read(1)
+        ser_bytes_upper = self.ser.read(1)
+        
+        ser_bytes_total = int.from_bytes(ser_bytes_lower, byteorder='little', signed=False) + (int.from_bytes(ser_bytes_mid, byteorder='little', signed=False) << 8) + (int.from_bytes(ser_bytes_upper, byteorder='little', signed=False) << 16)
+        return ser_bytes_total/1000
+
     def sendStopInstruction(self, instruction):
 
         """ Sends an '!' character so the Tiva will interrupt and stop running any task that's currently executing.
