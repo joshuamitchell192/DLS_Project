@@ -82,8 +82,6 @@ class Controller:
         self.serialConnection.sendStopInstruction(self.Instructions.STOP)
 
 
-
-
     def handleGoToPoint(self, P1):
 
         """ sends the GOTO instruction to move to position 1

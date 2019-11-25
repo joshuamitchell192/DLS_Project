@@ -238,9 +238,11 @@ class View(QMainWindow):
             if (fileName[-4:] != ".csv"):
                 fileName = fileName + ".csv"
             with open(fileName, 'w+' ) as newFile:
-                for s in self.controller.samples:
-                    newFile.write(str(s))
+                for i in range(len(self.controller.samples)):
+                    newFile.write(str(self.controller.samples[i]))
+                    newFile.write(str(self.controller.times[i]))
                     newFile.write('\n')
+                
 
     def clearGraph(self):
         self.controller.samples = []
