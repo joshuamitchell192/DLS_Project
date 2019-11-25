@@ -97,6 +97,7 @@ class DynamicMplCanvas(MplCanvas):
 
 
         self.axes.cla()
+        self.axes.set_xlim([0,max(len(self.samples),10)])
         self.axes.plot(self.samples, 'r')
         self.axes.set_xlabel("Sample Numbers")
         self.axes.set_ylabel("Sensor Value")
