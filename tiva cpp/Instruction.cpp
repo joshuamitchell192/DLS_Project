@@ -1,4 +1,4 @@
-#include "Instruction.hpp"
+#include "Instruction.h"
 
 /* Rapid positioning
     Usage: G0 X2.5

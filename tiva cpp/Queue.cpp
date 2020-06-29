@@ -1,12 +1,10 @@
-#include "Queue.hpp"
+#include "Queue.h"
 
 // TODO - Add error messaging
 
 // Constructor to initialize queue
-Queue::Queue(int size)
+Queue::Queue()
 {
-    arr = new String[size];
-    capacity = size;
     front = 0;
     rear = -1;
     count = 0;
@@ -35,7 +33,7 @@ void Queue::dequeue()
 }
 
 // Utility function to add an item to the queue
-void Queue::enqueue(String item)
+void Queue::enqueue(char* item)
 {
     // check for queue overflow
     if (isFull())
@@ -48,12 +46,12 @@ void Queue::enqueue(String item)
     // cout << "Inserting " << item << '\n';
 
     rear = (rear + 1) % capacity;
-    arr[rear] = item;
+    strcpy(arr[rear], item);
     count++;
 }
 
 // Utility function to return front element in the queue
-String Queue::peek()
+char* Queue::peek()
 {
     if (isEmpty())
     {
