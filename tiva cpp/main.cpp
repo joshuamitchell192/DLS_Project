@@ -10,10 +10,12 @@ void delayMS(int n); /*function prototype for delay*/
 extern "C" void UART0_Handler (void);
 extern "C" void ADC0SS3_Handler (void);
 
+
+
 void UART0_Handler(void) {
-    Helpers::WriteChar('Y');
-    int x = 5;
-    //dls.ReadSerial();
+    char c = Helpers::ReadChar();
+    DLS::readSerial(c);
+    Helpers::WriteChar(c);
 }
 
 void ADC0SS3_Handler (void)
