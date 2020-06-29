@@ -1,6 +1,9 @@
 #include "DLS.h"
  
 DLS::DLS () {
+    Setup::SensorADCSetup();
+    Setup::Uart0TerminalSetup();
+
     queue = new Queue();
 }
 
@@ -19,8 +22,11 @@ void DLS::eventLoop(){
 
     for (;;) {
         char *currentInstruction = queue->peek();
-        if (currentInstruction == "G0") {
+        Instruction::G00
+
+        if (currentInstruction == Instruction::G00) {
             // spinMotor();
+            Helpers::WriteChar(currentInstruction[0]);
         }
     }
 }
