@@ -1,11 +1,11 @@
-#include <WString.h>
+#include <string.h>
 
 class Instruction {
 
 public:
-    static String G0;
-    static String G1;
-    static String M0;
+    static string G0;
+    static string G1;
+    static string M0;
 
-    static bool exists(String input);
+    static bool exists(string input);
 };
