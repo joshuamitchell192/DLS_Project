@@ -11,7 +11,7 @@ class DLS{
         Queue *queue;
         Instruction *instruction;
     public:
-        DLS(Queue *_queue);
+        DLS();
         void eventLoop();
         void readSerial(char inChar);
 };

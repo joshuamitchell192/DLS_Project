@@ -1,7 +1,7 @@
 #include "DLS.h"
  
-DLS::DLS (Queue *_queue) {
-    queue = _queue;
+DLS::DLS () {
+    queue = new Queue();
 }
 
 void DLS::readSerial(char inChar){
