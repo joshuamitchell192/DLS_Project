@@ -1,6 +1,15 @@
 #include "helpers.h"
 
+void Helpers::EnableInterrupts(void)
+{ 
+	 __asm("CPSIE i");
+}
 
+
+void Helpers::DisableInterrupts(void)
+{ 
+	__asm("CPSID i");
+}
 
 void Helpers::WriteChar(unsigned int value)
 {

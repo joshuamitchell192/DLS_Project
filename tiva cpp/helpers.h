@@ -1,20 +1,10 @@
 #include "registers.h"
 
-inline void EnableInterrupts(void)
-{ 
-	 __asm("CPSIE i");
-}
-
-
-inline void DisableInterrupts(void)
-{ 
-	__asm("CPSID i");
-}
-
 
 class Helpers{
     public:
-        
+        static void EnableInterrupts();
+        static void DisableInterrupts();
         static void WriteChar(unsigned int);
         static unsigned int ReadChar();
 

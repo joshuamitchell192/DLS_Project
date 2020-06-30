@@ -22,7 +22,6 @@ void DLS::eventLoop(){
 
     for (;;) {
         char *currentInstruction = queue->peek();
-        Instruction::G00
 
         if (currentInstruction == Instruction::G00) {
             // spinMotor();

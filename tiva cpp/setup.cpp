@@ -1,6 +1,4 @@
 #include "setup.h"
-// #include "motorDriver.h"
-#include "helpers.h"
 
 void Setup::DriverGPIOSetup(void){
 	SYSCTL_RCGCGPIO |= 0x1;
@@ -93,7 +91,7 @@ void Setup::SensorADCSetup(void)
 	ADC0_SSCTL3 &= ~0xF;
 	ADC0_SSCTL3 |= 0x6;
 	
-	DisableInterrupts();
+	Helpers::DisableInterrupts();
 	
 	// Enable interrupts for sequencer 3
 	ADC0_IM |= 0x8;
@@ -102,7 +100,7 @@ void Setup::SensorADCSetup(void)
 	NVIC_EN0 |= (1<<17);
 	
 	
-	EnableInterrupts();
+	Helpers::EnableInterrupts();
 	
 	// Clear interrupts for sequencer 3
 	ADC0_ISC |= 0x8;
