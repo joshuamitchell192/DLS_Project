@@ -67,6 +67,10 @@ char* Queue::peek()
     return arr[front];
 }
 
+char* Queue::get(int i){
+    return arr[i];
+}
+
 // Utility function to return the size of the queue
 int Queue::size()
 {

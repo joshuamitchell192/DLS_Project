@@ -17,6 +17,7 @@ public:
     void dequeue();
     void enqueue(char* item);
     char* peek();
+    char* get(int i);
     int size();
     bool isEmpty();
     bool isFull();
