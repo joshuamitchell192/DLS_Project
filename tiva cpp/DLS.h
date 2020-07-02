@@ -4,14 +4,14 @@
 #include "setup.h"
 
 
-class LinearStage{
+class DLS{
 
     private:
         static const int StepsPerRev = 6600;
         char inputString[10];
         Queue *queue;
     public:
-        LinearStage();
+        DLS();
         void eventLoop();
         void readSerial(char inChar);
 };

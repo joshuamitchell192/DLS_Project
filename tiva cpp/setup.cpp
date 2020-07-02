@@ -206,7 +206,7 @@ void Setup::SampleDurationTimer(void) {
 	TIMER2_TAMR |= 0x2;
 	
 	// Set delay of 1000 clock cycles (6.25x10^-5 seconds)
-	TIMER2_TAILR = Helpers::getPreload(10.0, Helpers::getPrescaler(10.0));
+	TIMER2_TAILR = Helpers::getPreload(2.0, Helpers::getPrescaler(2.0));
 	
 	// Clear interrupts
 	TIMER2_ICR |= 0x1;

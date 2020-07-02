@@ -1,32 +1,33 @@
 #include "DLS.h"
  
-LinearStage::LinearStage () {
-    Setup::SensorADCSetup();
+DLS::DLS () {
+    //Setup::SensorADCSetup();
     Setup::Uart0TerminalSetup();
 
-    queue = new Queue();
+    //queue = new Queue();
 }
 
-void LinearStage::readSerial(char inChar){
+void DLS::readSerial(char inChar){
 
-    strcat(LinearStage::inputString, &inChar);
+    strcat(DLS::inputString, &inChar);
 
     if (inChar == '\n') {
         queue->enqueue(inputString);
+        Helpers::WriteChar(*queue->peek());
         strcpy(inputString, "");
         return;
     }
 }
 
-void LinearStage::eventLoop(){
+void DLS::eventLoop(){
 
     for (;;) {
-        char *currentInstruction = queue->peek();
+        //char *currentInstruction = queue->peek();
 
-        if (strcmp(currentInstruction, Instruction::G00)) {
-            // spinMotor();
-            Helpers::WriteChar(currentInstruction[0]);
-        }
+//        if (strcmp(currentInstruction, Instruction::G00)) {
+//            // spinMotor();
+//            Helpers::WriteChar(currentInstruction[0]);
+//        }
     }
 }
 

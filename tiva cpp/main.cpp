@@ -1,29 +1,29 @@
+#include "registers.h"
+//#include "setup.h"
+#include "DLS.h"
+//#include "main.h"
 
-#include "main.h"
-
-void delayMS(int n); /*function prototype for delay*/
+//void delayMS(int n); /*function prototype for delay*/
 //extern "C" void UART0_Handler (void);
 //using namespace std;
-// extern "C" void UART0_Handler (void);
-// extern "C" void ADC0SS3_Handler (void);
+extern "C" void UART0_Handler (void);
+extern "C" void ADC0SS3_Handler (void);
 
-LinearStage *linearStage;
+DLS dls;
 
 int main(void)
 {
-    linearStage = new LinearStage();
-
     Helpers::WriteChar('G');
     Helpers::WriteChar('O');
 
     //Turn on adc timer for sampling
-	TIMER0_CTL |= 0x21;
+	//TIMER0_CTL |= 0x21;
     while(1);
 }
 
 void UART0_Handler(void) {
     char c = Helpers::ReadChar();
-    linearStage->readSerial(c);
+    dls.readSerial(c);
     Helpers::WriteChar(c);
 }
 
