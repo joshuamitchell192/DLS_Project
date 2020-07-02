@@ -312,7 +312,7 @@
           </ArmAdsMisc>
           <Cads>
             <interw>1</interw>
-            <Optim>1</Optim>
+            <Optim>4</Optim>
             <oTime>0</oTime>
             <SplitLS>0</SplitLS>
             <OneElfS>1</OneElfS>
@@ -324,7 +324,7 @@
             <wLevel>2</wLevel>
             <uThumb>0</uThumb>
             <uSurpInc>0</uSurpInc>
-            <uC99>1</uC99>
+            <uC99>0</uC99>
             <uGnu>0</uGnu>
             <useXO>0</useXO>
             <v6Lang>1</v6Lang>
@@ -335,7 +335,7 @@
             <v6WtE>0</v6WtE>
             <v6Rtti>0</v6Rtti>
             <VariousControls>
-              <MiscControls></MiscControls>
+              <MiscControls>--cpp11</MiscControls>
               <Define></Define>
               <Undefine></Undefine>
               <IncludePath></IncludePath>
@@ -413,16 +413,6 @@
               <FilePath>.\DLS.h</FilePath>
             </File>
             <File>
-              <FileName>ISR.cpp</FileName>
-              <FileType>8</FileType>
-              <FilePath>.\ISR.cpp</FilePath>
-            </File>
-            <File>
-              <FileName>ISR.h</FileName>
-              <FileType>5</FileType>
-              <FilePath>.\ISR.h</FilePath>
-            </File>
-            <File>
               <FileName>Startup.s</FileName>
               <FileType>2</FileType>
               <FilePath>.\Startup.s</FilePath>
@@ -431,6 +421,16 @@
               <FileName>main.h</FileName>
               <FileType>5</FileType>
               <FilePath>.\main.h</FilePath>
+            </File>
+            <File>
+              <FileName>Instruction.cpp</FileName>
+              <FileType>8</FileType>
+              <FilePath>.\Instruction.cpp</FilePath>
+            </File>
+            <File>
+              <FileName>Queue.cpp</FileName>
+              <FileType>8</FileType>
+              <FilePath>.\Queue.cpp</FilePath>
             </File>
           </Files>
         </Group>

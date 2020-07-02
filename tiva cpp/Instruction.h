@@ -3,7 +3,6 @@
 class Instruction {
 
 public:
-    Instruction::Instruction(char * _instruction);
 
     /* Rapid positioning
         Usage: G0 X2.5

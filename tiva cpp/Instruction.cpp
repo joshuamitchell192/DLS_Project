@@ -1,14 +1,12 @@
 #include "Instruction.h"
 
-Instruction::Instruction(char * _instruction) {}
-
-static const char *G00 = "G00";
-static const char *G01 = "G01";
-static const char *M00 = "M00";
-static const char *M01 = "M01";
-static const char *M02 = "M02";
-static const char *T1 = "T1";
-static const char *T2 = "T2";
+const char* Instruction::G00 = "G00";
+const char* Instruction::G01 = "G01";
+const char* Instruction::M00 = "M00";
+const char* Instruction::M01 = "M01";
+const char* Instruction::M02 = "M02";
+const char* Instruction::T1 = "T1";
+const char* Instruction::T2 = "T2";
 
 bool Instruction::exists(char *instruction) {
 

@@ -3,7 +3,7 @@
         {
             "name": "keil",
             "includePath": [
-                "c:\\Users\\newuser\\OneDrive\\Documents\\University Documents\\Griffith Year 3\\Microprocessor Techniques\\DLSArduino\\tiva cpp"
+                "c:\\Users\\newuser\\OneDrive\\Documents\\University Documents\\Griffith Year 3\\Microprocessor Techniques\\Assignment\\DLS Project\\tiva cpp"
             ],
             "defines": [
                 "__CC_ARM",
@@ -13,6 +13,7 @@
                 "__alignof__(x)=",
                 "__asm(x)=",
                 "__forceinline=",
+                "__restrict=",
                 "__global_reg(n)=",
                 "__inline=",
                 "__int64=long long",
@@ -31,12 +32,27 @@
                 "__attribute__(x)=",
                 "__nonnull__(x)=",
                 "__register=",
-                "__va_start(x)=",
-                "__va_arg(x)=",
-                "__va_end(x)=",
+                "__enable_fiq()=",
+                "__disable_fiq()=",
+                "__nop()=",
+                "__wfi()=",
+                "__wfe()=",
+                "__sev()=",
+                "__isb(x)=",
+                "__dsb(x)=",
+                "__dmb(x)=",
+                "__schedule_barrier()=",
+                "__rev(x)=0U",
+                "__ror(x,y)=0U",
                 "__breakpoint(x)=",
-                "__ror=",
-                "__clz="
+                "__clz(x)=0U",
+                "__ldrex(x)=0U",
+                "__strex(x,y)=0U",
+                "__clrex()=",
+                "__ssat(x,y)=0U",
+                "__usat(x,y)=0U",
+                "__ldrt(x)=0U",
+                "__strt(x,y)="
             ],
             "intelliSenseMode": "${default}"
         }

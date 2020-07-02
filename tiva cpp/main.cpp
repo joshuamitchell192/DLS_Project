@@ -7,11 +7,11 @@ void delayMS(int n); /*function prototype for delay*/
 // extern "C" void UART0_Handler (void);
 // extern "C" void ADC0SS3_Handler (void);
 
-DLS *dls;
+LinearStage *linearStage;
 
 int main(void)
 {
-    dls = new DLS();
+    linearStage = new LinearStage();
 
     Helpers::WriteChar('G');
     Helpers::WriteChar('O');
@@ -23,7 +23,7 @@ int main(void)
 
 void UART0_Handler(void) {
     char c = Helpers::ReadChar();
-    dls->readSerial(c);
+    linearStage->readSerial(c);
     Helpers::WriteChar(c);
 }
 

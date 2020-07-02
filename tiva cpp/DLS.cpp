@@ -1,15 +1,15 @@
 #include "DLS.h"
  
-DLS::DLS () {
+LinearStage::LinearStage () {
     Setup::SensorADCSetup();
     Setup::Uart0TerminalSetup();
 
     queue = new Queue();
 }
 
-void DLS::readSerial(char inChar){
+void LinearStage::readSerial(char inChar){
 
-    strcat(DLS::inputString, &inChar);
+    strcat(LinearStage::inputString, &inChar);
 
     if (inChar == '\n') {
         queue->enqueue(inputString);
@@ -18,12 +18,12 @@ void DLS::readSerial(char inChar){
     }
 }
 
-void DLS::eventLoop(){
+void LinearStage::eventLoop(){
 
     for (;;) {
         char *currentInstruction = queue->peek();
 
-        if (currentInstruction == Instruction::G00) {
+        if (strcmp(currentInstruction, Instruction::G00)) {
             // spinMotor();
             Helpers::WriteChar(currentInstruction[0]);
         }
