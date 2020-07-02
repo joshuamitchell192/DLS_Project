@@ -9,7 +9,7 @@ class DLS{
     private:
         static const int StepsPerRev = 6600;
         char inputString[10];
-        Queue *queue;
+        Queue queue;
     public:
         DLS();
         void eventLoop();

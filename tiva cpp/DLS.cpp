@@ -12,8 +12,12 @@ void DLS::readSerial(char inChar){
     strcat(DLS::inputString, &inChar);
 
     if (inChar == '\n') {
-        queue->enqueue(inputString);
-        Helpers::WriteChar(*queue->peek());
+        queue.enqueue(inputString);
+        char * lastInstruction = queue.peek();
+        for (int i = 0; i < strlen(lastInstruction); i++){
+            Helpers::WriteChar(lastInstruction[i]);
+        }
+        
         strcpy(inputString, "");
         return;
     }

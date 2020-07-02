@@ -1,6 +1,6 @@
 #include <string.h>
-#define DEFAULT_QUEUE_CAPACITY 20
-#define DEFAULT_QUEUE_INSTRUCTION_SIZE 10
+#define DEFAULT_QUEUE_CAPACITY 50
+#define DEFAULT_QUEUE_INSTRUCTION_SIZE 100
 // Class for queue
 class Queue
 {
