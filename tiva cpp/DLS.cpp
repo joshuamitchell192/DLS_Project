@@ -48,12 +48,41 @@ void DLS::readSerial(char inChar){
 void DLS::eventLoop(){
 
     for (;;) {
-        //char *currentInstruction = queue->peek();
+        char *currentinstruction = queue.peek();
+        
+        const char* i;
+        int params[10];
+        
+        
+        
+        // Parse instruction to instruction and parameter parts.
+        if (currentinstruction == NULL){}
 
-//        if (strcmp(currentInstruction, Instruction::G00)) {
-//            // spinMotor();
-//            Helpers::WriteChar(currentInstruction[0]);
-//        }
+        else if (strcmp(currentinstruction, Instruction::G00)) {
+            // spinmotor();
+            Helpers::WriteString(currentinstruction);
+        }
+        else if (strcmp(currentinstruction, Instruction::G01)){
+            Helpers::WriteString(currentinstruction);
+        }
+        else if (strcmp(currentinstruction, Instruction::M01)){
+            Helpers::WriteString(currentinstruction);
+        }
+        else if (strcmp(currentinstruction, Instruction::M02)){
+            Helpers::WriteString(currentinstruction);
+        }
+        else if (strcmp(currentinstruction, Instruction::M03)){
+            Helpers::WriteString(currentinstruction);
+        }
+        else if (strcmp(currentinstruction, Instruction::T1)){
+            Helpers::WriteString(currentinstruction);
+        }
+        else if (strcmp(currentinstruction, Instruction::T2)){
+            Helpers::WriteString(currentinstruction);
+        }
+        Helpers::WriteString(currentinstruction);
+        queue.dequeue();
+        memset(currentinstruction, 0, strlen(currentinstruction));
     }
 }
 

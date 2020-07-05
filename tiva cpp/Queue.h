@@ -1,6 +1,8 @@
 #include <string.h>
 #define DEFAULT_QUEUE_CAPACITY 50
 #define DEFAULT_QUEUE_INSTRUCTION_SIZE 100
+
+
 // Class for queue
 class Queue
 {
@@ -9,6 +11,8 @@ class Queue
     int front;    // front points to front element in the queue (if any)
     int rear;     // rear points to last element in the queue
     int count;    // current size of the queue
+    const char *FULL_QUEUE = "Queue is full";
+    const char *EMPTY_QUEUE = "Queue is empty";
 
 public:
     Queue(); // constructor

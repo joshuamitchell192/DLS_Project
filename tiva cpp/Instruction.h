@@ -30,6 +30,11 @@ public:
         Usage: M02
     */
     static const char *M02;
+    
+    /* End Program
+        Usage: M03  
+    */
+    static const char *M03;
 
     /* Turn on the ADC sampling
         Usage: T1
@@ -44,4 +49,5 @@ public:
     static const char *T2;
 
     static bool exists(char *input);
+
 };

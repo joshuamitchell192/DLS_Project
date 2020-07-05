@@ -1,4 +1,5 @@
 #include "Queue.h"
+#include "helpers.h"
 
 // TODO - Add error messaging
 
@@ -28,11 +29,8 @@ void Queue::dequeue()
     // check for queue underflow
     if (isEmpty())
     {
-        // cout << "UnderFlow\nProgram Terminated\n";
-        // exit(EXIT_FAILURE);
+        Helpers::WriteString(EMPTY_QUEUE);
     }
-
-    // cout << "Removing " << arr[front] << '\n';
 
     front = (front + 1) % capacity;
     count--;
@@ -44,9 +42,8 @@ void Queue::enqueue(char* item)
     // check for queue overflow
     if (isFull())
     {
-        // cout << "OverFlow\nProgram Terminated\n";
-        // exit(EXIT_FAILURE);
-        
+        Helpers::WriteString(FULL_QUEUE);
+        return;
     }
 
     // cout << "Inserting " << item << '\n';
@@ -61,8 +58,7 @@ char* Queue::peek()
 {
     if (isEmpty())
     {
-        // cout << "UnderFlow\nProgram Terminated\n";
-        // exit(EXIT_FAILURE);
+        return NULL;
     }
     return arr[front];
 }

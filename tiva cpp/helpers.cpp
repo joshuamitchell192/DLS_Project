@@ -25,7 +25,11 @@ unsigned int Helpers::ReadChar()
 	return data;
 }
 
-
+void Helpers::WriteString(const char *string){
+    for (int i = 0; i < strlen(string); i++){
+        WriteChar(string[i]);
+    }
+}
 
 unsigned int Helpers::getPrescaler(double seconds){
 	volatile double preload = 0xFFFFFFFF;
