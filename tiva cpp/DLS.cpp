@@ -1,10 +1,13 @@
 #include "DLS.h"
  
 DLS::DLS () {
-    //Setup::SensorADCSetup();
+    Setup::SensorADCSetup();
     Setup::Uart0TerminalSetup();
-
-    //queue = new Queue();
+    
+    stepMode = StepModes::Full;
+    currentPosition = 0;
+    sampleDuration = 0.0;
+    averageInterval = 0;
 }
 
 void DLS::readSerial(char inChar){

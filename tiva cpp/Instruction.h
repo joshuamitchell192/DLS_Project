@@ -47,6 +47,31 @@ public:
         Description:
     */
     static const char *T2;
+    
+    /* Set Sample Duration
+        Usage S100
+        Description:
+    */
+    static const char *S1;
+    
+    /* Set Step Mode
+        Usage: S2 1.5
+        Description: 
+    */
+   static const char *S2;
+
+    /* Set Step Length
+        Usage: S3 1.5
+        Description: 
+    */
+   static const char *S3;
+
+   /* Set Average Interval
+        Usage: S4 1.5
+        Description: 
+   */
+  static const char *S4;
+
 
     static bool exists(char *input);
 

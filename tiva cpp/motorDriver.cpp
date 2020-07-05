@@ -8,6 +8,7 @@ int numSamples;
 int numMultiples;
 double remainder;
 
+// Sets StepMode  on GPIOA
 void MotorDriver::setStepAmount(int stepAmount){
 	//M0 = A6, M1 = A7
 	if (stepAmount == 0){
