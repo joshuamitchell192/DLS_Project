@@ -13,20 +13,8 @@ Also ensure that your keil support compilation to C++ for the C++ version.
 
 | Version | Compiler Control String | Screenshot |
 | :--- | :--- | :--- |
-| Tiva Cpp | -c --cpu Cortex-M4.fp -D__EVAL -g -O0 --apcs=interwork --split_sections --cpp11-I./RTE/_Target_1 -IC:/Users/newuser/AppData/Local Arm/Packs/ARM/CMSIS/5.6.0/CMSIS/Core/Include -IC:/Users/newuser/AppData/Local/Arm/Packs/Keil/TM4C_DFP/1.1.0/Device/Include/TM4C123 -D__UVISION_VERSION="528" -D_RTE_ -DTM4C123GH6PM -o .\Objects\*.o --omf_browse .\Objects\*.crf --depend .\Objects\*.d | ![C++11 Compiler Options](Screenshots/C++11CompilerSetup.jpg)
+| Tiva Cpp | `-c --cpu Cortex-M4.fp -D__EVAL -g -O0 --apcs=interwork --split_sections --cpp11-I./RTE/_Target_1 -IC:/Users/newuser/AppData/Local Arm/Packs/ARM/CMSIS/5.6.0/CMSIS/Core/Include -IC:/Users/newuser/AppData/Local/Arm/Packs/Keil/TM4C_DFP/1.1.0/Device/Include/TM4C123 -D__UVISION_VERSION="528" -D_RTE_ -DTM4C123GH6PM -o .\Objects\*.o --omf_browse .\Objects\*.crf --depend .\Objects\*.d` | ![C++11 Compiler Options](Screenshots/C++11CompilerSetup.jpg)
 | Tiva c | | |
-
-<style>
-table th:first-of-type {
-    width: 10%;
-}
-table th:nth-of-type(2) {
-    width: 50%;
-}
-table th:nth-of-type(3) {
-    width: 40%;
-}
-</style>
 
 ### <u>Setting up the tiva:</u>
 
