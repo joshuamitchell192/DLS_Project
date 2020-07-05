@@ -32,15 +32,7 @@ void DLS::readSerial(char inChar){
         return;
     }
     if (inChar == 'p'){
-        int queueSize = queue.size();
-        for (int j = 0; j <= queue.size(); j++){
-            char * lastInstruction = DLS::queue.get(j);
-            //DLS::queue.dequeue();
-            for (int i = 0; i < strlen(lastInstruction); i++){
-                Helpers::WriteChar(lastInstruction[i]);
-            }
-            Helpers::WriteChar('\n');
-        }
+        queue.printToSerial();
     }
 
 }

@@ -25,4 +25,5 @@ public:
     int size();
     bool isEmpty();
     bool isFull();
+    void printToSerial();
 };

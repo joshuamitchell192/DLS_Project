@@ -12,16 +12,16 @@ Queue::Queue()
 }
 
 // Destructor to free memory allocated to the queue
-Queue::~Queue()
-{
-   for (int i = 0; i < DEFAULT_QUEUE_CAPACITY; i++){
-       for (int j = 0; j < DEFAULT_QUEUE_INSTRUCTION_SIZE; j++){
-           delete [] arr;
-       }
-       delete arr[i]
-   }
-   
-}
+//Queue::~Queue()
+//{
+//   for (int i = 0; i < DEFAULT_QUEUE_CAPACITY; i++){
+//       for (int j = 0; j < DEFAULT_QUEUE_INSTRUCTION_SIZE; j++){
+//           delete [] arr;
+//       }
+//       delete arr[i]
+//   }
+//   
+//}
 
 // Utility function to remove front element from the queue
 void Queue::dequeue()
@@ -61,6 +61,16 @@ char* Queue::peek()
         return NULL;
     }
     return arr[front];
+}
+
+void Queue::printToSerial(){
+    for (int i = 0; i <= size(); i++){
+        char * nextInstruction = get(i);
+        
+        Helpers::WriteString(nextInstruction);
+        Helpers::WriteChar('\n');
+        Helpers::WriteChar('\r');
+    }
 }
 
 char* Queue::get(int i){
