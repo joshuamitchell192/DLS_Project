@@ -1,5 +1,10 @@
 #include <string.h>
 
+struct instruction{
+  int instructionLength;
+  char** splitInstructions;
+};
+
 class Instruction {
 
 public:
@@ -72,7 +77,10 @@ public:
    */
   static const char *S4;
 
+  
+  
 
-    static bool exists(char *input);
+  static bool exists(char *input);
+  static instruction splitInstruction(char *instruction, char *delimiters);
 
 };
