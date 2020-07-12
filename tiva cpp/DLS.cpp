@@ -6,6 +6,7 @@ DLS::DLS () {
     
     stepMode = StepModes::Full;
     currentPosition = 0;
+    stepLength = 0;
     sampleDuration = 0.0;
     averageInterval = 0;
 }
@@ -47,10 +48,12 @@ void DLS::eventLoop(){
         
         const char* i;
         int params[10];
-        
-        
-        
+
         // Parse instruction to instruction and parameter parts.
+        char *instructionSplit[3] = Instruction::exists(currentinstruction);
+
+         
+
         if (currentinstruction == NULL){}
 
         else if (strcmp(currentinstruction, Instruction::G00)) {

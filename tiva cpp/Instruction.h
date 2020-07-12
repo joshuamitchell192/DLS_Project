@@ -28,6 +28,7 @@ public:
 
     /*  Pause Program
         Usage: M02
+        Description: Runs a delay loop waiting for a start instruction to be sent.
     */
     static const char *M02;
     
@@ -74,5 +75,7 @@ public:
 
 
     static bool exists(char *input);
+
+    static char** splitInstruction(char *instruction);
 
 };
