@@ -52,27 +52,28 @@ bool Instruction::exists(char *instruction) {
     }
 }
 
-instruction Instruction::splitInstruction(char *instruction, char *delimiters){
+instruction Instruction::splitInstruction(char *instruction, char *delimiters) {
 
-    char * splitInstructions[10];
+    char *parameters[10];
     char *token;
 
-    splitInstructions[0] = strtok(instruction, delimiters);
+    struct instruction newInstruction;
+
+    newInstruction.instruction = strtok(instruction, delimiters);
 
     int instructionIndex = 1;
     while (token != NULL){
 
       token = strtok(NULL, delimiters);
       if (token != '\0'){
-        splitInstructions[instructionIndex] = token;
+        if (token[0] == 'X' || token[0] == 'Y' || token[0] == 'Z') token = &token[1];
+        parameters[instructionIndex] = token;
         instructionIndex++;
       }
     }
 
-    struct instruction _instruction = {
-        instructionIndex,
-        splitInstructions
-    };
+    newInstruction.parameterCount = instructionIndex;
+    newInstruction.parameters = parameters;
 
-    return _instruction;
+    return newInstruction;
 }

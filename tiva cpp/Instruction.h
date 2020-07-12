@@ -1,8 +1,9 @@
 #include <string.h>
 
 struct instruction{
-  int instructionLength;
-  char** splitInstructions;
+  int parameterCount;
+  char *instruction;
+  char **parameters;
 };
 
 class Instruction {
@@ -77,9 +78,6 @@ public:
         Description: 
    */
   static const char *S4;
-
-  
-  
 
   static bool exists(char *input);
   static instruction splitInstruction(char *instruction, char *delimiters);
