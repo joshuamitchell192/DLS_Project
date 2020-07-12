@@ -9,6 +9,7 @@ const char* Instruction::M03 = "M03";
 const char* Instruction::T1 = "T1";
 const char* Instruction::T2 = "T2";
 
+
 bool Instruction::exists(char *instruction) {
 
     switch (instruction[0]){
@@ -49,4 +50,29 @@ bool Instruction::exists(char *instruction) {
         default:
             return false;
     }
+}
+
+instruction Instruction::splitInstruction(char *instruction, char *delimiters){
+
+    char * splitInstructions[10];
+    char *token;
+
+    splitInstructions[0] = strtok(instruction, delimiters);
+
+    int instructionIndex = 1;
+    while (token != NULL){
+
+      token = strtok(NULL, delimiters);
+      if (token != '\0'){
+        splitInstructions[instructionIndex] = token;
+        instructionIndex++;
+      }
+    }
+
+    struct instruction _instruction = {
+        instructionIndex,
+        splitInstructions
+    };
+
+    return _instruction;
 }

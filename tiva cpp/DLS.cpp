@@ -48,7 +48,9 @@ void DLS::eventLoop(){
         
         const char* i;
         int params[10];
-
+        
+        instruction parsedInstruction = Instruction::splitInstruction(currentinstruction, " ");
+        
         // Parse instruction to instruction and parameter parts.
         char *instructionSplit[3] = Instruction::exists(currentinstruction);
 
