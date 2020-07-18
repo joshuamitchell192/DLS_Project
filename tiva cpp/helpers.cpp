@@ -51,3 +51,13 @@ unsigned int Helpers::getPreload(double seconds, int prescaler){
 	return (unsigned int)preload;
 	
 }
+
+
+int Helpers::strToInt(char* str){
+    int i = 0;
+    for (int s = 0; s < strlen(str); s++){
+        i *= 10;
+        i += s-48;
+    }
+    return i;
+}

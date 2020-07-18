@@ -44,7 +44,7 @@ void Setup::DriverTimerSetup(void){
 	
 	TIMER1_TAMR &= 3;
 	TIMER1_TAMR |= 2;
-	
+
 }
 
 //PB0,1
@@ -143,49 +143,49 @@ void Setup::SensorTimerSetup(void)
 	*/
 	
 	// Setup for timer 
-//	SYSCTL_RCGCTIMER |= 0x1;
-//	while ((SYSCTL_PRTIMER & 0x1) != 0x1);
-//	
-//	// Disable timer
-//	TIMER0_CTL &= ~0x1;
-//	// Set to 16 bit config
-//	TIMER0_CFG |= 0x4;
-//	
-//	// Ensure capture mode doesn't enable with 0x3;
-//	TIMER0_TAMR &= ~0x1;
-//	// Set to periodic timer
-//	TIMER0_TAMR |= 0x2;
-//	
-//	// Set delay of 1000 clock cycles (6.25x10^-5 seconds)
-//	TIMER0_TAILR = 1000;
-//	
-//	// Clear interrupts
-//	TIMER0_ICR |= 0x1;
-    SYSCTL_RCGCTIMER |= 0x1;
+	SYSCTL_RCGCTIMER |= 0x1;
 	while ((SYSCTL_PRTIMER & 0x1) != 0x1);
 	
-	// Disable timer
+	// disable timer
 	TIMER0_CTL &= ~0x1;
-	// Set to 32 bit config
-	TIMER0_CFG &= ~0x5;
+	// set to 16 bit config
+	TIMER0_CFG |= 0x4;
 	
-	// Ensure capture mode doesn't enable with 0x3;
+	// ensure capture mode doesn't enable with 0x3;
 	TIMER0_TAMR &= ~0x1;
-	// Set to periodic timer
+	// set to periodic timer
 	TIMER0_TAMR |= 0x2;
 	
-    //unsigned int preload = Helpers::getPreload(10000.0, Helpers::getPrescaler(10000.0));
-    
-    int prescale = Helpers::getPrescaler(10.0);
-	int preload = Helpers::getPreload(10.0, prescale);
-    
-	// Set delay of 1000 clock cycles (6.25x10^-5 seconds)
-	//TIMER0_TAILR = pr;
-    TIMER0_TAPR = prescale;
-	TIMER0_TAILR = preload;
+	// set delay of 1000 clock cycles (6.25x10^-5 seconds)
+	TIMER0_TAILR = 1000;
 	
 	// Clear interrupts
 	TIMER0_ICR |= 0x1;
+    // SYSCTL_RCGCTIMER |= 0x1;
+	// while ((SYSCTL_PRTIMER & 0x1) != 0x1);
+	
+	// // Disable timer
+	// TIMER0_CTL &= ~0x1;
+	// // Set to 32 bit config
+	// TIMER0_CFG &= ~0x5;
+	
+	// // Ensure capture mode doesn't enable with 0x3;
+	// TIMER0_TAMR &= ~0x1;
+	// // Set to periodic timer
+	// TIMER0_TAMR |= 0x2;
+	
+    // //unsigned int preload = Helpers::getPreload(10000.0, Helpers::getPrescaler(10000.0));
+    
+    // int prescale = Helpers::getPrescaler(10.0);
+	// int preload = Helpers::getPreload(10.0, prescale);
+    
+	// // Set delay of 1000 clock cycles (6.25x10^-5 seconds)
+	// //TIMER0_TAILR = pr;
+    // TIMER0_TAPR = prescale;
+	// TIMER0_TAILR = preload;
+	
+	// // Clear interrupts
+	// TIMER0_ICR |= 0x1;
 	
 	
 }

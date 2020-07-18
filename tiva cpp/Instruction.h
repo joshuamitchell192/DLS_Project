@@ -1,8 +1,9 @@
 #include <string.h>
 
 struct instruction{
-  int instructionLength;
-  char** splitInstructions;
+  int parameterCount;
+  char *instruction;
+  char **parameters;
 };
 
 class Instruction {
@@ -33,6 +34,7 @@ public:
 
     /*  Pause Program
         Usage: M02
+        Description: Runs a delay loop waiting for a start instruction to be sent.
     */
     static const char *M02;
     
