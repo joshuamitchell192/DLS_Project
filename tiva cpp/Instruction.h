@@ -77,9 +77,6 @@ public:
    */
   static const char *S4;
 
-  
-  
-
   static bool exists(char *input);
   static instruction splitInstruction(char *instruction, char *delimiters);
 
