@@ -44,41 +44,56 @@ void DLS::readSerial(char inChar){
 void DLS::eventLoop(){
 
     for (;;) {
-        char *currentinstruction = queue.peek();
-        instruction parsedInstruction = Instruction::splitInstruction(currentinstruction, " ");
-        
+        if (!queue.isEmpty()) {
+            
+            char *queuePeekedStr = queue.peek();
+            char currentinstruction[10];
+
+            strcpy(currentinstruction, queuePeekedStr);
+
+            instruction parsedInstruction = Instruction::splitInstruction(currentinstruction, " ");
+
+            for (int i = 0; i < parsedInstruction.parameterCount; i++){
+                Helpers::WriteString(parsedInstruction.parameters[i]);
+            }
+            
+            
+            
         // Parse instruction to instruction and parameter parts.
         //char *instructionSplit[3] = Instruction::exists(currentinstruction);
 
-        if (currentinstruction == NULL){}
+//        if (currentinstruction == NULL){}
 
-        else if (strcmp(currentinstruction, Instruction::G00)) {
-            // spinmotor();
-            Helpers::WriteString(currentinstruction);
+//        else if (strcmp(currentinstruction, Instruction::G00)) {
+//            // spinmotor();
+//            Helpers::WriteString(currentinstruction);
+//        }
+//        else if (strcmp(currentinstruction, Instruction::G01)){
+//            Helpers::WriteString(currentinstruction);
+//        }
+//        else if (strcmp(currentinstruction, Instruction::M01)){
+//            Helpers::WriteString(currentinstruction);
+//        }
+//        else if (strcmp(currentinstruction, Instruction::M02)){
+//            Helpers::WriteString(currentinstruction);
+//        }
+//        else if (strcmp(currentinstruction, Instruction::M03)){
+//            Helpers::WriteString(currentinstruction);
+//        }
+//        else if (strcmp(currentinstruction, Instruction::T1)){
+//            Helpers::WriteString(currentinstruction);
+//        }
+//        else if (strcmp(currentinstruction, Instruction::T2)){
+//            Helpers::WriteString(currentinstruction);
+//        }
+//        Helpers::WriteString(currentinstruction);
+            queue.dequeue();
+            memset(currentinstruction, 0, strlen(currentinstruction));
         }
-        else if (strcmp(currentinstruction, Instruction::G01)){
-            Helpers::WriteString(currentinstruction);
-        }
-        else if (strcmp(currentinstruction, Instruction::M01)){
-            Helpers::WriteString(currentinstruction);
-        }
-        else if (strcmp(currentinstruction, Instruction::M02)){
-            Helpers::WriteString(currentinstruction);
-        }
-        else if (strcmp(currentinstruction, Instruction::M03)){
-            Helpers::WriteString(currentinstruction);
-        }
-        else if (strcmp(currentinstruction, Instruction::T1)){
-            Helpers::WriteString(currentinstruction);
-        }
-        else if (strcmp(currentinstruction, Instruction::T2)){
-            Helpers::WriteString(currentinstruction);
-        }
-        Helpers::WriteString(currentinstruction);
-        queue.dequeue();
-        memset(currentinstruction, 0, strlen(currentinstruction));
     }
 }
+
+
 
 // void spinMotor() {
 //     for (int x = 0; x < StepsPerRev; x++) {

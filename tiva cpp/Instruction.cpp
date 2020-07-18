@@ -1,4 +1,5 @@
 #include "Instruction.h"
+#include "Helpers.h"
 
 const char* Instruction::G00 = "G00";
 const char* Instruction::G01 = "G01";
@@ -52,6 +53,9 @@ bool Instruction::exists(char *instruction) {
     }
 }
 
+
+
+
 instruction Instruction::splitInstruction(char *instruction, char *delimiters) {
 
     char *parameters[10];
@@ -59,19 +63,17 @@ instruction Instruction::splitInstruction(char *instruction, char *delimiters) {
 
     struct instruction newInstruction;
 
-    newInstruction.instruction = strtok(instruction, delimiters);
-
-    int instructionIndex = 1;
+    token = strtok(instruction, delimiters);
+    newInstruction.instruction = token;
+    int instructionIndex = 0;
     while (token != NULL){
-
       token = strtok(NULL, delimiters);
       if (token != '\0'){
         if (token[0] == 'X' || token[0] == 'Y' || token[0] == 'Z') token = &token[1];
-        parameters[instructionIndex] = token;
+        parameters[instructionIndex] = token; 
         instructionIndex++;
       }
     }
-
     newInstruction.parameterCount = instructionIndex;
     newInstruction.parameters = parameters;
 

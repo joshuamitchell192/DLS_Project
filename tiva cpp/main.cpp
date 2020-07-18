@@ -36,8 +36,8 @@ void ADC0SS3_Handler (void)
 	// Get Data from FIFO
 	unsigned int sensorData = ADC0_SSFIFO3;
     
-    Helpers::WriteChar(sensorData);
-    Helpers::WriteChar(' ');
+//    Helpers::WriteChar(sensorData);
+//    Helpers::WriteChar(' ');
 //	sampleTotal += sensorData;
 //	numSamples++;
 	
