@@ -138,26 +138,11 @@ void MotorDriver::setDriverTimer(volatile double seconds){
 
 
 void MotorDriver::stepMotor(void){
-		if (numMultiples == -1){
-			while((TIMER1_RIS & 0x1) != 0x1);
-			TIMER1_ICR |= 1;
-		}else{
-			for (int i = 0; i < numMultiples; i++){
-				while((TIMER1_RIS & 0x1) != 0x1);
-				TIMER1_ICR |= 1;
-			}
-			setDriverTimer(remainder);
-			while((TIMER1_RIS & 0x1) != 0x1);
-		}
-		
-		//TIMER1_ICR |= 1;
+		while((TIMER1_RIS & 0x1) != 0x1);
+
 		GPIOA_DATA |= 0x4;
-		//while((TIMER1_RIS & 0x1) != 0x1);		
 		TIMER1_ICR |= 1;
 		GPIOA_DATA &=~ 0x4;
-		
-	
-		
 }
 
 int MotorDriver::calibrate(void){
@@ -189,50 +174,50 @@ int MotorDriver::calibrate(void){
 	return numSteps;
 }
 
-void MotorDriver::sampleHere(int duration,int avgInterval){
-    sampleTotal = 0;
-    numSamples = 0;
-    TIMER0_CTL |= 0x21;
-//setDriverTimer(duration);
-  //  TIMER1_ICR |= 1;
-	//TIMER1_CTL |= 1;
-		avgInterval = 10;
-    while(!STOP){
-        if (numSamples >= avgInterval){
-            unsigned int avgSample = sampleTotal / numSamples;
+// void MotorDriver::sampleHere(int duration,int avgInterval){
+//     sampleTotal = 0;
+//     numSamples = 0;
+//     TIMER0_CTL |= 0x21;
+// //setDriverTimer(duration);
+//   //  TIMER1_ICR |= 1;
+// 	//TIMER1_CTL |= 1;
+// 		avgInterval = 10;
+//     while(!STOP){
+//         if (numSamples >= avgInterval){
+//             unsigned int avgSample = sampleTotal / numSamples;
 
-			unsigned int avgSample_lowerHalf = (0xFF & avgSample); 
-			unsigned int avgSample_upperHalf = (0xF00 & avgSample) >> 8;	
+// 			unsigned int avgSample_lowerHalf = (0xFF & avgSample); 
+// 			unsigned int avgSample_upperHalf = (0xF00 & avgSample) >> 8;	
 			
-			WriteChar(avgSample_lowerHalf);
+// 			WriteChar(avgSample_lowerHalf);
 			
-			WriteChar(avgSample_upperHalf);
+// 			WriteChar(avgSample_upperHalf);
 
-			sampleTotal = 0;
-            numSamples = 0;
-        }
-    }
-    TIMER0_CTL &= ~0x21;
-	WriteChar(0xFF);
-	WriteChar(0xFF);
-}
+// 			sampleTotal = 0;
+//             numSamples = 0;
+//         }
+//     }
+//     TIMER0_CTL &= ~0x21;
+// 	WriteChar(0xFF);
+// 	WriteChar(0xFF);
+// }
 
-void MotorDriver::goTo(int point){
-		setStepAmount(2);
-    setDriverTimer(0.0014);
-    int dir;
-    if (currentPosition > (point-1)*4){
-            GPIOA_DATA &= ~0x8;
-            dir = -4;
-    }else{
-        GPIOA_DATA |= 0x8;
-            dir = 4;
-    }
-    while (currentPosition != (point-1)*4 && !STOP){
-            currentPosition += 4;
-            stepMotor();
-    }
-    GPIOA_DATA |= 0x8;
-    stepMotor();
-    currentPosition += 4;
-}
+// void MotorDriver::goTo(int point){
+// 		setStepAmount(2);
+//     setDriverTimer(0.0014);
+//     int dir;
+//     if (currentPosition > (point-1)*4){
+//             GPIOA_DATA &= ~0x8;
+//             dir = -4;
+//     }else{
+//         GPIOA_DATA |= 0x8;
+//             dir = 4;
+//     }
+//     while (currentPosition != (point-1)*4 && !STOP){
+//             currentPosition += 4;
+//             stepMotor();
+//     }
+//     GPIOA_DATA |= 0x8;
+//     stepMotor();
+//     currentPosition += 4;
+// }

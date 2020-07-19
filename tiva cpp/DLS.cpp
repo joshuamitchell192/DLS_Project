@@ -3,6 +3,8 @@
 DLS::DLS () {
     Setup::SensorADCSetup();
     Setup::Uart0TerminalSetup();
+    Setup::DriverGPIOSetup();
+    Setup::DriverTimerSetup();
     
     stepMode = StepModes::Full;
     currentPosition = 0;

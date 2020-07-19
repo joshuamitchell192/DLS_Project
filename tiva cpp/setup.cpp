@@ -38,8 +38,8 @@ void Setup::DriverTimerSetup(void){
 	// Disable Timer 1
 	TIMER1_CTL &= ~0x1;
 	
-	// Select 16 bit timer configuration
-	TIMER1_CFG = 0x4;
+	// Select 32 bit timer configuration
+	TIMER1_CFG &= ~0x5;
 	
 	
 	TIMER1_TAMR &= 3;
