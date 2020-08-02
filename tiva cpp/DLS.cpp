@@ -5,18 +5,21 @@ DLS::DLS () {
     Setup::Uart0TerminalSetup();
     Setup::DriverGPIOSetup();
     Setup::DriverTimerSetup();
+    Setup::LimitSwitchesGPIOSetup();
     
-    stepMode = StepModes::Full;
-    currentPosition = 0;
-    stepLength = 0;
-    sampleDuration = 0.0;
-    averageInterval = 0;
+    //averageInterval = 0;
+    stop = false;
 }
 
 void DLS::readSerial(char inChar){
 
-    strcat(DLS::inputString, &inChar);
-
+    if (inChar == 'p'){
+        queue.printToSerial();
+    }
+    else {
+        strcat(DLS::inputString, &inChar);
+    }
+    
     if (inChar == '\n') {
         DLS::queue.enqueue(inputString);
         //char * lastInstruction = DLS::queue.peek();
@@ -37,34 +40,72 @@ void DLS::readSerial(char inChar){
         strcpy(inputString, "");
         return;
     }
-    if (inChar == 'p'){
-        queue.printToSerial();
-    }
+    
+    
 
 }
 
 void DLS::eventLoop(){
 
+//    MotorDriver::setDriverTimer(0.016);
+//    MotorDriver::setStepAmount(2);
+
+//    TIMER1_CTL |= 0x21;
+
+//    GPIOA_DATA |= 0x8;
+//    
+//    while(true){
+//        for (int i = 0; i < 300; i++) {
+//            MotorDriver::stepMotor();
+//        }
+//    //}
+//        GPIOA_DATA &= ~0x8;
+//    
+//    //while(true){
+//        for (int i = 0; i < 300; i++) {
+//            MotorDriver::stepMotor();
+//        }
+//    }
     for (;;) {
         if (!queue.isEmpty()) {
-            
             char *queuePeekedStr = queue.peek();
-            char currentinstruction[10];
+            char currentInstruction[10];
 
-            strcpy(currentinstruction, queuePeekedStr);
+            strcpy(currentInstruction, queuePeekedStr);
 
-            instruction parsedInstruction = Instruction::splitInstruction(currentinstruction, " ");
+            instruction parsedInstruction = Instruction::splitInstruction(currentInstruction, " \n");
 
             for (int i = 0; i < parsedInstruction.parameterCount; i++){
                 Helpers::WriteString(parsedInstruction.parameters[i]);
             }
-            
-            
-            
-        // Parse instruction to instruction and parameter parts.
-        //char *instructionSplit[3] = Instruction::exists(currentinstruction);
 
-//        if (currentinstruction == NULL){}
+            if (strcmp(parsedInstruction.instruction, Instruction::M04) == 0){
+                driver.calibrate(stop);
+            }
+
+            if (strcmp(parsedInstruction.instruction, Instruction::T1) == 0)  {
+                MotorDriver::TurnAdcOn();
+            }
+
+            if (strcmp(parsedInstruction.instruction, Instruction::T2) == 0)  {
+                MotorDriver::TurnAdcOff();
+            }
+
+            if (strcmp(parsedInstruction.instruction, Instruction::S1) == 0){
+                driver.sampleDuration = Helpers::ToDouble(parsedInstruction.parameters[0]);
+            }
+
+            if (strcmp(parsedInstruction.instruction, Instruction::G01) == 0){
+                driver.move(stop, Helpers::ToInt(parsedInstruction.parameters[0]), false);
+            }
+
+            if (strcmp(parsedInstruction.instruction, Instruction::G00) == 0){
+                driver.move(stop, Helpers::ToInt(parsedInstruction.parameters[0]), true);
+            }
+
+            Helpers::WriteString(currentInstruction);
+            queue.dequeue();
+            memset(queuePeekedStr, 0, strlen(queuePeekedStr));
 
 //        else if (strcmp(currentinstruction, Instruction::G00)) {
 //            // spinmotor();
@@ -88,12 +129,10 @@ void DLS::eventLoop(){
 //        else if (strcmp(currentinstruction, Instruction::T2)){
 //            Helpers::WriteString(currentinstruction);
 //        }
-//        Helpers::WriteString(currentinstruction);
-            queue.dequeue();
-            memset(currentinstruction, 0, strlen(currentinstruction));
         }
     }
 }
+
 
 
 

@@ -312,7 +312,7 @@
           </ArmAdsMisc>
           <Cads>
             <interw>1</interw>
-            <Optim>4</Optim>
+            <Optim>0</Optim>
             <oTime>0</oTime>
             <SplitLS>0</SplitLS>
             <OneElfS>1</OneElfS>
@@ -431,6 +431,16 @@
               <FileName>Queue.cpp</FileName>
               <FileType>8</FileType>
               <FilePath>.\Queue.cpp</FilePath>
+            </File>
+            <File>
+              <FileName>motorDriver.cpp</FileName>
+              <FileType>8</FileType>
+              <FilePath>.\motorDriver.cpp</FilePath>
+            </File>
+            <File>
+              <FileName>motorDriver.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>.\motorDriver.h</FilePath>
             </File>
           </Files>
         </Group>

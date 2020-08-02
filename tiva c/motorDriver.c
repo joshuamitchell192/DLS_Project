@@ -100,7 +100,7 @@ void sampleTwoPoints(double sampleDuration, int point1, int point2){
 				//SEND TIME
 				volatile float totalSecondsF = (float)timeElapsed;
 				volatile float leftOverTimeF = (float)(NVIC_ST_RELOAD - NVIC_ST_CURRENT) / 16000000.0;
-				totalTime = ((float)(totalSecondsF/k) + leftOverTimeF) * 1000;
+				totalTime = ((float)(totalSecondsF) + leftOverTimeF) * 1000;
 				unsigned int timeLower = (0xFF & totalTime);
 				unsigned int timeMid = (0xFF00 & totalTime) >> 8;
 				unsigned int timeUpper = (0xFF0000 & totalTime) >> 16;

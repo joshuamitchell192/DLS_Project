@@ -17,8 +17,9 @@ int main(void)
     Helpers::WriteChar('O');
 
     //Turn on adc timer for sampling
-	//TIMER0_CTL |= 0x21;
+	TIMER0_CTL |= 0x20;
     dls.eventLoop();
+
     while(1);
 }
 
@@ -35,11 +36,10 @@ void ADC0SS3_Handler (void)
 
 	// Get Data from FIFO
 	unsigned int sensorData = ADC0_SSFIFO3;
-    
 //    Helpers::WriteChar(sensorData);
 //    Helpers::WriteChar(' ');
-//	sampleTotal += sensorData;
-//	numSamples++;
+    //dls.sampleTotal += sensorData;
+//	  dls.numSamples++;
 	
 }
 

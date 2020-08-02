@@ -78,6 +78,12 @@ public:
         Description: 
    */
   static const char *S4;
+  
+  /* Calibrate Stage
+        Usage: M04
+        Description:
+  */
+  static const char *M04;
 
   static bool exists(char *input);
   static instruction splitInstruction(char *instruction, char *delimiters);

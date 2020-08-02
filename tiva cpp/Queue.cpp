@@ -64,11 +64,12 @@ char* Queue::peek()
 }
 
 void Queue::printToSerial(){
+    Helpers::WriteString("Queue:\n\r");
     for (int i = 0; i <= size(); i++){
         char * nextInstruction = get(i);
         
         Helpers::WriteString(nextInstruction);
-        Helpers::WriteChar('\n');
+        //Helpers::WriteChar('\n');
         Helpers::WriteChar('\r');
     }
 }

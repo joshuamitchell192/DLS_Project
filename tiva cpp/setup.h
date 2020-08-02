@@ -13,13 +13,13 @@ class Setup {
 
         static void Uart0TerminalSetup(void);
 
-        void DriverGPIOSetup(void);
-        void LimitSwitchesGPIOSetup(void);
+        static void DriverGPIOSetup(void);
+        static void LimitSwitchesGPIOSetup(void);
 
-        void StepSizeGPIOSetup(void);
+        static void StepSizeGPIOSetup(void);
 
-        void DriverTimerSetup(void);
+        static void DriverTimerSetup(void);
 
-        void sysTickSamplingTimerSetup(void);
+        static void sysTickSamplingTimerSetup(void);
 
 };

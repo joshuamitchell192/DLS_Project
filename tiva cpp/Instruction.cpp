@@ -7,8 +7,13 @@ const char* Instruction::M00 = "M00";
 const char* Instruction::M01 = "M01";
 const char* Instruction::M02 = "M02";
 const char* Instruction::M03 = "M03";
+const char* Instruction::M04 = "M04";
 const char* Instruction::T1 = "T1";
 const char* Instruction::T2 = "T2";
+const char* Instruction::S1 = "S1";
+const char* Instruction::S2 = "S2";
+const char* Instruction::S3 = "S3";
+const char* Instruction::S4 = "S4";
 
 
 bool Instruction::exists(char *instruction) {
@@ -66,6 +71,7 @@ instruction Instruction::splitInstruction(char *instruction, char *delimiters) {
     token = strtok(instruction, delimiters);
     newInstruction.instruction = token;
     int instructionIndex = 0;
+    
     while (token != NULL){
       token = strtok(NULL, delimiters);
       if (token != '\0'){
