@@ -67,7 +67,7 @@ public:
     */
    static const char *S2;
 
-    /* Set Step Length
+    /* Set StepsBetweenSamples
         Usage: S3 1.5
         Description: 
     */

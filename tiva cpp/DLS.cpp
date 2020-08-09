@@ -92,33 +92,24 @@ void DLS::EventLoop(){
             if (strcmp(parsedInstruction.instruction, Instruction::G00) == 0){
                 driver.Move(stop, Helpers::ToInt(parsedInstruction.parameters[0]), true);
             }
+            if (strcmp(parsedInstruction.instruction, Instruction::S1) == 0){
+                driver.SetSampleDuration(Helpers::ToDouble(parsedInstruction.parameters[0]));
+            }
+            if (strcmp(parsedInstruction.instruction, Instruction::S2) == 0){
+                driver.SetStepMode(Helpers::ToDouble(parsedInstruction.parameters[0]));
+            }
+
+            if (strcmp(parsedInstruction.instruction, Instruction::S3) == 0) {
+                driver.SetStepsBetweenSamples(Helpers::ToDouble(parsedInstruction.parameters[0]));
+            }
+
+            if (strcmp(parsedInstruction.instruction, Instruction::S4) == 0) {
+                Serial::WriteString("Not Implemented");
+            }
 
             Serial::WriteString(currentInstruction);
             queue.dequeue();
             memset(queuePeekedStr, 0, strlen(queuePeekedStr));
-
-//        else if (strcmp(currentinstruction, Instruction::G00)) {
-//            // spinmotor();
-//            Helpers::WriteString(currentinstruction);
-//        }
-//        else if (strcmp(currentinstruction, Instruction::G01)){
-//            Helpers::WriteString(currentinstruction);
-//        }
-//        else if (strcmp(currentinstruction, Instruction::M01)){
-//            Helpers::WriteString(currentinstruction);
-//        }
-//        else if (strcmp(currentinstruction, Instruction::M02)){
-//            Helpers::WriteString(currentinstruction);
-//        }
-//        else if (strcmp(currentinstruction, Instruction::M03)){
-//            Helpers::WriteString(currentinstruction);
-//        }
-//        else if (strcmp(currentinstruction, Instruction::T1)){
-//            Helpers::WriteString(currentinstruction);
-//        }
-//        else if (strcmp(currentinstruction, Instruction::T2)){
-//            Helpers::WriteString(currentinstruction);
-//        }
         }
     }
 }

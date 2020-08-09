@@ -28,13 +28,13 @@ class MotorDriver{
         void StepSizeMove(bool &stop, int dest);
         static void SetDriverTimer(double seconds);
         static void StepMotor(void);
-        void GoTo(bool &stop, int dest);
+        void GoToPosition(bool &stop, int dest, double sampleDuration);
         void ScanBetween(bool &stop, int dest);
         void SetStepMode(int stepMode);
         void SetStepsBetweenSamples(double stepLength);
+        void SetSampleDuration(double sampleDuration);
         void Move(bool &stop, int dest, bool setMaxSpeed);
         int SetDirection(int dest);
-        void MoveToNextSamplePosition(bool &stop, int dest, double sampleDuration);
         
         static void SendInt(int input);
         
