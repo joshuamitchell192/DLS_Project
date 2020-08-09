@@ -1,4 +1,6 @@
 #include "DLS.h"
+#include "serial.h"
+#include "helpers.h"
  
 DLS::DLS () {
     Setup::SensorADCSetup();
@@ -21,9 +23,14 @@ void DLS::readSerial(char inChar){
     }
     
     if (inChar == '\n') {
-        DLS::queue.enqueue(inputString);
+        if (strcmp(inputString, "state\n") == 0){
+            PrintState();
+        }
+        else {
+            DLS::queue.enqueue(inputString);
+        }
         //char * lastInstruction = DLS::queue.peek();
-        Helpers::WriteChar('\r');
+        Serial::WriteChar('\r');
         
 //        for (int j = 0; j < queue.size(); j++){
 //            char * lastInstruction = DLS::queue.peek();
@@ -47,25 +54,6 @@ void DLS::readSerial(char inChar){
 
 void DLS::eventLoop(){
 
-//    MotorDriver::setDriverTimer(0.016);
-//    MotorDriver::setStepAmount(2);
-
-//    TIMER1_CTL |= 0x21;
-
-//    GPIOA_DATA |= 0x8;
-//    
-//    while(true){
-//        for (int i = 0; i < 300; i++) {
-//            MotorDriver::stepMotor();
-//        }
-//    //}
-//        GPIOA_DATA &= ~0x8;
-//    
-//    //while(true){
-//        for (int i = 0; i < 300; i++) {
-//            MotorDriver::stepMotor();
-//        }
-//    }
     for (;;) {
         if (!queue.isEmpty()) {
             char *queuePeekedStr = queue.peek();
@@ -76,7 +64,7 @@ void DLS::eventLoop(){
             instruction parsedInstruction = Instruction::splitInstruction(currentInstruction, " \n");
 
             for (int i = 0; i < parsedInstruction.parameterCount; i++){
-                Helpers::WriteString(parsedInstruction.parameters[i]);
+                Serial::WriteString(parsedInstruction.parameters[i]);
             }
 
             if (strcmp(parsedInstruction.instruction, Instruction::M04) == 0){
@@ -103,7 +91,7 @@ void DLS::eventLoop(){
                 driver.move(stop, Helpers::ToInt(parsedInstruction.parameters[0]), true);
             }
 
-            Helpers::WriteString(currentInstruction);
+            Serial::WriteString(currentInstruction);
             queue.dequeue();
             memset(queuePeekedStr, 0, strlen(queuePeekedStr));
 
@@ -133,7 +121,15 @@ void DLS::eventLoop(){
     }
 }
 
-
+void DLS::PrintState() {
+    Serial::WriteString("ADC : ");
+    if (MotorDriver::IsAdcOn()){
+        Serial::WriteString("On\n\r");
+    }
+    else {
+        Serial::WriteString("Off\n\r");
+    }
+}
 
 
 // void spinMotor() {

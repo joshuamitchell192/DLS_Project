@@ -5,9 +5,6 @@ class Helpers{
     public:
         static void EnableInterrupts();
         static void DisableInterrupts();
-        static void WriteChar(unsigned int value);
-        static unsigned int ReadChar();
-        static void WriteString(const char* string);
         static int ToInt(char* string);
         static double ToDouble(char* string);
         static bool IsDouble(char* string);

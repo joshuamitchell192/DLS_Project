@@ -1,4 +1,6 @@
 #include "setup.h"
+#include "helpers.h"
+#include "registers.h"
 
 void Setup::DriverGPIOSetup(void){
 	SYSCTL_RCGCGPIO |= 0x1;

@@ -1,5 +1,6 @@
 #include "Queue.h"
 #include "helpers.h"
+#include "serial.h"
 
 // TODO - Add error messaging
 
@@ -29,7 +30,7 @@ void Queue::dequeue()
     // check for queue underflow
     if (isEmpty())
     {
-        Helpers::WriteString(EMPTY_QUEUE);
+        Serial::WriteString(EMPTY_QUEUE);
     }
 
     front = (front + 1) % capacity;
@@ -42,7 +43,7 @@ void Queue::enqueue(char* item)
     // check for queue overflow
     if (isFull())
     {
-        Helpers::WriteString(FULL_QUEUE);
+        Serial::WriteString(FULL_QUEUE);
         return;
     }
 
@@ -64,13 +65,12 @@ char* Queue::peek()
 }
 
 void Queue::printToSerial(){
-    Helpers::WriteString("Queue:\n\r");
-    for (int i = 0; i <= size(); i++){
+    Serial::WriteString("Queue:\n\r");
+    for (int i = front; i <= rear; i++){
         char * nextInstruction = get(i);
         
-        Helpers::WriteString(nextInstruction);
-        //Helpers::WriteChar('\n');
-        Helpers::WriteChar('\r');
+        Serial::WriteString(nextInstruction);
+        Serial::WriteChar('\r');
     }
 }
 

@@ -1,0 +1,22 @@
+*** Using Compiler 'V5.06 update 6 (build 750)', folder: 'C:\Keil_v5\ARM\ARMCC\Bin'
+Build target 'Target 1'
+compiling Instruction.cpp...
+Instruction.cpp(55): warning:  #111-D: statement is unreachable
+              return false;
+Instruction.cpp: 1 warning, 0 errors
+compiling main.cpp...
+motorDriver.h(40): warning:  #1-D: last line of file ends without a newline
+  };
+DLS.h(32): warning:  #1-D: last line of file ends without a newline
+  };
+main.cpp: 2 warnings, 0 errors
+compiling DLS.cpp...
+motorDriver.h(40): warning:  #1-D: last line of file ends without a newline
+  };
+DLS.h(32): warning:  #1-D: last line of file ends without a newline
+  };
+DLS.cpp: 2 warnings, 0 errors
+linking...
+Program Size: Code=13980 RO-data=524 RW-data=28 ZI-data=6220  
+".\Objects\dls.axf" - 0 Error(s), 5 Warning(s).
+Build Time Elapsed:  00:00:01

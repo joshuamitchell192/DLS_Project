@@ -1,5 +1,6 @@
 #include "registers.h"
 //#include "setup.h"
+#include "serial.h"
 #include "DLS.h"
 //#include "main.h"
 
@@ -13,8 +14,8 @@ DLS dls;
 
 int main(void)
 {
-    Helpers::WriteChar('G');
-    Helpers::WriteChar('O');
+    Serial::WriteChar('G');
+    Serial::WriteChar('O');
 
     //Turn on adc timer for sampling
 	TIMER0_CTL |= 0x20;
@@ -25,9 +26,9 @@ int main(void)
 
 void UART0_Handler(void) {
     
-    char c = Helpers::ReadChar();
+    char c = Serial::ReadChar();
     dls.readSerial(c);
-    Helpers::WriteChar(c);
+    Serial::WriteChar(c);
 }
 
 void ADC0SS3_Handler (void)
@@ -38,8 +39,8 @@ void ADC0SS3_Handler (void)
 	unsigned int sensorData = ADC0_SSFIFO3;
 //    Helpers::WriteChar(sensorData);
 //    Helpers::WriteChar(' ');
-    //dls.sampleTotal += sensorData;
-//	  dls.numSamples++;
+        dls.driver.sampleTotal += sensorData;
+        dls.driver.numSamples++;
 	
 }
 

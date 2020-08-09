@@ -11,24 +11,31 @@ class MotorDriver{
 
         // The stepper motor driver step size
         StepModes stepMode;
+        // This is a double to retain precision
         double stepsPerMM;
         int currentPosition;
-        double sampleDuration;
+        volatile double sampleDuration;
         // The distance to move between sampling during scanbetween.
         double stepSize;
         // Based on the stepMode to calculate the number of steps that are required for each mode.
         int stepAmount;
+        int sampleTotal;
+        int numSamples;
+        int stepsBetweenSamples;
 
+    
+        
         void calibrate(bool &stop);
+        void stepSizeMove(bool &stop, int dest);
         static void setDriverTimer(double seconds);
         static void stepMotor(void);
-        // void sampleHere(int duration,int avgInterval);
         void goTo(bool &stop, int dest);
-        // static void scanBetween(int &currentPosition, int &stop, float stepsPerMM, int dest, double stepSize, double sampleDuration, int stepAmount, int &sampleTotal, int &numSamples);
-        void scanBetween(bool &stop, int dest);
-        static void setStepAmount(int stepAmount);
-        // void sampleTwoPoints(double sampleDuration, int point1, int point2);
+        void ScanBetween(bool &stop, int dest);
+        void setStepMode(int stepMode);
+        void setStepsBetweenSamples(double stepLength);
         void move(bool &stop, int dest, bool setMaxSpeed);
+        int SetDirection(int dest);
+        void stepSizeMove(bool &stop, int dest, double sampleDuration);
         
         static void sendInt(int input);
         

@@ -12,26 +12,6 @@ void Helpers::DisableInterrupts(void)
     __asm("CPSID i");
 }
 
-void Helpers::WriteChar(unsigned int value)
-{
-    while ((UART0_FR & 0x20) == 0x20);
-    UART0_DR = value;
-}
-
-unsigned int Helpers::ReadChar()
-{
-    while ((UART0_FR & 0x10) == 0x10);
-    unsigned int data = (unsigned int)UART0_DR;
-    UART0_FR &= ~0x10;
-    return data;
-}
-
-void Helpers::WriteString(const char *string){
-    for (int i = 0; i < strlen(string); i++){
-        WriteChar(string[i]);
-    }
-}
-
 unsigned int Helpers::getPrescaler(double seconds){
     volatile double preload = 0xFFFFFFFF;
     volatile double prescaler = (seconds * 16000000)/(preload+1) -1;

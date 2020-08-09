@@ -56,7 +56,7 @@ public:
     static const char *T2;
     
     /* Set Sample Duration
-        Usage S100
+        Usage S1 100
         Description:
     */
     static const char *S1;

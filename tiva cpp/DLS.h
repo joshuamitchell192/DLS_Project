@@ -11,7 +11,7 @@ class DLS{
         static const int StepsPerRev = 6600;
         char inputString[10];
         Queue queue;
-        MotorDriver driver;
+        static void PrintState();
 
         //double sampleDuration;
         //double stepLength;
@@ -26,4 +26,7 @@ class DLS{
         DLS();
         void eventLoop();
         void readSerial(char inChar);
+        MotorDriver driver;
+    
+        
 };
