@@ -1,9 +1,5 @@
-#include <string.h>
 #include "Queue.h"
-#include "Instruction.h"
-#include "setup.h"
 #include "motorDriver.h"
-
 
 class DLS{
 
@@ -24,9 +20,7 @@ class DLS{
 
     public:
         DLS();
-        void eventLoop();
-        void readSerial(char inChar);
+        void EventLoop();
+        void ReadSerial(char inChar);
         MotorDriver driver;
-    
-        
 };

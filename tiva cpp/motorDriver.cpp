@@ -4,26 +4,18 @@
 #include "serial.h"
 
 #define MIN_SAMPLE_DURATION 0.0014
-
-//int sampleTotal;
-//int numSamples;
-
-static const float mm = 60.0;
+#define STAGE_LENGTH_MM 60.0
 
 MotorDriver::MotorDriver(){
     stepMode = StepModes::Full;
     stepsPerMM = 0.0;
     currentPosition = 0;
-    sampleDuration = 0.1;
-    stepsBetweenSamples = 1;
+    sampleDuration_ = 0.02;
+    stepsBetweenSamples = 5;
     stepAmount = 4;
 }
 
-// int numMultiples;
-// double remainder;
-
-// Sets StepMode  on GPIOA
-void MotorDriver::setStepMode(int stepMode){
+void MotorDriver::SetStepMode(int stepMode){
     //M0 = A6, M1 = A7
     if (stepMode == 0){
         GPIOA_DATA &= ~0x40;
@@ -40,11 +32,11 @@ void MotorDriver::setStepMode(int stepMode){
     }
 }
 
-void MotorDriver::setStepsBetweenSamples(double stepLength){
-    stepSize = stepLength * stepsPerMM;
+void MotorDriver::SetStepsBetweenSamples(double stepLength){
+    stepsBetweenSamples = stepLength * stepsPerMM;
 }
 
-void MotorDriver::setDriverTimer(volatile double seconds){
+void MotorDriver::SetDriverTimer(volatile double seconds){
     int prescale = Helpers::getPrescaler(seconds);
     int preload = Helpers::getPreload(seconds, prescale);
     
@@ -56,7 +48,7 @@ void MotorDriver::setDriverTimer(volatile double seconds){
 }
 
 
-void MotorDriver::stepMotor(void){
+void MotorDriver::StepMotor(void){
         
         
         while((TIMER1_RIS & 0x1) != 0x1);
@@ -74,15 +66,15 @@ void MotorDriver::stepMotor(void){
     it will stop and return to the opposite end while counting
     the number of steps.
 */
-void MotorDriver::calibrate(bool &stop){
+void MotorDriver::Calibrate(bool &stop){
 
-    setStepsBetweenSamples(2);
+    SetStepMode(2);
     GPIOA_DATA |= 0x8;
 
-    setDriverTimer(0.0014);
+    SetDriverTimer(0.0014);
 
     while(!stop){
-        stepMotor();
+        StepMotor();
     
         if ((GPIOB_DATA & 0x2) == 0x2){
         break;
@@ -92,13 +84,15 @@ void MotorDriver::calibrate(bool &stop){
     GPIOA_DATA &= ~0x8;
     int numSteps = 1;
     while(!stop){
-        stepMotor();
+        StepMotor();
         numSteps++;
         if ((GPIOB_DATA & 0x1) ==0x1){
                 break;
         }
     }
-    stepsPerMM = numSteps/mm;
+    stepsPerMM = numSteps / STAGE_LENGTH_MM;
+    
+    // Send back the stepsPerMM to the GUI
 }
 
 //goto rapid positioning to point 1
@@ -109,40 +103,40 @@ void MotorDriver::calibrate(bool &stop){
 //  average and send samples
 //  goto rapid positioning currentPos + stepSize
 
-void MotorDriver::move(bool &stop, int dest, bool setMaxSpeed) {
+void MotorDriver::Move(bool &stop, int dest, bool setMaxSpeed) {
     
-    dest = dest * stepsPerMM;
+    dest = dest * stepsPerMM * 4;
     
     if (setMaxSpeed){
-        sampleDuration = MIN_SAMPLE_DURATION;
+        sampleDuration_ = MIN_SAMPLE_DURATION;
     }
 
     if (MotorDriver::IsAdcOn()){
         ScanBetween( stop, dest);
     }
     else {
-        goTo(stop, dest);
+        GoTo(stop, dest);
     }
 }
 
-void MotorDriver::goTo(bool &stop, int dest){
-    setStepsBetweenSamples(2);
-    setDriverTimer(sampleDuration);
+void MotorDriver::GoTo(bool &stop, int dest){
+    SetStepMode(2);
+    SetDriverTimer(sampleDuration_);
     
     int dir;
-    if (currentPosition > (dest-1)*4){
+    if (currentPosition > (dest-4)){
         GPIOA_DATA &= ~0x8;
         dir = -stepAmount;
         while (currentPosition >= (dest)*dir && !stop){
             currentPosition += dir;
-            stepMotor();
+            StepMotor();
         }
     }else{
         GPIOA_DATA |= 0x8;
         dir = stepAmount;
         while (currentPosition <= (dest)*dir && !stop){
             currentPosition += dir;
-            stepMotor();
+            StepMotor();
         }
     }
     
@@ -152,33 +146,34 @@ void MotorDriver::goTo(bool &stop, int dest){
     
 }
 
-void MotorDriver::stepSizeMove(bool &stop, int dest, double sampleDuration){
-    setStepsBetweenSamples(2);
-    setDriverTimer(sampleDuration);
-    
-    int dir;
-    if (currentPosition > (dest-1)*4){
-        GPIOA_DATA &= ~0x8;
-        dir = -stepAmount;
-    }else{
-        GPIOA_DATA |= 0x8;
-        dir = stepAmount;
+void MotorDriver::MoveToNextSamplePosition(bool &stop, int dest, double sampleDuration){
+    SetStepMode(2);
+    SetDriverTimer(sampleDuration);
+
+    int dir = SetDirection(dest);
+    if (dir == 1){
+        while (currentPosition <= (dest)*dir && !stop){
+            currentPosition += stepAmount * dir;
+            StepMotor();
+        }
     }
-    while (currentPosition <= (dest)*dir && !stop){
-        currentPosition += dir;
-        stepMotor();
+    else {
+        while (currentPosition >= (dest)*dir && !stop){
+            currentPosition += stepAmount * dir;
+            StepMotor();
+        }
     }
     
 }
  
- void sendSamples(int &sampleTotal, int &numSamples){
+ void SendSamples(int &sampleTotal, int &numSamples){
     int avg_sample = (double)sampleTotal / numSamples;
-    MotorDriver::sendInt(avg_sample);
+    MotorDriver::SendInt(avg_sample);
  }
 
  int MotorDriver::SetDirection(int dest) {
     int dir;
-    if (currentPosition > (dest-1)*4){
+    if (currentPosition > (dest-4)){
         GPIOA_DATA &= ~0x8;
         dir = -1;
     }
@@ -217,20 +212,20 @@ void MotorDriver::ScanBetween(bool &stop, int dest) {
     sampleTotal = 0;
     
     int dir = SetDirection(dest);
-    int dirDirection = dest * dir;
+    int dirDestination = dest * dir;
     
-    while (currentPosition <= dirDirection && !stop){
-        setDriverTimer(sampleDuration);
+    while (currentPosition <= dirDestination && !stop){
+        SetDriverTimer(sampleDuration_);
         sampleTotal = 0;
         numSamples = 1;
-        stepMotor();
+        StepMotor();
         currentPosition += stepAmount;
-        sendSamples(sampleTotal, numSamples);
-        stepSizeMove(stop, currentPosition + stepsBetweenSamples, MIN_SAMPLE_DURATION);
+        SendSamples(sampleTotal, numSamples);
+        MoveToNextSamplePosition(stop, currentPosition + stepsBetweenSamples, MIN_SAMPLE_DURATION);
     }
 }
 
-void MotorDriver::sendInt(int input){
+void MotorDriver::SendInt(int input){
     unsigned int avgSample_lowerHalf = (0xFF & input); 
     unsigned int avgSample_upperHalf = (0xF00 & input) >> 8;
 

@@ -1,4 +1,3 @@
-
 enum StepModes {
     Full = 2,
     Half = 1,
@@ -14,7 +13,7 @@ class MotorDriver{
         // This is a double to retain precision
         double stepsPerMM;
         int currentPosition;
-        volatile double sampleDuration;
+        volatile double sampleDuration_;
         // The distance to move between sampling during scanbetween.
         double stepSize;
         // Based on the stepMode to calculate the number of steps that are required for each mode.
@@ -25,19 +24,19 @@ class MotorDriver{
 
     
         
-        void calibrate(bool &stop);
-        void stepSizeMove(bool &stop, int dest);
-        static void setDriverTimer(double seconds);
-        static void stepMotor(void);
-        void goTo(bool &stop, int dest);
+        void Calibrate(bool &stop);
+        void StepSizeMove(bool &stop, int dest);
+        static void SetDriverTimer(double seconds);
+        static void StepMotor(void);
+        void GoTo(bool &stop, int dest);
         void ScanBetween(bool &stop, int dest);
-        void setStepMode(int stepMode);
-        void setStepsBetweenSamples(double stepLength);
-        void move(bool &stop, int dest, bool setMaxSpeed);
+        void SetStepMode(int stepMode);
+        void SetStepsBetweenSamples(double stepLength);
+        void Move(bool &stop, int dest, bool setMaxSpeed);
         int SetDirection(int dest);
-        void stepSizeMove(bool &stop, int dest, double sampleDuration);
+        void MoveToNextSamplePosition(bool &stop, int dest, double sampleDuration);
         
-        static void sendInt(int input);
+        static void SendInt(int input);
         
         static bool IsAdcOn();
         static void TurnAdcOn();

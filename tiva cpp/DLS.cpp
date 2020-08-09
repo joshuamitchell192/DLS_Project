@@ -1,6 +1,9 @@
 #include "DLS.h"
 #include "serial.h"
 #include "helpers.h"
+#include <string.h>
+#include "Instruction.h"
+#include "setup.h"
  
 DLS::DLS () {
     Setup::SensorADCSetup();
@@ -8,12 +11,11 @@ DLS::DLS () {
     Setup::DriverGPIOSetup();
     Setup::DriverTimerSetup();
     Setup::LimitSwitchesGPIOSetup();
-    
-    //averageInterval = 0;
+
     stop = false;
 }
 
-void DLS::readSerial(char inChar){
+void DLS::ReadSerial(char inChar){
 
     if (inChar == 'p'){
         queue.printToSerial();
@@ -52,7 +54,7 @@ void DLS::readSerial(char inChar){
 
 }
 
-void DLS::eventLoop(){
+void DLS::EventLoop(){
 
     for (;;) {
         if (!queue.isEmpty()) {
@@ -68,7 +70,7 @@ void DLS::eventLoop(){
             }
 
             if (strcmp(parsedInstruction.instruction, Instruction::M04) == 0){
-                driver.calibrate(stop);
+                driver.Calibrate(stop);
             }
 
             if (strcmp(parsedInstruction.instruction, Instruction::T1) == 0)  {
@@ -80,15 +82,15 @@ void DLS::eventLoop(){
             }
 
             if (strcmp(parsedInstruction.instruction, Instruction::S1) == 0){
-                driver.sampleDuration = Helpers::ToDouble(parsedInstruction.parameters[0]);
+                driver.sampleDuration_ = Helpers::ToDouble(parsedInstruction.parameters[0]);
             }
 
             if (strcmp(parsedInstruction.instruction, Instruction::G01) == 0){
-                driver.move(stop, Helpers::ToInt(parsedInstruction.parameters[0]), false);
+                driver.Move(stop, Helpers::ToInt(parsedInstruction.parameters[0]), false);
             }
 
             if (strcmp(parsedInstruction.instruction, Instruction::G00) == 0){
-                driver.move(stop, Helpers::ToInt(parsedInstruction.parameters[0]), true);
+                driver.Move(stop, Helpers::ToInt(parsedInstruction.parameters[0]), true);
             }
 
             Serial::WriteString(currentInstruction);
@@ -130,16 +132,3 @@ void DLS::PrintState() {
         Serial::WriteString("Off\n\r");
     }
 }
-
-
-// void spinMotor() {
-//     for (int x = 0; x < StepsPerRev; x++) {
-//         digitalWrite(stepPin, HIGH);
-        
-//         delayMicroseconds(800);
-//         digitalWrite(stepPin, LOW);
-        
-//         delayMicroseconds(800);
-
-//     }
-// }
