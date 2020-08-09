@@ -10,6 +10,7 @@ DLS::DLS () {
     Setup::Uart0TerminalSetup();
     Setup::DriverGPIOSetup();
     Setup::DriverTimerSetup();
+    //Setup::TimeElapsedTimer();
     Setup::LimitSwitchesGPIOSetup();
 
     stop = false;
@@ -86,11 +87,11 @@ void DLS::EventLoop(){
             }
 
             if (strcmp(parsedInstruction.instruction, Instruction::G01) == 0){
-                driver.Move(stop, Helpers::ToInt(parsedInstruction.parameters[0]), false);
+                driver.Move(stop, Helpers::ToDouble(parsedInstruction.parameters[0]), false);
             }
 
             if (strcmp(parsedInstruction.instruction, Instruction::G00) == 0){
-                driver.Move(stop, Helpers::ToInt(parsedInstruction.parameters[0]), true);
+                driver.Move(stop, Helpers::ToDouble(parsedInstruction.parameters[0]), true);
             }
             if (strcmp(parsedInstruction.instruction, Instruction::S1) == 0){
                 driver.SetSampleDuration(Helpers::ToDouble(parsedInstruction.parameters[0]));
@@ -115,11 +116,22 @@ void DLS::EventLoop(){
 }
 
 void DLS::PrintState() {
-    Serial::WriteString("ADC : ");
+    Serial::WriteString("\n\rADC : ");
     if (MotorDriver::IsAdcOn()){
         Serial::WriteString("On\n\r");
     }
     else {
         Serial::WriteString("Off\n\r");
     }
+
+    Serial::WriteString("\nSample Duration: ");
+    
+    Serial::SendFloat(driver.sampleDuration_);
+    Serial::WriteString("\n\rStep Mode: ");
+    Serial::SendInt(driver.stepMode);
+    Serial::WriteString("\n\rStepAmount: ");
+    Serial::SendInt(driver.stepAmount);
+    Serial::WriteString("\n\rStepsBetweenSamples: ");
+    Serial::SendInt(driver.stepsBetweenSamples);
+
 }

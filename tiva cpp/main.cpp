@@ -13,7 +13,7 @@ int main(void)
     Serial::WriteChar('O');
 
     //Turn on adc timer for sampling
-    TIMER0_CTL |= 0x20;
+    
     dls.EventLoop();
 
     while(1);
@@ -34,6 +34,10 @@ void ADC0SS3_Handler (void)
     dls.driver.sampleTotal += sensorData;
     dls.driver.numSamples++;
 }
+
+//void TIMER2A_Handler(void) {
+//    
+//}
 
 void delayMS(int n)
 {

@@ -16,13 +16,13 @@ void Setup::DriverGPIOSetup(void){
 	GPIOA_DEN |= 0x3C;
 }
 
-void Setup::sysTickSamplingTimerSetup(void){
-	NVIC_ST_CTRL &= ~0x1;
-	NVIC_ST_RELOAD |= 0xFFFFFF;
-	NVIC_ST_CURRENT |= 0x1;
-	NVIC_ST_CTRL |= 6;
-	NVIC_ST_CTRL |= 1;
-}
+// void Setup::sysTickSamplingTimerSetup(void){
+// 	NVIC_ST_CTRL &= ~0x1;
+// 	NVIC_ST_RELOAD |= 0xFFFFFF;
+// 	NVIC_ST_CURRENT |= 0x1;
+// 	NVIC_ST_CTRL |= 6;
+// 	NVIC_ST_CTRL |= 1;
+// }
 
 // PA6,7 OUTPUT FOR SETTING MOTOR STEP SIZE 
 // void Setup::StepSizeGPIOSetup(void){
@@ -163,6 +163,7 @@ void Setup::SensorTimerSetup(void)
 	
 	// Clear interrupts
 	TIMER0_ICR |= 0x1;
+    TIMER0_CTL |= 0x20;
     // SYSCTL_RCGCTIMER |= 0x1;
 	// while ((SYSCTL_PRTIMER & 0x1) != 0x1);
 	
@@ -192,7 +193,7 @@ void Setup::SensorTimerSetup(void)
 	
 }
 
-void Setup::SampleDurationTimer(void) {
+void Setup::TimeElapsedTimer(void) {
     // Setup for timer 
 	SYSCTL_RCGCTIMER |= 0x4;
 	while ((SYSCTL_PRTIMER & 0x4) != 0x4);
@@ -213,6 +214,28 @@ void Setup::SampleDurationTimer(void) {
 	// Clear interrupts
 	TIMER2_ICR |= 0x1;
 }
+
+// void Setup::SampleDurationTimer(void) {
+//     // Setup for timer 
+// 	SYSCTL_RCGCTIMER |= 0x4;
+// 	while ((SYSCTL_PRTIMER & 0x4) != 0x4);
+	
+// 	// Disable timer
+// 	TIMER2_CTL &= ~0x1;
+// 	// Set to 32 bit config
+// 	TIMER2_CFG &= ~0x5;
+	
+// 	// Ensure capture mode doesn't enable with 0x3;
+// 	TIMER2_TAMR &= ~0x1;
+// 	// Set to periodic timer
+// 	TIMER2_TAMR |= 0x2;
+	
+// 	// Set delay of 1000 clock cycles (6.25x10^-5 seconds)
+// 	TIMER2_TAILR = Helpers::getPreload(2.0, Helpers::getPrescaler(2.0));
+	
+// 	// Clear interrupts
+// 	TIMER2_ICR |= 0x1;
+// }
 
 
 void Setup::Uart0TerminalSetup(void)

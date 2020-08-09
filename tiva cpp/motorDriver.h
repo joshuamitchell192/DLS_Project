@@ -21,8 +21,7 @@ class MotorDriver{
         int sampleTotal;
         int numSamples;
         int stepsBetweenSamples;
-
-    
+        float totalTimeElapsed;
         
         void Calibrate(bool &stop);
         void StepSizeMove(bool &stop, int dest);
@@ -33,7 +32,7 @@ class MotorDriver{
         void SetStepMode(int stepMode);
         void SetStepsBetweenSamples(double stepLength);
         void SetSampleDuration(double sampleDuration);
-        void Move(bool &stop, int dest, bool setMaxSpeed);
+        void Move(bool &stop, double dest, bool setMaxSpeed);
         int SetDirection(int dest);
         
         static void SendInt(int input);

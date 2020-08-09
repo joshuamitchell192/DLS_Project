@@ -7,7 +7,7 @@ class DLS{
         static const int StepsPerRev = 6600;
         char inputString[10];
         Queue queue;
-        static void PrintState();
+        void PrintState();
 
         //double sampleDuration;
         //double stepLength;

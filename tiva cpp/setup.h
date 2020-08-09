@@ -18,4 +18,5 @@ class Setup {
 
         static void sysTickSamplingTimerSetup(void);
 
+        static void TimeElapsedTimer(void);
 };

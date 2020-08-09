@@ -11,8 +11,9 @@ MotorDriver::MotorDriver(){
     stepsPerMM = 0.0;
     currentPosition = 0;
     sampleDuration_ = 0.01;
-    stepsBetweenSamples = 5;
+    stepsBetweenSamples = 48;
     stepAmount = 4;
+    totalTimeElapsed = 0;
 }
 
 void MotorDriver::SetStepMode(int stepMode){
@@ -54,8 +55,6 @@ void MotorDriver::SetDriverTimer(volatile double seconds){
 
 
 void MotorDriver::StepMotor(void){
-        
-        
         while((TIMER1_RIS & 0x1) != 0x1);
         TIMER1_ICR |= 1;
         GPIOA_DATA |= 0x4;
@@ -76,7 +75,7 @@ void MotorDriver::Calibrate(bool &stop){
     SetStepMode(2);
     GPIOA_DATA |= 0x8;
 
-    SetDriverTimer(0.0014);
+    SetDriverTimer(MIN_SAMPLE_DURATION);
 
     while(!stop){
         StepMotor();
@@ -110,22 +109,19 @@ void MotorDriver::Calibrate(bool &stop){
 //  average and send samples
 //  goto rapid positioning currentPos + stepSize
 
-void MotorDriver::Move(bool &stop, int dest, bool setMaxSpeed) {
+void MotorDriver::Move(bool &stop, double dest, bool setMaxSpeed) {
     
-    dest = dest * stepsPerMM * 4;
+    int destination = (int)(dest * stepsPerMM * 4);
     
     if (setMaxSpeed){
         sampleDuration_ = MIN_SAMPLE_DURATION;
     }
-    else {
-        sampleDuration_ = 0.01;
-    }
 
     if (MotorDriver::IsAdcOn()){
-        ScanBetween( stop, dest);
+        ScanBetween( stop, destination);
     }
     else {
-        GoToPosition(stop, dest, sampleDuration_);
+        GoToPosition(stop, destination, sampleDuration_);
     }
 }
 
@@ -150,10 +146,7 @@ void MotorDriver::GoToPosition(bool &stop, int dest, double sampleDuration){
     
 }
  
- void SendSamples(int &sampleTotal, int &numSamples){
-    int avg_sample = (double)sampleTotal / numSamples;
-    MotorDriver::SendInt(avg_sample);
- }
+
 
  int MotorDriver::SetDirection(int dest) {
     int dir;
@@ -182,18 +175,11 @@ void MotorDriver::ScanBetween(bool &stop, int dest) {
         sampleTotal = 0;
         numSamples = 1;
         StepMotor();
+        //Serial::SendTime(timeElapsed);
+        Serial::SendSampleAverage(sampleTotal, numSamples);
         currentPosition += stepAmount;
-        SendSamples(sampleTotal, numSamples);
         GoToPosition(stop, currentPosition + stepsBetweenSamples, MIN_SAMPLE_DURATION);
     }
-}
-
-void MotorDriver::SendInt(int input){
-    unsigned int avgSample_lowerHalf = (0xFF & input); 
-    unsigned int avgSample_upperHalf = (0xF00 & input) >> 8;
-
-    Serial::WriteChar(avgSample_lowerHalf);
-    Serial::WriteChar(avgSample_upperHalf);
 }
 
 
