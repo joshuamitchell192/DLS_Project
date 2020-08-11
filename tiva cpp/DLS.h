@@ -14,6 +14,7 @@ class DLS{
         //int currentPosition;
         //int averageInterval;
         bool stop;
+        bool wait;
         //float stepsPerMM;
         //int sampleTotal;
         //int numSamples;

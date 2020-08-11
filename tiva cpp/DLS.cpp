@@ -14,6 +14,7 @@ DLS::DLS () {
     Setup::LimitSwitchesGPIOSetup();
 
     stop = false;
+    wait = false;
 }
 
 void DLS::ReadSerial(char inChar){
@@ -28,6 +29,12 @@ void DLS::ReadSerial(char inChar){
     if (inChar == '\n') {
         if (strcmp(inputString, "state\n") == 0){
             PrintState();
+        }
+        else if (strcmp(inputString, "M01\n") == 0) {
+            wait = true;
+        }
+        else if (strcmp(inputString, "M03\n") == 0) {
+            wait = false;
         }
         else {
             DLS::queue.enqueue(inputString);
@@ -58,7 +65,7 @@ void DLS::ReadSerial(char inChar){
 void DLS::EventLoop(){
 
     for (;;) {
-        if (!queue.isEmpty()) {
+        if (!queue.isEmpty() && !wait) {
             char *queuePeekedStr = queue.peek();
             char currentInstruction[10];
 
@@ -69,7 +76,7 @@ void DLS::EventLoop(){
             for (int i = 0; i < parsedInstruction.parameterCount; i++){
                 Serial::WriteString(parsedInstruction.parameters[i]);
             }
-
+            
             if (strcmp(parsedInstruction.instruction, Instruction::M04) == 0){
                 driver.Calibrate(stop);
             }
@@ -80,10 +87,6 @@ void DLS::EventLoop(){
 
             if (strcmp(parsedInstruction.instruction, Instruction::T2) == 0)  {
                 MotorDriver::TurnAdcOff();
-            }
-
-            if (strcmp(parsedInstruction.instruction, Instruction::S1) == 0){
-                driver.sampleDuration_ = Helpers::ToDouble(parsedInstruction.parameters[0]);
             }
 
             if (strcmp(parsedInstruction.instruction, Instruction::G01) == 0){

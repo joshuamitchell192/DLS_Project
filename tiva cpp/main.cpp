@@ -9,8 +9,7 @@ DLS dls;
 
 int main(void)
 {
-    Serial::WriteChar('G');
-    Serial::WriteChar('O');
+    Serial::WriteString("Enter an instruction: ");
 
     //Turn on adc timer for sampling
     
