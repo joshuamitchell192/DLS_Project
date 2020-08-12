@@ -9,7 +9,6 @@ class MotorDriver{
         MotorDriver();
 
         // The stepper motor driver step size
-        StepModes stepMode;
         // This is a double to retain precision
         double stepsPerMM;
         int currentPosition;

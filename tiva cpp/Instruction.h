@@ -62,13 +62,13 @@ public:
     static const char *S1;
     
     /* Set Step Mode
-        Usage: S2 1.5
+        Usage: S2 1
         Description: 
     */
    static const char *S2;
 
     /* Set StepsBetweenSamples
-        Usage: S3 1.5
+        Usage: S3 25
         Description: 
     */
    static const char *S3;

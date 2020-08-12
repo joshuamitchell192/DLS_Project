@@ -4,6 +4,8 @@
 #include <string.h>
 #include "Instruction.h"
 #include "setup.h"
+#include <stdio.h>
+#include <stdlib.h>
  
 DLS::DLS () {
     Setup::SensorADCSetup();
@@ -100,7 +102,7 @@ void DLS::EventLoop(){
                 driver.SetSampleDuration(Helpers::ToDouble(parsedInstruction.parameters[0]));
             }
             if (strcmp(parsedInstruction.instruction, Instruction::S2) == 0){
-                driver.SetStepMode(Helpers::ToDouble(parsedInstruction.parameters[0]));
+                driver.SetStepMode(Helpers::ToInt(parsedInstruction.parameters[0]));
             }
 
             if (strcmp(parsedInstruction.instruction, Instruction::S3) == 0) {
@@ -121,20 +123,36 @@ void DLS::EventLoop(){
 void DLS::PrintState() {
     Serial::WriteString("\n\rADC : ");
     if (MotorDriver::IsAdcOn()){
-        Serial::WriteString("On\n\r");
+        Serial::WriteString("On");
     }
     else {
-        Serial::WriteString("Off\n\r");
+        Serial::WriteString("Off");
     }
-
-    Serial::WriteString("\nSample Duration: ");
     
-    Serial::SendFloat(driver.sampleDuration_);
-    Serial::WriteString("\n\rStep Mode: ");
-    Serial::SendInt(driver.stepMode);
-    Serial::WriteString("\n\rStepAmount: ");
-    Serial::SendInt(driver.stepAmount);
+    char stateString[20];
+
+    Serial::WriteString("\n\rSample Duration: ");
+    snprintf(stateString, 0, "%f", driver.sampleDuration_);
+    Serial::WriteString(stateString);
+    
+    Serial::WriteString("\n\rStepMode: ");
+
+    char *stepMode;
+    switch (driver.stepAmount){
+        case 1:
+            stepMode = "Quarter";
+            break;
+        case 2:
+            stepMode = "Half";
+            break;
+        case 4:
+            stepMode = "Full";
+            break;
+    }
+    Serial::WriteString(stepMode);
+    
     Serial::WriteString("\n\rStepsBetweenSamples: ");
-    Serial::SendInt(driver.stepsBetweenSamples);
+    snprintf(stateString, 10, "%d", driver.stepsBetweenSamples);
+    Serial::WriteString(stateString);
 
 }

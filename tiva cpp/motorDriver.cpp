@@ -7,7 +7,6 @@
 #define STAGE_LENGTH_MM 65.0
 
 MotorDriver::MotorDriver(){
-    stepMode = StepModes::Full;
     stepsPerMM = 0.0;
     currentPosition = 0;
     sampleDuration_ = 0.01;
@@ -18,15 +17,18 @@ MotorDriver::MotorDriver(){
 
 void MotorDriver::SetStepMode(int stepMode){
     //M0 = A6, M1 = A7
-    if (stepMode == 0){
+    if (stepMode == Quarter){
         GPIOA_DATA &= ~0x40;
         GPIOA_DATA |= 0x80;
+
         stepAmount = 1;
-    }else if(stepMode == 1){
+    }
+    else if(stepMode == Half){
         GPIOA_DATA |= 0x40;
         GPIOA_DATA &= ~0x80;
         stepAmount = 2;
-    }else if(stepMode == 2){
+    }
+    else if(stepMode == Full){
         GPIOA_DATA &= ~0x40;
         GPIOA_DATA &= ~0x80;
         stepAmount = 4;

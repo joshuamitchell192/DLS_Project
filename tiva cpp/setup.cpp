@@ -237,7 +237,6 @@ void Setup::TimeElapsedTimer(void) {
 // 	TIMER2_ICR |= 0x1;
 // }
 
-
 void Setup::Uart0TerminalSetup(void)
 {
 	/*
@@ -296,5 +295,3 @@ void Setup::Uart0TerminalSetup(void)
 	
 	UART0_CTL |= 0x321;
 }
-
-
