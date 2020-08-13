@@ -9,7 +9,7 @@
 MotorDriver::MotorDriver(){
     stepsPerMM = 0.0;
     currentPosition = 0;
-    sampleDuration_ = 0.01;
+    sampleDuration_ = 0.0017;
     stepsBetweenSamples = 48;
     stepAmount = 4;
     totalTimeElapsed = 0;
@@ -74,7 +74,7 @@ void MotorDriver::StepMotor(void){
 */
 void MotorDriver::Calibrate(bool &stop){
 
-    SetStepMode(2);
+    SetStepMode(0);
     GPIOA_DATA |= 0x8;
 
     SetDriverTimer(MIN_SAMPLE_DURATION);

@@ -32,8 +32,14 @@ void DLS::ReadSerial(char inChar){
         if (strcmp(inputString, "state\n") == 0){
             PrintState();
         }
-        else if (strcmp(inputString, "M01\n") == 0) {
+        else if (strcmp(inputString, "M00\n") == 0) {
             wait = true;
+        }
+        else if (strcmp(inputString, "M01\n") == 0) {
+            stop = true;
+        }
+        else if (strcmp(inputString, "M02\n") == 0) {
+            stop = false;
         }
         else if (strcmp(inputString, "M03\n") == 0) {
             wait = false;
@@ -41,20 +47,8 @@ void DLS::ReadSerial(char inChar){
         else {
             DLS::queue.enqueue(inputString);
         }
-        //char * lastInstruction = DLS::queue.peek();
+
         Serial::WriteChar('\r');
-        
-//        for (int j = 0; j < queue.size(); j++){
-//            char * lastInstruction = DLS::queue.peek();
-//            DLS::queue.dequeue();
-//            for (int i = 0; i < strlen(lastInstruction); i++){
-//                Helpers::WriteChar(lastInstruction[i]);
-//            }
-//            Helpers::WriteChar('\n');
-//        }
-        
-        //Helpers::WriteChar('\n');
-        //Helpers::WriteChar('\r');
         
         strcpy(inputString, "");
         return;
@@ -67,17 +61,13 @@ void DLS::ReadSerial(char inChar){
 void DLS::EventLoop(){
 
     for (;;) {
-        if (!queue.isEmpty() && !wait) {
+        if (!queue.isEmpty() && !wait && !stop) {
             char *queuePeekedStr = queue.peek();
             char currentInstruction[10];
 
             strcpy(currentInstruction, queuePeekedStr);
 
             instruction parsedInstruction = Instruction::splitInstruction(currentInstruction, " \n");
-
-            for (int i = 0; i < parsedInstruction.parameterCount; i++){
-                Serial::WriteString(parsedInstruction.parameters[i]);
-            }
             
             if (strcmp(parsedInstruction.instruction, Instruction::M04) == 0){
                 driver.Calibrate(stop);
@@ -102,7 +92,19 @@ void DLS::EventLoop(){
                 driver.SetSampleDuration(Helpers::ToDouble(parsedInstruction.parameters[0]));
             }
             if (strcmp(parsedInstruction.instruction, Instruction::S2) == 0){
-                driver.SetStepMode(Helpers::ToInt(parsedInstruction.parameters[0]));
+                if (strcmp(parsedInstruction.parameters[0], "full") == 0){
+                    driver.SetStepMode(Full);
+                }
+                else if (strcmp(parsedInstruction.parameters[0], "half") == 0){
+                    driver.SetStepMode(Half);
+                }
+                else if (strcmp(parsedInstruction.parameters[0], "quarter") == 0){
+                    driver.SetStepMode(Quarter);
+                }
+                else {
+                    driver.SetStepMode(Helpers::ToInt(parsedInstruction.parameters[0]));
+                }
+
             }
 
             if (strcmp(parsedInstruction.instruction, Instruction::S3) == 0) {
@@ -112,10 +114,12 @@ void DLS::EventLoop(){
             if (strcmp(parsedInstruction.instruction, Instruction::S4) == 0) {
                 Serial::WriteString("Not Implemented");
             }
-
-            Serial::WriteString(currentInstruction);
-            queue.dequeue();
-            memset(queuePeekedStr, 0, strlen(queuePeekedStr));
+            
+            if (!stop){
+                Serial::WriteString(currentInstruction);
+                queue.dequeue();
+                memset(queuePeekedStr, 0, strlen(queuePeekedStr));
+            }
         }
     }
 }
