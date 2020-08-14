@@ -44,6 +44,9 @@ void DLS::ReadSerial(char inChar){
         else if (strcmp(inputString, "M03\n") == 0) {
             wait = false;
         }
+        else if (strcmp(inputString, "M05\n") == 0) {
+            queue.clear();
+        }
         else {
             DLS::queue.enqueue(inputString);
         }
@@ -79,6 +82,10 @@ void DLS::EventLoop(){
 
             if (strcmp(parsedInstruction.instruction, Instruction::T2) == 0)  {
                 MotorDriver::TurnAdcOff();
+            }
+            
+            if (strcmp(parsedInstruction.instruction, Instruction::T3) == 0)  {
+                driver.StartSamplingHere(stop);
             }
 
             if (strcmp(parsedInstruction.instruction, Instruction::G01) == 0){
@@ -118,7 +125,6 @@ void DLS::EventLoop(){
             if (!stop){
                 Serial::WriteString(currentInstruction);
                 queue.dequeue();
-                memset(queuePeekedStr, 0, strlen(queuePeekedStr));
             }
         }
     }
@@ -156,7 +162,12 @@ void DLS::PrintState() {
     Serial::WriteString(stepMode);
     
     Serial::WriteString("\n\rStepsBetweenSamples: ");
-    snprintf(stateString, 10, "%d", driver.stepsBetweenSamples);
+    snprintf(stateString, 0, "%d", driver.stepsBetweenSamples);
+    Serial::WriteString(stateString);
+    
+    Serial::WriteString("\n\rCurrent Position: ");
+    
+    snprintf(stateString, 0, "%d", driver.currentPosition);
     Serial::WriteString(stateString);
 
 }

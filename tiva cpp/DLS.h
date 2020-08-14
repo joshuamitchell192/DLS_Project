@@ -12,7 +12,7 @@ class DLS{
         //double sampleDuration;
         //double stepLength;
         //int currentPosition;
-        //int averageInterval;
+        
         bool stop;
         bool wait;
         //float stepsPerMM;

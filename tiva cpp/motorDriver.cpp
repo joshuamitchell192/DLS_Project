@@ -13,6 +13,7 @@ MotorDriver::MotorDriver(){
     stepsBetweenSamples = 48;
     stepAmount = 4;
     totalTimeElapsed = 0;
+    averageInterval = 100;
 }
 
 void MotorDriver::SetStepMode(int stepMode){
@@ -41,7 +42,7 @@ void MotorDriver::SetSampleDuration(double sampleDuration){
 }
 
 void MotorDriver::SetStepsBetweenSamples(double stepLength){
-    stepsBetweenSamples = stepLength * stepsPerMM;
+    stepsBetweenSamples = stepLength * stepsPerMM * 4;
 }
 
 void MotorDriver::SetDriverTimer(volatile double seconds){
@@ -99,8 +100,21 @@ void MotorDriver::Calibrate(bool &stop){
     stepsPerMM = numSteps / STAGE_LENGTH_MM;
     currentPosition = 0;
     
+    Serial::SendFloat(stepsPerMM);
     
     // Send back the stepsPerMM to the GUI
+}
+
+void MotorDriver::StartSamplingHere(bool &stop){
+    
+    while (!stop){
+        sampleTotal = 0;
+        numSamples = 1;
+        while(numSamples < averageInterval){
+            Serial::SendSampleAverage(sampleTotal, numSamples);
+        }
+    }
+    
 }
 
 //goto rapid positioning to point 1

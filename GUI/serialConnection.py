@@ -32,38 +32,51 @@ class SerialConnection:
         else:
             print("Successful Serial Connection to Tiva")
 
-    def sendInstruction(self, instruction):
+    # def sendInstruction(self, instruction):
 
-        """
-            Send a single ascii character to inform the tiva of what task is should execute.
+    #     """
+    #         Send a single ascii character to inform the tiva of what task is should execute.
 
-            :param: instruction - the instruction character to be sent to the tiva.
-        """
-        print(f'Sending: {instruction}\n')
-        self.ser.write(instruction.encode("ascii"))
+    #         :param: instruction - the instruction character to be sent to the tiva.
+    #     """
+    #     print(f'Sending: {instruction}\n')
+    #     self.ser.write(instruction.encode("ascii"))
 
-        self.ser.reset_input_buffer()
+    #     self.ser.reset_input_buffer()
 
-        ser_bytes = self.ser.read(1)
-        print(f'Receiving\nraw data: {ser_bytes}')
+    #     ser_bytes = self.ser.read(1)
+    #     print(f'Receiving\nraw data: {ser_bytes}')
 
         # decoded_bytes = (ser_bytes.decode("ascii"))
         # print(f'Ascii Value: {decoded_bytes}', flush=True)
 
-    def sendValue(self, value):
+    def sendInstruction(self, instruction, parameters):
+        print(f'Sending: {instruction}\n')
 
-        """ Sends a value associated with an instruction.
-
-            :param: value - The raw value to be sent to the tiva.
-        """
-
-        print(f'Sending: {value}\n')
-        self.ser.write(bytes([value]))
-
-
+        wholeInstruction = instruction + " ".join(parameters) + "\n"
+        self.ser.write(wholeInstruction.encode("ascii"))
         self.ser.reset_input_buffer()
-        ser_bytes = self.ser.read(1)
+        ser_bytes = self.ser.readline(20)
+        
         print(f'Receiving\nraw data: {ser_bytes}')
+
+        decoded_bytes = (ser_bytes.decode("ascii"))
+        print(f'Ascii Value: {decoded_bytes}', flush=True)
+
+    # def sendValue(self, value):
+
+    #     """ Sends a value associated with an instruction.
+
+    #         :param: value - The raw value to be sent to the tiva.
+    #     """
+
+    #     print(f'Sending: {value}\n')
+    #     self.ser.write(bytes([value]))
+
+
+    #     self.ser.reset_input_buffer()
+    #     ser_bytes = self.ser.read(1)
+    #     print(f'Receiving\nraw data: {ser_bytes}')
 
 
         #decoded_bytes = (ser_bytes.decode("ascii"))
@@ -103,3 +116,7 @@ class SerialConnection:
 
         self.ser.reset_input_buffer()
         ser_bytes = self.ser.read(1)
+
+    #def receiveFloat(self):
+
+    #def recieveInt(self):

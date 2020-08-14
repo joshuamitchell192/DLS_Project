@@ -21,11 +21,14 @@ class MotorDriver{
         int numSamples;
         int stepsBetweenSamples;
         float totalTimeElapsed;
+        int averageInterval;
+    
         
         void Calibrate(bool &stop);
         void StepSizeMove(bool &stop, int dest);
         static void SetDriverTimer(double seconds);
         static void StepMotor(void);
+        void StartSamplingHere(bool &stop);
         void GoToPosition(bool &stop, int dest, double sampleDuration);
         void ScanBetween(bool &stop, int dest);
         void SetStepMode(int stepMode);

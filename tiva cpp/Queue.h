@@ -1,6 +1,6 @@
 #include <string.h>
-#define DEFAULT_QUEUE_CAPACITY 50
-#define DEFAULT_QUEUE_INSTRUCTION_SIZE 100
+#define DEFAULT_QUEUE_CAPACITY 100
+#define DEFAULT_QUEUE_INSTRUCTION_SIZE 50
 
 
 // Class for queue
@@ -22,6 +22,7 @@ public:
     void enqueue(char* item);
     char* peek();
     char* get(int i);
+    void clear();
     int size();
     bool isEmpty();
     bool isFull();

@@ -13,10 +13,10 @@ class Controller:
         self.stepsPerMM = 0.018
 
     def handleCalibrate(self):
-        self.handleStop()
-        self.serialConnection.sendInstruction(self.Instructions.CALIBRATE)
+        self.serialConnection.sendInstruction(self.Instructions.CALIBRATE, "")
         
-        self.stepsPerMM = 1/(self.serialConnection.readSample() / 100)
+        self.stepsPerMM = (self.serialConnection.readSample() )
+
         print("NUMSTEPS ",self.stepsPerMM)
 
 

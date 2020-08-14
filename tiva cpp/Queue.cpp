@@ -2,8 +2,6 @@
 #include "helpers.h"
 #include "serial.h"
 
-// TODO - Add error messaging
-
 // Constructor to initialize queue
 Queue::Queue()
 {
@@ -32,7 +30,7 @@ void Queue::dequeue()
     {
         Serial::WriteString(EMPTY_QUEUE);
     }
-
+    memset(arr[front], 0, strlen(arr[front]));
     front = (front + 1) % capacity;
     count--;
 }
@@ -46,8 +44,6 @@ void Queue::enqueue(char* item)
         Serial::WriteString(FULL_QUEUE);
         return;
     }
-
-    // cout << "Inserting " << item << '\n';
 
     rear = (rear + 1) % capacity;
     strcpy(arr[rear], item);
@@ -76,6 +72,12 @@ void Queue::printToSerial(){
 
 char* Queue::get(int i){
     return arr[i];
+}
+
+void Queue::clear(){
+    for (int i = front; i <= rear; i++){
+        dequeue();
+    }
 }
 
 // Utility function to return the size of the queue

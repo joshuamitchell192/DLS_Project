@@ -42,6 +42,11 @@ public:
         Usage: M03  
     */
     static const char *M03;
+    
+    /* Clear Queue
+        Usage: M05
+    */
+    static const char *M05;
 
     /* Turn on the ADC sampling
         Usage: T1
@@ -54,6 +59,12 @@ public:
         Description:
     */
     static const char *T2;
+    
+    /* Start Sampling at Current Point
+        Usage: T3
+        Description:
+    */
+    static const char *T3;
     
     /* Set Sample Duration
         Usage S1 100
