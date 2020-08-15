@@ -3,7 +3,7 @@
 #include "helpers.h"
 #include "serial.h"
 
-#define MIN_SAMPLE_DURATION 0.0014
+#define MIN_SAMPLE_DURATION 0.001
 #define STAGE_LENGTH_MM 65.0
 
 MotorDriver::MotorDriver(){
@@ -13,7 +13,7 @@ MotorDriver::MotorDriver(){
     stepsBetweenSamples = 48;
     stepAmount = 4;
     totalTimeElapsed = 0;
-    averageInterval = 100;
+    averageInterval = 20;
 }
 
 void MotorDriver::SetStepMode(int stepMode){
@@ -93,16 +93,13 @@ void MotorDriver::Calibrate(bool &stop){
     while(!stop){
         StepMotor();
         numSteps++;
-        if ((GPIOB_DATA & 0x1) ==0x1){
-                break;
+        if ((GPIOB_DATA & 0x1) == 0x1){
+            stepsPerMM = numSteps / STAGE_LENGTH_MM;
+            currentPosition = 0;
+            Serial::SendFloat(stepsPerMM);
+            break;
         }
     }
-    stepsPerMM = numSteps / STAGE_LENGTH_MM;
-    currentPosition = 0;
-    
-    Serial::SendFloat(stepsPerMM);
-    
-    // Send back the stepsPerMM to the GUI
 }
 
 void MotorDriver::StartSamplingHere(bool &stop){
@@ -186,6 +183,7 @@ void MotorDriver::ScanBetween(bool &stop, int dest) {
     int dir = SetDirection(dest);
     int dirDestination = dest * dir;
     
+    Serial::WriteFlag(0xFF);
     while (currentPosition <= dirDestination && !stop){
         SetDriverTimer(sampleDuration_);
         sampleTotal = 0;
@@ -196,6 +194,7 @@ void MotorDriver::ScanBetween(bool &stop, int dest) {
         currentPosition += stepAmount;
         GoToPosition(stop, currentPosition + stepsBetweenSamples, MIN_SAMPLE_DURATION);
     }
+    Serial::WriteFlag(0xFF);
 }
 
 

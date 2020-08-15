@@ -51,17 +51,15 @@ class SerialConnection:
         # print(f'Ascii Value: {decoded_bytes}', flush=True)
 
     def sendInstruction(self, instruction, parameters):
-        print(f'Sending: {instruction}\n')
 
-        wholeInstruction = instruction + " ".join(parameters) + "\n"
-        self.ser.write(wholeInstruction.encode("ascii"))
+        wholeInstruction = instruction + " ".join(" {0}".format(n) for n in parameters) + "\n"
+        #self.ser.write(wholeInstruction.encode("ascii"))
+        for i in wholeInstruction:
+            print(repr(i))
+            self.ser.write(i.encode("ascii"))
+        print(f'Sending: {wholeInstruction}')
         self.ser.reset_input_buffer()
-        ser_bytes = self.ser.readline(20)
         
-        print(f'Receiving\nraw data: {ser_bytes}')
-
-        decoded_bytes = (ser_bytes.decode("ascii"))
-        print(f'Ascii Value: {decoded_bytes}', flush=True)
 
     # def sendValue(self, value):
 
@@ -73,7 +71,6 @@ class SerialConnection:
     #     print(f'Sending: {value}\n')
     #     self.ser.write(bytes([value]))
 
-
     #     self.ser.reset_input_buffer()
     #     ser_bytes = self.ser.read(1)
     #     print(f'Receiving\nraw data: {ser_bytes}')
@@ -82,6 +79,10 @@ class SerialConnection:
         #decoded_bytes = (ser_bytes.decode("ascii"))
 
         #print(f'Ascii Value: {decoded_bytes}', flush=True)
+
+    def readLine(self):
+
+        print(self.ser.readline())
 
     def readSample(self):
 

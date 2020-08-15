@@ -50,3 +50,8 @@ void Serial::SendFloat(float input){
     WriteChar(inputMid);
     WriteChar(inputUpper);
 }
+
+void Serial::WriteFlag(int flag){
+    WriteChar(0xFF);
+    WriteChar(flag);
+}

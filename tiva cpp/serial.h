@@ -8,4 +8,5 @@ class Serial
         static void WriteString(const char* string);
         static void SendInt(int input);
         static void SendFloat(float input);
+        static void WriteFlag(int flag);
 };

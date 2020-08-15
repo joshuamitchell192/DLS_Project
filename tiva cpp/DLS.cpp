@@ -142,7 +142,7 @@ void DLS::PrintState() {
     char stateString[20];
 
     Serial::WriteString("\n\rSample Duration: ");
-    snprintf(stateString, 0, "%f", driver.sampleDuration_);
+    snprintf(stateString, 20, "%f", driver.sampleDuration_);
     Serial::WriteString(stateString);
     
     Serial::WriteString("\n\rStepMode: ");
@@ -162,12 +162,30 @@ void DLS::PrintState() {
     Serial::WriteString(stepMode);
     
     Serial::WriteString("\n\rStepsBetweenSamples: ");
-    snprintf(stateString, 0, "%d", driver.stepsBetweenSamples);
+    snprintf(stateString, 20, "%d", driver.stepsBetweenSamples);
     Serial::WriteString(stateString);
     
     Serial::WriteString("\n\rCurrent Position: ");
     
-    snprintf(stateString, 0, "%d", driver.currentPosition);
+    float currentPositionMM = driver.currentPosition / driver.stepsPerMM / 4;
+    
+    snprintf(stateString, 20, "%f", currentPositionMM);
     Serial::WriteString(stateString);
+    
+    Serial::WriteString("\n\rStopped: ");
+    if (stop){
+        Serial::WriteString("True");
+    }
+    else {
+        Serial::WriteString("False");
+    }
+    
+    Serial::WriteString("\n\rStart Program: ");
+    if (wait){
+        Serial::WriteString("True");
+    }
+    else {
+        Serial::WriteString("False");
+    }
 
 }
