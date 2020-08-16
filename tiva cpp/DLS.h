@@ -8,6 +8,7 @@ class DLS{
         char inputString[10];
         Queue queue;
         void PrintState();
+        void LoadProgram();
 
         //double sampleDuration;
         //double stepLength;
@@ -15,6 +16,7 @@ class DLS{
         
         bool stop;
         bool wait;
+        Queue program;
         //float stepsPerMM;
         //int sampleTotal;
         //int numSamples;

@@ -17,6 +17,7 @@ DLS::DLS () {
 
     stop = false;
     wait = false;
+
 }
 
 void DLS::ReadSerial(char inChar){
@@ -29,7 +30,9 @@ void DLS::ReadSerial(char inChar){
     }
     
     if (inChar == '\n') {
-        if (strcmp(inputString, "state\n") == 0){
+       
+
+        if (strcmp(inputString, "state\n") == 0) {
             PrintState();
         }
         else if (strcmp(inputString, "M00\n") == 0) {
@@ -43,12 +46,18 @@ void DLS::ReadSerial(char inChar){
         }
         else if (strcmp(inputString, "M03\n") == 0) {
             wait = false;
+            LoadProgram();
         }
         else if (strcmp(inputString, "M05\n") == 0) {
             queue.clear();
         }
         else {
-            DLS::queue.enqueue(inputString);
+             if (wait) {
+                DLS::program.enqueue(inputString);
+            }
+            else {
+                DLS::queue.enqueue(inputString);
+            }
         }
 
         Serial::WriteChar('\r');
@@ -56,22 +65,19 @@ void DLS::ReadSerial(char inChar){
         strcpy(inputString, "");
         return;
     }
-    
-    
-
 }
 
 void DLS::EventLoop(){
 
     for (;;) {
-        if (!queue.isEmpty() && !wait && !stop) {
+        if (!queue.isEmpty() && !stop) {
             char *queuePeekedStr = queue.peek();
             char currentInstruction[10];
 
             strcpy(currentInstruction, queuePeekedStr);
 
             instruction parsedInstruction = Instruction::splitInstruction(currentInstruction, " \n");
-            
+                
             if (strcmp(parsedInstruction.instruction, Instruction::M04) == 0){
                 driver.Calibrate(stop);
             }
@@ -121,12 +127,22 @@ void DLS::EventLoop(){
             if (strcmp(parsedInstruction.instruction, Instruction::S4) == 0) {
                 Serial::WriteString("Not Implemented");
             }
-            
             if (!stop){
                 Serial::WriteString(currentInstruction);
                 queue.dequeue();
             }
+
         }
+    }
+}
+
+void DLS::LoadProgram() {
+    int programLength = program.size();
+    for (int i = 0; i < programLength; i++){
+        char nextInstruction[20];
+        strcpy(nextInstruction, DLS::program.peek());
+        DLS::queue.enqueue(nextInstruction);
+        DLS::program.dequeue();
     }
 }
 
