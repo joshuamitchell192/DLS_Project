@@ -9,17 +9,10 @@ class DLS{
         Queue queue;
         void PrintState();
         void LoadProgram();
-
-        //double sampleDuration;
-        //double stepLength;
-        //int currentPosition;
         
         bool stop;
         bool wait;
         Queue program;
-        //float stepsPerMM;
-        //int sampleTotal;
-        //int numSamples;
 
     public:
         DLS();

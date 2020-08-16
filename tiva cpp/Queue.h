@@ -16,7 +16,7 @@ class Queue
 
 public:
     Queue(); // constructor
-    //~Queue();               // destructor
+    //~Queue(); // destructor
 
     void dequeue();
     void enqueue(char* item);

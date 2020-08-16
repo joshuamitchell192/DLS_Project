@@ -128,7 +128,7 @@ void DLS::EventLoop(){
                 Serial::WriteString("Not Implemented");
             }
             if (!stop){
-                Serial::WriteString(currentInstruction);
+                //Serial::WriteString(currentInstruction);
                 queue.dequeue();
             }
 

@@ -1,7 +1,7 @@
 from PyQt5.QtWidgets import (QApplication)
 # from dialog import Ui_Dialog as Form
 import serial.tools.list_ports as port_list
-import sys
+import sys, threading
 
 from view import View
 from serialConnection import SerialConnection
@@ -29,6 +29,9 @@ class App (QApplication):
         self.controller = Controller(self.serialConnection, Instructions)
         self.view = View(self.serialConnection, self.controller)
         self.view.show()
+
+        thread = threading.Thread(target=self.controller.readLoop, args=())
+        thread.start()
 
         #self.serialConnection.connectionTest()
 

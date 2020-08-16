@@ -6,7 +6,6 @@ import sys
 
 class SerialConnection:
 
-
     def __init__(self, port):
 
         """ Sets up the serial connection with the specified configuration.
@@ -32,6 +31,8 @@ class SerialConnection:
         else:
             print("Successful Serial Connection to Tiva")
 
+    
+
     # def sendInstruction(self, instruction):
 
     #     """
@@ -50,14 +51,16 @@ class SerialConnection:
         # decoded_bytes = (ser_bytes.decode("ascii"))
         # print(f'Ascii Value: {decoded_bytes}', flush=True)
 
+    #def readCalibrationData():
+
+
     def sendInstruction(self, instruction, parameters):
 
         wholeInstruction = instruction + " ".join(" {0}".format(n) for n in parameters) + "\n"
         #self.ser.write(wholeInstruction.encode("ascii"))
         for i in wholeInstruction:
-            print(repr(i))
             self.ser.write(i.encode("ascii"))
-        print(f'Sending: {wholeInstruction}')
+        print(f'Sending: {repr(wholeInstruction)}')
         self.ser.reset_input_buffer()
         
 
@@ -79,10 +82,6 @@ class SerialConnection:
         #decoded_bytes = (ser_bytes.decode("ascii"))
 
         #print(f'Ascii Value: {decoded_bytes}', flush=True)
-
-    def readLine(self):
-
-        print(self.ser.readline())
 
     def readSample(self):
 

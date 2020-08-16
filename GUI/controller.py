@@ -11,6 +11,7 @@ class Controller:
         self.times = []
         self.stop = False
         self.stepsPerMM = 0.018
+        self.isSampling = False
 
     def handleCalibrate(self):
         self.serialConnection.sendInstruction(self.Instructions.Calibrate, "")
@@ -22,24 +23,34 @@ class Controller:
 
     def handleScanBetween(self, P1, P2, sampleDuration, mmBetweenSamples, stepMode):
         self.serialConnection.sendInstruction(self.Instructions.Stop, [])
+        time.sleep(0.01)
         #self.serialConnection.readLine()
         self.serialConnection.sendInstruction(self.Instructions.StartProgram, [])
+        time.sleep(0.01)
         #self.serialConnection.readLine()
         self.serialConnection.sendInstruction(self.Instructions.RapidPosition, [P1])
+        time.sleep(0.01)
         #self.serialConnection.readLine()
         self.serialConnection.sendInstruction(self.Instructions.SampleDuration, [sampleDuration])
+        time.sleep(0.01)
         #self.serialConnection.readLine()
         self.serialConnection.sendInstruction(self.Instructions.TurnOnAdc, [])
+        time.sleep(0.01)
         #self.serialConnection.readLine()
         self.serialConnection.sendInstruction(self.Instructions.mmBetweenSamples, [mmBetweenSamples])
+        time.sleep(0.01)
         #self.serialConnection.readLine()
         self.serialConnection.sendInstruction(self.Instructions.StepMode, [stepMode])
+        time.sleep(0.01)
         #self.serialConnection.readLine()
         self.serialConnection.sendInstruction(self.Instructions.LinearPosition, [P2])
+        time.sleep(0.01)
         #self.serialConnection.readLine()
         self.serialConnection.sendInstruction(self.Instructions.EndProgram, [])
+        time.sleep(0.01)
         #self.serialConnection.readLine()
         self.serialConnection.sendInstruction(self.Instructions.Resume, [])
+        time.sleep(0.01)
         #self.serialConnection.readLine()
 
     # def handleScanBetween(self, P1, P2, sampleDuration, stepLength, stepSize):
@@ -137,6 +148,37 @@ class Controller:
             # print(self.samples)
             QApplication.processEvents()
 
+    def readLoop(self):
+        returnString = bytearray("", encoding="utf-8")
+        while True:
+            bytesToRead = self.serialConnection.ser.in_waiting
+            if (bytesToRead > 0):
+
+                data1 = self.serialConnection.ser.read(1)
+
+                if data1 == b'\xff':
+                    data2 = self.serialConnection.ser.read(1)
+                    if data2 == b'\xff':
+                        self.isSampling = not self.isSampling
+                        print(f'Sampling is: {self.isSampling}')
+                        continue
+                    elif data2 == b'\xfe':
+                        #self.readCalibrationData()
+                        #handle calibrate info
+                        continue
+                else:
+                    if self.isSampling:
+                        data2 = self.serialConnection.ser.read(1)
+                        sample = int.from_bytes(data1, byteorder='little', signed=False) + (int.from_bytes(data2, byteorder='little', signed=False) << 8)
+                        self.samples.append(sample)
+                        #time = self.readTime()
+                    else:
+                        if (data1 == b'\n'):
+                            print(f"Receiving: {str(returnString)}")
+                            returnString = bytearray("", encoding="utf-8")
+                        else:
+                            returnString = returnString + data1
+                #print(data)
 
 
     def handleClearSamples(self):
