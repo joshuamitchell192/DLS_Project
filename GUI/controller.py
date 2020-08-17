@@ -14,7 +14,7 @@ class Controller:
         self.isSampling = False
 
     def handleCalibrate(self):
-        self.serialConnection.sendInstruction(self.Instructions.Calibrate, "")
+        self.serialConnection.sendInstruction(self.Instructions.Calibrate)
         
        #self.stepsPerMM = (self.serialConnection.readSample() )
 
@@ -22,36 +22,17 @@ class Controller:
         print("NUMSTEPS ",self.stepsPerMM)
 
     def handleScanBetween(self, P1, P2, sampleDuration, mmBetweenSamples, stepMode):
-        self.serialConnection.sendInstruction(self.Instructions.Stop, [])
-        time.sleep(0.01)
-        #self.serialConnection.readLine()
-        self.serialConnection.sendInstruction(self.Instructions.StartProgram, [])
-        time.sleep(0.01)
-        #self.serialConnection.readLine()
+        self.serialConnection.sendInstruction(self.Instructions.Stop)
+        self.serialConnection.sendInstruction(self.Instructions.StartProgram)
         self.serialConnection.sendInstruction(self.Instructions.RapidPosition, [P1])
-        time.sleep(0.01)
-        #self.serialConnection.readLine()
         self.serialConnection.sendInstruction(self.Instructions.SampleDuration, [sampleDuration])
-        time.sleep(0.01)
-        #self.serialConnection.readLine()
-        self.serialConnection.sendInstruction(self.Instructions.TurnOnAdc, [])
-        time.sleep(0.01)
-        #self.serialConnection.readLine()
+        self.serialConnection.sendInstruction(self.Instructions.TurnOnAdc)
         self.serialConnection.sendInstruction(self.Instructions.mmBetweenSamples, [mmBetweenSamples])
-        time.sleep(0.01)
-        #self.serialConnection.readLine()
         self.serialConnection.sendInstruction(self.Instructions.StepMode, [stepMode])
-        time.sleep(0.01)
-        #self.serialConnection.readLine()
         self.serialConnection.sendInstruction(self.Instructions.LinearPosition, [P2])
-        time.sleep(0.01)
-        #self.serialConnection.readLine()
-        self.serialConnection.sendInstruction(self.Instructions.EndProgram, [])
-        time.sleep(0.01)
-        #self.serialConnection.readLine()
-        self.serialConnection.sendInstruction(self.Instructions.Resume, [])
-        time.sleep(0.01)
-        #self.serialConnection.readLine()
+        self.serialConnection.sendInstruction(self.Instructions.TurnOffAdc)
+        self.serialConnection.sendInstruction(self.Instructions.EndProgram)
+        self.serialConnection.sendInstruction(self.Instructions.Resume)
 
     # def handleScanBetween(self, P1, P2, sampleDuration, stepLength, stepSize):
 
@@ -110,8 +91,13 @@ class Controller:
         """ Sets the stop boolean to true so that we cease reading samples.
 
         """
-        self.stop = True
-        self.serialConnection.sendStopInstruction(self.Instructions.STOP)
+        
+        if (self.stop):
+            self.stop = False
+            self.serialConnection.sendInstruction(self.Instructions.Resume)
+        else:
+            self.stop = True
+            self.serialConnection.sendInstruction(self.Instructions.Stop)
 
 
     def handleGoToPoint(self, P1):

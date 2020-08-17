@@ -54,15 +54,18 @@ class SerialConnection:
     #def readCalibrationData():
 
 
-    def sendInstruction(self, instruction, parameters):
+    def sendInstruction(self, instruction, parameters = None):
+        if parameters == None:
+             wholeInstruction = instruction + '\n'
+        else:
+            wholeInstruction = instruction + " ".join(" {0}".format(n) for n in parameters) + "\n"
+        self.ser.write(wholeInstruction.encode("ascii"))
+        # for i in wholeInstruction:
+        #     self.ser.write(i.encode("ascii"))
 
-        wholeInstruction = instruction + " ".join(" {0}".format(n) for n in parameters) + "\n"
-        #self.ser.write(wholeInstruction.encode("ascii"))
-        for i in wholeInstruction:
-            self.ser.write(i.encode("ascii"))
         print(f'Sending: {repr(wholeInstruction)}')
-        self.ser.reset_input_buffer()
-        
+        self.ser.reset_output_buffer()
+        time.sleep(0.02)
 
     # def sendValue(self, value):
 

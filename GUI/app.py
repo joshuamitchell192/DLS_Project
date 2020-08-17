@@ -12,12 +12,6 @@ class App (QApplication):
     
     def __init__(self, sys_argv):
         super(App, self).__init__(sys_argv)
-        
-        # dialog = QDialog()
-        # dialog.ui = Form()
-        # dialog.ui.setupUi(dialog)
-        # dialog.exec_()
-        # dialog.show()
 
         ports = list(port_list.comports())
         for p in ports:
@@ -31,10 +25,20 @@ class App (QApplication):
         self.view.show()
 
         thread = threading.Thread(target=self.controller.readLoop, args=())
+        # probably should use an signalling mechanism like an Event to stop gracefully
+        thread.daemon = True
         thread.start()
 
         #self.serialConnection.connectionTest()
 
 if __name__ == '__main__':
     app = App(sys.argv)
+
+    stylesheet = """
+            View {
+                background-color: white;
+            }
+        """
+
+    app.setStyleSheet(stylesheet)
     sys.exit(app.exec_())

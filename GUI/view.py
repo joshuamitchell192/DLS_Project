@@ -144,20 +144,20 @@ class View(QMainWindow):
         self.Stop_Button = QPushButton(self)
         self.Stop_Button.setGeometry(320, self.y, 70, 35)
         self.Stop_Button.setText("Stop")
-        self.Stop_Button.clicked.connect(lambda: self.controller.handleStop())
+        self.Stop_Button.clicked.connect(self.toggleStop)
 
         self.GoTo_Button = QPushButton(self)
-        self.GoTo_Button.setGeometry(410, self.y, 180, 35)
+        self.GoTo_Button.setGeometry(410, self.y, 150, 35)
         self.GoTo_Button.setText("Go To Position 1")
         self.GoTo_Button.clicked.connect(lambda: self.controller.handleGoToPoint(self.P1_Slider.value()))
 
         self.ScanAtPoint_Button = QPushButton(self)
-        self.ScanAtPoint_Button.setGeometry(610, self.y, 180, 35)
+        self.ScanAtPoint_Button.setGeometry(580, self.y, 150, 35)
         self.ScanAtPoint_Button.setText("Start Sampling")
         self.ScanAtPoint_Button.clicked.connect(lambda: self.controller.handleStartSample(self.AvgInterval_SpinBox.value()))
 
         self.ClearGraph_Button = QPushButton(self)
-        self.ClearGraph_Button.setGeometry(810, self.y, 180, 35)
+        self.ClearGraph_Button.setGeometry(750, self.y, 150, 35)
         self.ClearGraph_Button.setText("Clear Samples")
         # self.ClearGraph_Button.clicked.connect(lambda: self.controller.handleClearSamples())
         self.ClearGraph_Button.clicked.connect(lambda: self.clearGraph())
@@ -225,6 +225,12 @@ class View(QMainWindow):
     def __updateP2Slider(self, value):
         self.P2_Slider.setValue(value)
 
+    def toggleStop(self):
+        self.controller.handleStop()
+        if (self.controller.stop):
+            self.Stop_Button.setText("Resume")
+        else:
+            self.Stop_Button.setText("Stop")
 
     def fileQuit(self):
             self.close()
