@@ -4,6 +4,7 @@
 
 extern "C" void UART0_Handler (void);
 extern "C" void ADC0SS3_Handler (void);
+extern "C" void SysTick_Handler(void);
 
 DLS dls;
 
@@ -44,8 +45,7 @@ void delayMS(int n)
 
 }
 
+void SysTick_Handler(void){
+	dls.driver.totalTimeElapsed += 1048575;
+}
 
-// void SystemInit(void)
-// {
-//     SCB_CPAC |= 0x00F00000;
-// }

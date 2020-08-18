@@ -99,10 +99,10 @@ class DynamicMplCanvas(MplCanvas):
         self.axes.cla()
         self.axes.set_xlim([0,max(len(self.samples),10)])
         self.axes.plot(self.samples, 'r')
-        self.axes.set_xlabel("Sample Numbers")
+        self.axes.set_xlabel("Sample Index")
         self.axes.set_ylabel("Sensor Value")
         self.axes2.set_xticks(time_tick_locations)
         self.axes2.set_xticklabels(self.timeIntervals(self.times))
-        self.axes2.set_xlabel("Time (s)")
+        self.axes2.set_xlabel("Time")
         
         self.draw()

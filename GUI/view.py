@@ -98,14 +98,16 @@ class View(QMainWindow):
         self.P1_Slider = QSlider(Qt.Horizontal, self)
         self.P1_Slider.setFocusPolicy(Qt.NoFocus)
         self.P1_Slider.setGeometry(30, self.y, 400, 15)
-        self.P1_Slider.setRange(0, 55)
+        self.P1_Slider.setRange(0, 65)
+        self.P1_Slider.setTickInterval(5)
+        self.P1_Slider.TickPosition(self.P1_Slider.TicksBelow)
         self.P1_Slider.valueChanged[int].connect(self.__updateP1SpinBox)
 
         self.y -= 5
 
         self.P1_SpinBox = QSpinBox(self)
         self.P1_SpinBox.setGeometry(460, self.y, 60, 25)
-        self.P1_SpinBox.setRange(0, 55)
+        self.P1_SpinBox.setRange(0, 65)
         self.P1_SpinBox.valueChanged[int].connect(self.__updateP1Slider)
 
         self.y += 60
@@ -118,15 +120,16 @@ class View(QMainWindow):
 
         self.P2_Slider = QSlider(Qt.Horizontal, self)
         self.P2_Slider.setFocusPolicy(Qt.NoFocus)
-        self.P2_Slider.setRange(0, 55)
+        self.P2_Slider.setRange(0, 65)
         self.P2_Slider.setGeometry(30, self.y, 400, 15)
+        #self.P2_Slider.set
         self.P2_Slider.valueChanged[int].connect(self.__updateP2SpinBox)
 
         self.y -= 5
 
         self.P2_SpinBox = QSpinBox(self)
         self.P2_SpinBox.setGeometry(460, self.y, 60, 25)
-        self.P2_SpinBox.setRange(0, 55)
+        self.P2_SpinBox.setRange(0, 65)
         self.P2_SpinBox.valueChanged[int].connect(self.__updateP2Slider)
 
         self.y += 200
@@ -165,10 +168,10 @@ class View(QMainWindow):
         self.graph_widget = QtWidgets.QWidget(self)
 
         l = QtWidgets.QVBoxLayout(self.graph_widget)
-        self.dc = DynamicMplCanvas(self.graph_widget, self.controller.samples, self.controller.times,width=5, height=4, dpi=100)
+        self.dc = DynamicMplCanvas(self.graph_widget, self.controller.samples, self.controller.times,width=5, height=4, dpi=90)
         l.addWidget(self.dc)
 
-        self.graph_widget.setGeometry(600, 50, 650, 500)
+        self.graph_widget.setGeometry(575, 30, 700, 500)
 
 
         self.file_menu = QMenu('&File', self)
@@ -176,6 +179,7 @@ class View(QMainWindow):
                                  Qt.CTRL + Qt.Key_Q)
         self.file_menu.addAction('&Save Data', self.saveDataToCSV,
                                  Qt.CTRL + Qt.Key_S)
+        self.file_menu.addAction('&Load Program', self.loadProgram, Qt.CTRL + Qt.Key_L)
         self.menuBar().addMenu(self.file_menu)
 
 
@@ -248,7 +252,9 @@ class View(QMainWindow):
                     newFile.write(str(self.controller.samples[i]))
                     newFile.write(str(self.controller.times[i]))
                     newFile.write('\n')
-                
+    
+    def loadProgram(self):
+        pass
 
     def clearGraph(self):
         self.controller.samples = []

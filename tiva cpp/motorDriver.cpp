@@ -36,6 +36,9 @@ void MotorDriver::SetStepMode(int stepMode){
     }
 }
 
+void MotorDriver::SetAverageInterval(int averageInterval_) {
+    averageInterval = averageInterval_;
+}
 
 void MotorDriver::SetSampleDuration(double sampleDuration){
     sampleDuration_ = sampleDuration;
@@ -107,9 +110,15 @@ void MotorDriver::StartSamplingHere(bool &stop){
     while (!stop){
         sampleTotal = 0;
         numSamples = 1;
+        
+        Serial::WriteFlag(0xFF);
         while(numSamples < averageInterval){
             Serial::SendSampleAverage(sampleTotal, numSamples);
+            //volatile float currentTime = CalculateCurrentTime();
+            //Serial::SendFloat(currentTime);
         }
+        
+        Serial::WriteFlag(0xFE);
     }
     
 }
@@ -144,14 +153,14 @@ void MotorDriver::GoToPosition(bool &stop, int dest, double sampleDuration){
     SetDriverTimer(sampleDuration);
 
     int dir = SetDirection(dest);
-    if (dir == 1){
-        while (currentPosition <= dest && !stop){
+    if (dir == 1) {
+        while (currentPosition < dest && !stop){
             currentPosition += stepAmount * dir;
             StepMotor();
         }
     }
-    else {
-        while (currentPosition >= dest && !stop){
+    else if (dir == -1) {
+        while (currentPosition > dest && !stop){
             currentPosition += stepAmount * dir;
             StepMotor();
         }
@@ -160,43 +169,83 @@ void MotorDriver::GoToPosition(bool &stop, int dest, double sampleDuration){
 }
  
 
-
+/**
+ * Determines what direction to step the motor base on the current position in
+ * relation to the destination position.
+ * 
+ * @param dest : The desired position to move to
+ * @return integer describing if the destination is greater, less or equal to the current position
+*/
  int MotorDriver::SetDirection(int dest) {
     int dir;
-    if (currentPosition > (dest-4)){
+    if (currentPosition > dest) {
         GPIOA_DATA &= ~0x8;
         dir = -1;
     }
-    else{
+    else if (currentPosition < dest ) {
         GPIOA_DATA |= 0x8;
         dir = 1;
+    }
+    else {
+        dir = 0;
     }
 
     return dir;
 }
 
-
+/**
+ * Moves to destination position while taking samples
+ * 
+ * This will run if given a G01 instruction after a T1 instruction (ADC is on).
+ * 
+ * @param stop : Flag to stop and return to event loop if true
+ * @param dest : Destination position
+*/
 void MotorDriver::ScanBetween(bool &stop, int dest) {
     numSamples = 0;
     sampleTotal = 0;
+    totalTimeElapsed = 0;
     
-    int dir = SetDirection(dest);
-    int dirDestination = dest * dir;
+    int direction = SetDirection(dest);
     
     Serial::WriteFlag(0xFF);
-    while (currentPosition <= dirDestination && !stop){
-        SetDriverTimer(sampleDuration_);
-        sampleTotal = 0;
-        numSamples = 1;
-        StepMotor();
-        //Serial::SendTime(timeElapsed);
-        Serial::SendSampleAverage(sampleTotal, numSamples);
-        currentPosition += stepAmount;
-        GoToPosition(stop, currentPosition + stepsBetweenSamples, MIN_SAMPLE_DURATION);
+
+    if (direction == 1) {
+        while (currentPosition < dest && !stop){
+            WaitForSamples();
+            currentPosition += stepAmount;
+            GoToPosition(stop, currentPosition + stepsBetweenSamples, MIN_SAMPLE_DURATION);
+        }
     }
-    Serial::WriteFlag(0xFF);
+    else if (direction == -1) {
+        while (currentPosition > dest && !stop){
+            WaitForSamples();
+            currentPosition -= stepAmount;
+            GoToPosition(stop, currentPosition + (stepsBetweenSamples * direction), MIN_SAMPLE_DURATION);
+        }
+    }
+
+    Serial::WriteFlag(0xFE);
 }
 
+void MotorDriver::WaitForSamples() {
+    sampleTotal = 0;
+    numSamples = 1;
+
+    SetDriverTimer(sampleDuration_);
+    StepMotor();
+
+    //volatile float currentTime = CalculateCurrentTime();
+    //Serial::SendFloat(currentTime);
+
+    Serial::SendSampleAverage(sampleTotal, numSamples);
+}
+
+float MotorDriver::CalculateCurrentTime() {
+    volatile int totalSecondsF = totalTimeElapsed;
+    volatile float leftOverTimeF = (float)(NVIC_ST_RELOAD - NVIC_ST_CURRENT) / TIVA_CLOCK_SPEED;
+    return ((float)(totalSecondsF) + leftOverTimeF) * 1000;
+}
 
 bool MotorDriver::IsAdcOn(){
     return (TIMER0_CTL & 0x1);

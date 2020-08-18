@@ -16,13 +16,13 @@ void Setup::DriverGPIOSetup(void){
 	GPIOA_DEN |= 0x3C;
 }
 
-// void Setup::sysTickSamplingTimerSetup(void){
-// 	NVIC_ST_CTRL &= ~0x1;
-// 	NVIC_ST_RELOAD |= 0xFFFFFF;
-// 	NVIC_ST_CURRENT |= 0x1;
-// 	NVIC_ST_CTRL |= 6;
-// 	NVIC_ST_CTRL |= 1;
-// }
+void Setup::sysTickSamplingTimerSetup(void){
+	NVIC_ST_CTRL &= ~0x1;
+	NVIC_ST_RELOAD |= 0xFFFFFF;
+	NVIC_ST_CURRENT |= 0x1;
+	NVIC_ST_CTRL |= 6;
+	NVIC_ST_CTRL |= 1;
+}
 
 // PA6,7 OUTPUT FOR SETTING MOTOR STEP SIZE 
 // void Setup::StepSizeGPIOSetup(void){

@@ -14,6 +14,7 @@ class Controller:
         self.isSampling = False
 
     def handleCalibrate(self):
+        self.isSampling = False
         self.serialConnection.sendInstruction(self.Instructions.Calibrate)
         
        #self.stepsPerMM = (self.serialConnection.readSample() )
@@ -22,6 +23,7 @@ class Controller:
         print("NUMSTEPS ",self.stepsPerMM)
 
     def handleScanBetween(self, P1, P2, sampleDuration, mmBetweenSamples, stepMode):
+        self.isSampling = False
         self.serialConnection.sendInstruction(self.Instructions.Stop)
         self.serialConnection.sendInstruction(self.Instructions.StartProgram)
         self.serialConnection.sendInstruction(self.Instructions.RapidPosition, [P1])
@@ -97,42 +99,56 @@ class Controller:
             self.serialConnection.sendInstruction(self.Instructions.Resume)
         else:
             self.stop = True
+            # Write to tiva to stop sampling on GUI
+            self.isSampling = False
             self.serialConnection.sendInstruction(self.Instructions.Stop)
 
 
     def handleGoToPoint(self, P1):
 
-        """ sends the GOTO instruction to move to position 1
+        """ sends the Rapid Position instruction to move to position 1
 
         """
-        self.handleStop()
-        self.serialConnection.sendInstruction(self.Instructions.GOTO)
-        self.serialConnection.sendValue(P1)
+        self.isSampling = False
+        self.serialConnection.sendInstruction(self.Instructions.Stop)
+        self.serialConnection.sendInstruction(self.Instructions.RapidPosition, [P1])
+        self.serialConnection.sendInstruction(self.Instructions.Resume)
 
     def handleStartSample(self, averageInterval):
+        self.isSampling = False
+        self.serialConnection.sendInstruction(self.Instructions.Stop)
+        self.serialConnection.sendInstruction(self.Instructions.StartProgram)
+        self.serialConnection.sendInstruction(self.Instructions.AverageInterval, [averageInterval])
+        self.serialConnection.sendInstruction(self.Instructions.TurnOnAdc)
+        self.serialConnection.sendInstruction(self.Instructions.SampleAtPosition)
+        self.serialConnection.sendInstruction(self.Instructions.TurnOffAdc)
+        self.serialConnection.sendInstruction(self.Instructions.EndProgram)
+        self.serialConnection.sendInstruction(self.Instructions.Resume)
 
-        """ Sends the START_SAMPLE instruction to turn on the ADC clock and wait to receive samples from the sensor through the tiva UART connection.
-            Samples until the stop button is pressed.
+    # def handleStartSample(self, averageInterval):
 
-            :param: sampleDuration -  [Deprecated]
-            :param: averageInterval  - the amount of samples to take to average on.
+    #     """ Sends the START_SAMPLE instruction to turn on the ADC clock and wait to receive samples from the sensor through the tiva UART connection.
+    #         Samples until the stop button is pressed.
 
-        """
-        self.handleStop()
-        self.stop = False
-        self.serialConnection.sendInstruction(self.Instructions.START_SAMPLE)
-        #self.serialConnection.sendValue(sampleDuration)
-        #self.serialConnection.sendValue(averageInterval)
+    #         :param: sampleDuration -  [Deprecated]
+    #         :param: averageInterval  - the amount of samples to take to average on.
 
-        while(not self.stop):
-            currentSample = self.serialConnection.readSample()
-            # print("Current sample", currentSample)
-            if currentSample == 0xFFFF:
-                break
-            self.samples.append(currentSample)
-            self.times.append(20)
-            # print(self.samples)
-            QApplication.processEvents()
+    #     """
+    #     self.handleStop()
+    #     self.stop = False
+    #     self.serialConnection.sendInstruction(self.Instructions.START_SAMPLE)
+    #     #self.serialConnection.sendValue(sampleDuration)
+    #     #self.serialConnection.sendValue(averageInterval)
+
+    #     while(not self.stop):
+    #         currentSample = self.serialConnection.readSample()
+    #         # print("Current sample", currentSample)
+    #         if currentSample == 0xFFFF:
+    #             break
+    #         self.samples.append(currentSample)
+    #         self.times.append(20)
+    #         # print(self.samples)
+    #         QApplication.processEvents()
 
     def readLoop(self):
         returnString = bytearray("", encoding="utf-8")
@@ -145,18 +161,24 @@ class Controller:
                 if data1 == b'\xff':
                     data2 = self.serialConnection.ser.read(1)
                     if data2 == b'\xff':
-                        self.isSampling = not self.isSampling
+                        self.isSampling = True
                         print(f'Sampling is: {self.isSampling}')
                         continue
                     elif data2 == b'\xfe':
-                        #self.readCalibrationData()
-                        #handle calibrate info
+                        self.isSampling = False
+                        print(f'Sampling is: {self.isSampling}')
                         continue
                 else:
                     if self.isSampling:
+
                         data2 = self.serialConnection.ser.read(1)
+                        #time = self.serialConnection.readTime()
                         sample = int.from_bytes(data1, byteorder='little', signed=False) + (int.from_bytes(data2, byteorder='little', signed=False) << 8)
+
+
+                        #print(f'Total: {sample}, Data1: {data1} - Data2: {data2} - Time: {time}')
                         self.samples.append(sample)
+                        #self.times.append(time)
                         #time = self.readTime()
                     else:
                         if (data1 == b'\n'):

@@ -14,6 +14,7 @@ DLS::DLS () {
     Setup::DriverTimerSetup();
     //Setup::TimeElapsedTimer();
     Setup::LimitSwitchesGPIOSetup();
+    Setup::sysTickSamplingTimerSetup();
 
     stop = false;
     wait = false;
@@ -92,6 +93,7 @@ void DLS::EventLoop(){
             
             if (strcmp(parsedInstruction.instruction, Instruction::T3) == 0)  {
                 driver.StartSamplingHere(stop);
+                queue.dequeue();
             }
 
             if (strcmp(parsedInstruction.instruction, Instruction::G01) == 0){
@@ -125,7 +127,7 @@ void DLS::EventLoop(){
             }
 
             if (strcmp(parsedInstruction.instruction, Instruction::S4) == 0) {
-                Serial::WriteString("Not Implemented");
+                driver.SetAverageInterval(Helpers::ToInt(parsedInstruction.parameters[0]));
             }
             if (!stop){
                 //Serial::WriteString(currentInstruction);

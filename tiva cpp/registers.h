@@ -139,3 +139,5 @@
 #define ADC0_IM (*((volatile unsigned long *)0x40038008))
 #define ADC0_ISC (*((volatile unsigned long *)0x4003800C))
 #define ADC0_SSFIFO3 (*((volatile unsigned long *)0x400380A8))
+
+#define TIVA_CLOCK_SPEED 16000000.0

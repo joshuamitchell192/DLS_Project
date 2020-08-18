@@ -34,13 +34,6 @@ void Serial::SendInt(int input){
     Serial::WriteChar(avgSample_lowerHalf);
     Serial::WriteChar(avgSample_upperHalf);
 }
-void Serial::SendTime(float time) {
-    //SEND TIME
-//    volatile float totalSecondsF = (float)timeElapsed;
-//    volatile float leftOverTimeF = (float)(NVIC_ST_RELOAD - NVIC_ST_CURRENT) / 16000000.0;
-//    volatile unsigned int totalTime = ((float)(totalSecondsF) + leftOverTimeF) * 1000;
-    //d SendFloat(totalTime);
-}
 
 void Serial::SendFloat(float input){
     unsigned int inputLower = (0xFF && input);

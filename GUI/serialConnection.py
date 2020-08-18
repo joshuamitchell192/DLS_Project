@@ -55,6 +55,7 @@ class SerialConnection:
 
 
     def sendInstruction(self, instruction, parameters = None):
+
         if parameters == None:
              wholeInstruction = instruction + '\n'
         else:
@@ -65,7 +66,7 @@ class SerialConnection:
 
         print(f'Sending: {repr(wholeInstruction)}')
         self.ser.reset_output_buffer()
-        time.sleep(0.02)
+        time.sleep(0.018)
 
     # def sendValue(self, value):
 
@@ -103,6 +104,8 @@ class SerialConnection:
         ser_bytes_lower = self.ser.read(1)
         ser_bytes_mid = self.ser.read(1)
         ser_bytes_upper = self.ser.read(1)
+
+        print(f'{ser_bytes_lower} - {ser_bytes_mid} - {ser_bytes_upper}')
         
         ser_bytes_total = int.from_bytes(ser_bytes_lower, byteorder='little', signed=False) + (int.from_bytes(ser_bytes_mid, byteorder='little', signed=False) << 8) + (int.from_bytes(ser_bytes_upper, byteorder='little', signed=False) << 16)
         return ser_bytes_total/1000
