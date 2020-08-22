@@ -165,6 +165,11 @@ class View(QMainWindow):
         # self.ClearGraph_Button.clicked.connect(lambda: self.controller.handleClearSamples())
         self.ClearGraph_Button.clicked.connect(lambda: self.clearGraph())
 
+        self.ClearQueue_Button = QPushButton(self)
+        self.ClearQueue_Button.setGeometry(920, self.y, 150, 35)
+        self.ClearQueue_Button.setText("Clear Queue")
+        self.ClearQueue_Button.clicked.connect(lambda: self.controller.handleClearQueue())
+
         self.graph_widget = QtWidgets.QWidget(self)
 
         l = QtWidgets.QVBoxLayout(self.graph_widget)

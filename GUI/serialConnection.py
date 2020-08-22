@@ -14,7 +14,7 @@ class SerialConnection:
 
         """
 
-        self.ser = serial.Serial(port=port.upper(), baudrate=56700, bytesize=serial.EIGHTBITS, parity=serial.PARITY_ODD, stopbits=serial.STOPBITS_TWO, xonxoff=False, timeout=200)
+        self.ser = serial.Serial(port=port.upper(), baudrate=115200, bytesize=serial.EIGHTBITS, parity=serial.PARITY_ODD, stopbits=serial.STOPBITS_TWO, xonxoff=False, timeout=200)
 
     def connectionTest(self):
 

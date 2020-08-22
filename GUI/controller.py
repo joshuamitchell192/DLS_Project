@@ -195,4 +195,9 @@ class Controller:
         """
         self.samples = []
 
+    def handleClearQueue(self):
 
+        self.isSampling = False
+        self.serialConnection.sendInstruction(self.Instructions.Stop)
+        self.serialConnection.sendInstruction(self.Instructions.Clear)
+        self.serialConnection.sendInstruction(self.Instructions.Resume)
