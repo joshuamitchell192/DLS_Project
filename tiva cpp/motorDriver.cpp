@@ -83,12 +83,8 @@ void MotorDriver::Calibrate(bool &stop){
 
     SetDriverTimer(MIN_SAMPLE_DURATION);
 
-    while(!stop){
+    while(!stop && !IsSwitchB2On()){
         StepMotor();
-    
-        if ((GPIOB_DATA & 0x2) == 0x2){
-        break;
-        }
     }
 
     GPIOA_DATA &= ~0x8;
@@ -96,7 +92,7 @@ void MotorDriver::Calibrate(bool &stop){
     while(!stop){
         StepMotor();
         numSteps++;
-        if ((GPIOB_DATA & 0x1) == 0x1){
+        if (IsSwitchB1On()){
             stepsPerMM = numSteps / STAGE_LENGTH_MM;
             currentPosition = 0;
             Serial::SendFloat(stepsPerMM);
@@ -154,13 +150,13 @@ void MotorDriver::GoToPosition(bool &stop, int dest, double sampleDuration){
 
     int dir = SetDirection(dest);
     if (dir == 1) {
-        while (currentPosition < dest && !stop){
+        while (currentPosition < dest && !stop && !IsSwitchB2On()){
             currentPosition += stepAmount * dir;
             StepMotor();
         }
     }
     else if (dir == -1) {
-        while (currentPosition > dest && !stop){
+        while (currentPosition > dest && !stop && !IsSwitchB1On()){
             currentPosition += stepAmount * dir;
             StepMotor();
         }
@@ -211,14 +207,14 @@ void MotorDriver::ScanBetween(bool &stop, int dest) {
     Serial::WriteFlag(0xFF);
 
     if (direction == 1) {
-        while (currentPosition < dest && !stop){
+        while (currentPosition < dest && !stop && !IsSwitchB2On()){
             WaitForSamples();
             currentPosition += stepAmount;
             GoToPosition(stop, currentPosition + stepsBetweenSamples, MIN_SAMPLE_DURATION);
         }
     }
     else if (direction == -1) {
-        while (currentPosition > dest && !stop){
+        while (currentPosition > dest && !stop && !IsSwitchB1On()){
             WaitForSamples();
             currentPosition -= stepAmount;
             GoToPosition(stop, currentPosition + (stepsBetweenSamples * direction), MIN_SAMPLE_DURATION);
@@ -245,6 +241,14 @@ float MotorDriver::CalculateCurrentTime() {
     volatile int totalSecondsF = totalTimeElapsed;
     volatile float leftOverTimeF = (float)(NVIC_ST_RELOAD - NVIC_ST_CURRENT) / TIVA_CLOCK_SPEED;
     return ((float)(totalSecondsF) + leftOverTimeF) * 1000;
+}
+
+bool MotorDriver::IsSwitchB2On(){
+    return (GPIOB_DATA & 0x2) == 0x2;
+}
+
+bool MotorDriver::IsSwitchB1On() {
+    return (GPIOB_DATA & 0x1) == 0x1;
 }
 
 bool MotorDriver::IsAdcOn(){

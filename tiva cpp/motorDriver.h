@@ -42,6 +42,8 @@ class MotorDriver{
         
         static void SendInt(int input);
         
+        static bool IsSwitchB2On();
+        static bool IsSwitchB1On();
         static bool IsAdcOn();
         static void TurnAdcOn();
         static void TurnAdcOff();
