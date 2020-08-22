@@ -1,7 +1,5 @@
 # DLS Project
-DLS (Drivable Linear Stage) project is a tiva software project to control a stage with that moves on one axis using stepper motors, limit switches and a motor driver. The project uses a GUI to send instructions via UART serial communication to the tiva that are then interpreted and executed. The instructions are based on the GCode language which allows for flexible and modular instructions that are combined to execute more complex behaviours.
-
-
+DLS (Drivable Linear Stage) is a project written for tiva microcontrollers to control a stage that moves along an axis using a stepper motor, limit switches and a motor driver. The project uses a GUI to send instructions via UART serial communication to the tiva that are then interpreted and executed. The instructions are based on the GCode language which allows for flexible and modular instructions that are combined to execute more complex behaviours.
 
 ## Installation
 
