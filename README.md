@@ -23,7 +23,8 @@ Also ensure that your keil support compilation to C++ for the C++ version.
 
 ## Usage
 
-
+## Documentation
+https://github.com/josh2397/DLS_Project/wiki
 
 ## License
 
