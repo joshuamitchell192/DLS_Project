@@ -110,8 +110,8 @@ void MotorDriver::StartSamplingHere(bool &stop){
         Serial::WriteFlag(0xFF);
         while(numSamples < averageInterval){
             Serial::SendSampleAverage(sampleTotal, numSamples);
-            //volatile float currentTime = CalculateCurrentTime();
-            //Serial::SendFloat(currentTime);
+            float currentTime = CalculateCurrentTime();
+            Serial::SendFloat(currentTime);
         }
         
         Serial::WriteFlag(0xFE);
@@ -231,16 +231,15 @@ void MotorDriver::WaitForSamples() {
     SetDriverTimer(sampleDuration_);
     StepMotor();
 
-    //volatile float currentTime = CalculateCurrentTime();
-    //Serial::SendFloat(currentTime);
-
     Serial::SendSampleAverage(sampleTotal, numSamples);
+    volatile float currentTime = CalculateCurrentTime();
+    Serial::SendFloat(currentTime);
 }
 
 float MotorDriver::CalculateCurrentTime() {
     volatile int totalSecondsF = totalTimeElapsed;
     volatile float leftOverTimeF = (float)(NVIC_ST_RELOAD - NVIC_ST_CURRENT) / TIVA_CLOCK_SPEED;
-    return ((float)(totalSecondsF) + leftOverTimeF) * 1000;
+    return ((float)(totalSecondsF) + leftOverTimeF);
 }
 
 bool MotorDriver::IsSwitchB2On(){

@@ -3,6 +3,7 @@ import serial
 import serial.tools.list_ports as port_list
 import time
 import sys
+import struct
 
 class SerialConnection:
 
@@ -87,7 +88,7 @@ class SerialConnection:
 
         #print(f'Ascii Value: {decoded_bytes}', flush=True)
 
-    def readSample(self):
+    def readAdcSample(self):
 
         """ Waits to receive samples from the Tiva and combines bytes from separated writes
 
@@ -100,15 +101,16 @@ class SerialConnection:
 
         return ser_bytes_total
 
-    def readTime(self):
+    def readFloat(self):
         ser_bytes_lower = self.ser.read(1)
         ser_bytes_mid = self.ser.read(1)
         ser_bytes_upper = self.ser.read(1)
+        ser_bytes_upper_upper = self.ser.read(1)
 
-        print(f'{ser_bytes_lower} - {ser_bytes_mid} - {ser_bytes_upper}')
-        
-        ser_bytes_total = int.from_bytes(ser_bytes_lower, byteorder='little', signed=False) + (int.from_bytes(ser_bytes_mid, byteorder='little', signed=False) << 8) + (int.from_bytes(ser_bytes_upper, byteorder='little', signed=False) << 16)
-        return ser_bytes_total/1000
+        print(f'{ser_bytes_upper_upper} - {ser_bytes_upper} - {ser_bytes_mid} - {ser_bytes_lower}')
+
+        ser_bytes_total = ser_bytes_lower + ser_bytes_mid + ser_bytes_upper + ser_bytes_upper_upper 
+        return struct.unpack('f', ser_bytes_total)[0]
 
     def sendStopInstruction(self, instruction):
 

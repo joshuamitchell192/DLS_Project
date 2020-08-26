@@ -20,8 +20,9 @@ class MotorDriver{
         int sampleTotal;
         int numSamples;
         int stepsBetweenSamples;
-        int totalTimeElapsed;
+        float totalTimeElapsed;
         int averageInterval;
+        
     
         
         void Calibrate(bool &stop);

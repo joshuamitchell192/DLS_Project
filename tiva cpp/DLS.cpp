@@ -68,6 +68,17 @@ void DLS::ReadSerial(char inChar){
     }
 }
 
+void delayMS(int n)
+{
+    int i, j;
+
+    for (i = 0; i < n; i++)
+        for(j = 0; j < 3180; j++)
+        {
+        }
+
+}
+
 void DLS::EventLoop(){
 
     for (;;) {

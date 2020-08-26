@@ -34,18 +34,18 @@ void ADC0SS3_Handler (void)
     dls.driver.numSamples++;
 }
 
-void delayMS(int n)
-{
-    int i, j;
+//void delayMS(int n)
+//{
+//    int i, j;
 
-    for (i = 0; i < n; i++)
-        for(j = 0; j < 3180; j++)
-        {
-        }
+//    for (i = 0; i < n; i++)
+//        for(j = 0; j < 3180; j++)
+//        {
+//        }
 
-}
+//}
 
 void SysTick_Handler(void){
-	dls.driver.totalTimeElapsed += 1048575;
+	dls.driver.totalTimeElapsed += 1.048575;
 }
 

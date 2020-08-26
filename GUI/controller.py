@@ -172,14 +172,13 @@ class Controller:
                     if self.isSampling:
 
                         data2 = self.serialConnection.ser.read(1)
-                        #time = self.serialConnection.readTime()
+                        time = round(self.serialConnection.readFloat(), 4)
                         sample = int.from_bytes(data1, byteorder='little', signed=False) + (int.from_bytes(data2, byteorder='little', signed=False) << 8)
 
 
-                        #print(f'Total: {sample}, Data1: {data1} - Data2: {data2} - Time: {time}')
+                        print(f'Total: {sample}, Data1: {data1} - Data2: {data2} - Time: {time}')
                         self.samples.append(sample)
-                        #self.times.append(time)
-                        #time = self.readTime()
+                        self.times.append(time)
                     else:
                         if (data1 == b'\n'):
                             print(f"Receiving: {str(returnString)}")

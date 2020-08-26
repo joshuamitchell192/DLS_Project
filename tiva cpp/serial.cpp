@@ -35,13 +35,24 @@ void Serial::SendInt(int input){
     Serial::WriteChar(avgSample_upperHalf);
 }
 
+unsigned char * floatToBytes(unsigned char bytes[4], float input){
+    
+    union{
+        float a;
+        unsigned char bytes[4];
+    } floatStore;
+    
+    floatStore.a = input;
+    memcpy(bytes, floatStore.bytes, 4);
+}
+
 void Serial::SendFloat(float input){
-    unsigned int inputLower = (0xFF && input);
-    unsigned int inputMid = (0xFF00 && input) >> 8;
-    unsigned int inputUpper = (0xFF0000 && input) >> 16;
-    WriteChar(inputLower);
-    WriteChar(inputMid);
-    WriteChar(inputUpper);
+    unsigned char bytes[4];
+    floatToBytes(bytes, input);
+    
+    for (int i = 0; i < 4; i++){
+        WriteChar(bytes[i]);
+    }
 }
 
 void Serial::WriteFlag(int flag){
