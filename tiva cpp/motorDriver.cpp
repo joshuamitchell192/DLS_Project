@@ -234,6 +234,10 @@ void MotorDriver::WaitForSamples() {
     Serial::SendSampleAverage(sampleTotal, numSamples);
     volatile float currentTime = CalculateCurrentTime();
     Serial::SendFloat(currentTime);
+
+    float currentPosMM = (float)(currentPosition / stepsPerMM / 4);
+    
+    Serial::SendFloat(currentPosMM);
 }
 
 float MotorDriver::CalculateCurrentTime() {

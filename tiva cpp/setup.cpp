@@ -268,8 +268,8 @@ void Setup::Uart0TerminalSetup(void)
 	UART0_CTL &= ~0x1;
 	
 	// Set baud rate for 115200
-	UART0_IBRD = 17;
-	UART0_FBRD = 23;
+	UART0_IBRD = 34;
+	UART0_FBRD = 45;
 	
 	// Set line control register to odd parity, 2 stop bits, and word length of 8 bits
 	UART0_LCRH |= 0x6A;

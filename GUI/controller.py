@@ -9,6 +9,7 @@ class Controller:
         self.Instructions = Instructions
         self.samples = []
         self.times = []
+        self.positions = []
         self.stop = False
         self.stepsPerMM = 0.018
         self.isSampling = False
@@ -170,23 +171,28 @@ class Controller:
                         continue
                 else:
                     if self.isSampling:
+                        self.readSampleData(data1)
 
-                        data2 = self.serialConnection.ser.read(1)
-                        time = round(self.serialConnection.readFloat(), 4)
-                        sample = int.from_bytes(data1, byteorder='little', signed=False) + (int.from_bytes(data2, byteorder='little', signed=False) << 8)
-
-
-                        print(f'Total: {sample}, Data1: {data1} - Data2: {data2} - Time: {time}')
-                        self.samples.append(sample)
-                        self.times.append(time)
                     else:
                         if (data1 == b'\n'):
                             print(f"Receiving: {str(returnString)}")
                             returnString = bytearray("", encoding="utf-8")
                         else:
                             returnString = returnString + data1
-                #print(data)
+                self.serialConnection.ser.reset_input_buffer()
 
+
+    def readSampleData(self, data1):
+        data2 = self.serialConnection.ser.read(1)
+        time = round(self.serialConnection.readFloat(), 4)
+        position = round(self.serialConnection.readFloat(), 4)
+        sample = int.from_bytes(data1, byteorder='little', signed=False) + (int.from_bytes(data2, byteorder='little', signed=False) << 8)
+
+
+        print(f'Total: {sample}, Data1: {data1} - Data2: {data2} - Time: {time} - Pos: {position}')
+        self.samples.append(sample)
+        self.times.append(time)
+        self.positions.append(position)
 
     def handleClearSamples(self):
         """

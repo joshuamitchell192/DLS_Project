@@ -16,7 +16,7 @@ class MplCanvas(FigureCanvas):
 
     """
 
-    def __init__(self, parent=None, samples=[], times=[],width=5, height=4, dpi=100):
+    def __init__(self, parent=None, samples=[], times=[], positions=[], width=5, height=4, dpi=100):
 
         """ Creates a matplot lib figure, subplot and links the data samples list.
             
@@ -26,6 +26,7 @@ class MplCanvas(FigureCanvas):
         self.axes2 = self.axes.twiny()
         self.samples = samples
         self.times = times
+        self.positions = positions
 
         self.compute_initial_figure()
 
@@ -57,7 +58,7 @@ class DynamicMplCanvas(MplCanvas):
         timer.timeout.connect(self.update_figure)
         timer.start(100)
 
-    def resetSamples(self, newSamples, newTimes):
+    def resetSamples(self, newSamples, newTimes, newPositions):
 
         """ Relinks the samples list for when the user clicks the clear samples button
 
@@ -66,6 +67,7 @@ class DynamicMplCanvas(MplCanvas):
         """
         self.times = newTimes
         self.samples = newSamples
+        self.positions = newPositions
 
     def compute_initial_figure(self):
 
@@ -85,6 +87,18 @@ class DynamicMplCanvas(MplCanvas):
         return timeInts
 
 
+    def positionIntervals(self, position_tick_ints):
+        positionInts = []
+        if len(self.positions) < 9:
+            intNum = len(self.positions)
+        else:
+            intNum = 9
+        
+        for pos in range(intNum):
+            positionInts.append(self.positions[int(pos * len(self.positions) / intNum)])
+
+        return positionInts
+
 
     def update_figure(self):
 
@@ -94,14 +108,20 @@ class DynamicMplCanvas(MplCanvas):
         # Build a list of 4 random integers between 0 and 10 (both inclusive)
         # l = [random.randint(0, 10) for i in range(4)]
         time_tick_locations = np.array([.1, .2, .3, .4, .5, .6, .7, .8, .9])
+        position_tick_locations = np.array([0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9])
 
 
         self.axes.cla()
-        self.axes.set_xlim([0,max(len(self.samples),10)])
+        if (len(self.positions) > 0):
+            self.axes.set_xlim([0,max(self.positions[-1], 10)])
+        else:
+            self.axes.set_xlim([0,10])
+        self.axes.set_xticks(position_tick_locations)
+        self.axes.set_xticklabels(self.positionIntervals(self.positions))
         self.axes.plot(self.samples, 'r')
-        self.axes.set_xlabel("Sample Index")
+        self.axes.set_xlabel("Position")
         self.axes.set_ylabel("Sensor Value")
-        self.axes2.set_xticks(time_tick_locations)
+        #self.axes2.set_xticks(time_tick_locations)
         self.axes2.set_xticklabels(self.timeIntervals(self.times))
         self.axes2.set_xlabel("Time")
         
