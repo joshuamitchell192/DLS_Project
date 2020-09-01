@@ -101,6 +101,12 @@ class SerialConnection:
 
         return ser_bytes_total
 
+    def readInt(self):
+        data1 = self.ser.read(1)
+        data2 = self.ser.read(1)
+        
+        return int.from_bytes(data1, byteorder='little', signed=False) + (int.from_bytes(data2, byteorder='little', signed=False) << 8)
+
     def readFloat(self):
         ser_bytes_lower = self.ser.read(1)
         ser_bytes_mid = self.ser.read(1)

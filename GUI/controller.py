@@ -1,7 +1,7 @@
 from view import View
 from serialConnection import SerialConnection
 from PyQt5.QtWidgets import QApplication
-import time
+import time, configparser
 
 class Controller:
     def __init__(self, serialConnection, Instructions):
@@ -17,11 +17,6 @@ class Controller:
     def handleCalibrate(self):
         self.isSampling = False
         self.serialConnection.sendInstruction(self.Instructions.Calibrate)
-        
-       #self.stepsPerMM = (self.serialConnection.readSample() )
-
-
-        print("NUMSTEPS ",self.stepsPerMM)
 
     def handleScanBetween(self, P1, P2, sampleDuration, mmBetweenSamples, stepMode):
         self.isSampling = False
@@ -169,6 +164,10 @@ class Controller:
                         self.isSampling = False
                         print(f'Sampling is: {self.isSampling}')
                         continue
+                    elif data2 == b'\xfd':
+                        stepsPerMM = self.serialConnection.readInt()
+                        self.saveSetting('Calibration', 'stepsPerMM', str(stepsPerMM))
+
                 else:
                     if self.isSampling:
                         self.readSampleData(data1)
@@ -181,13 +180,21 @@ class Controller:
                             returnString = returnString + data1
                 self.serialConnection.ser.reset_input_buffer()
 
+    def saveSetting(self, section, field, value):
+        config = configparser.ConfigParser()
+        config.read('./GUI/settings.ini')
+
+        config[section][field] = value
+
+        with open('./GUI/settings.ini', 'w') as configFile:
+            config.write(configFile)
+
 
     def readSampleData(self, data1):
         data2 = self.serialConnection.ser.read(1)
         time = round(self.serialConnection.readFloat(), 4)
         position = round(self.serialConnection.readFloat(), 4)
         sample = int.from_bytes(data1, byteorder='little', signed=False) + (int.from_bytes(data2, byteorder='little', signed=False) << 8)
-
 
         print(f'Total: {sample}, Data1: {data1} - Data2: {data2} - Time: {time} - Pos: {position}')
         self.samples.append(sample)
@@ -199,6 +206,8 @@ class Controller:
             Clear the samples list for the controller. [ Need to relink the list on the view. ]
         """
         self.samples = []
+        self.times = []
+        self.positions = []
 
     def handleClearQueue(self):
 

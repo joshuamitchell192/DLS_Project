@@ -1,4 +1,4 @@
-from PyQt5.QtWidgets import (QApplication)
+from PyQt5.QtWidgets import (QApplication, QDialog)
 from PyQt5.QtCore import Qt, QTimer
 # from dialog import Ui_Dialog as Form
 import serial.tools.list_ports as port_list
@@ -8,6 +8,7 @@ from view import View
 from serialConnection import SerialConnection
 from controller import Controller
 from instructions import Instructions
+from portDialog import PortDialog
 
 class App (QApplication):
     
@@ -17,12 +18,19 @@ class App (QApplication):
         port = self.loadConfigComPort()
 
         if (port == ""):
-            ports = list(port_list.comports())
-            print()
-            for p in ports:
-                print (f'{p} is visible')
-            print()
-            port = input("Enter the COM port you're connected to: ")
+
+            self.getPortDialog = PortDialog()
+            self.getPortDialog.setModal(True)
+            self.getPortDialog.exec()
+            port = self.getPortDialog.Port_LineEdit.text()
+
+
+            # ports = list(port_list.comports())
+            # print()
+            # for p in ports:
+            #     print (f'{p} is visible')
+            # print()
+            # port = input("Enter the COM port you're connected to: ")
         
         print("Connecting to " + port.upper())
 
@@ -37,6 +45,8 @@ class App (QApplication):
         thread.daemon = True
         thread.start()
         self.loadConfig()
+
+        self.view.calculateExpectedDuration()
 
     def loadConfigComPort(self):
         config = configparser.ConfigParser()

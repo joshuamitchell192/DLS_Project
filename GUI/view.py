@@ -96,7 +96,7 @@ class View(QMainWindow):
         self.SmpDuration_LineEdit.setGeometry(40, self.y, 150, 25)
         self.SmpDuration_LineEdit.setText("0.001")
         self.SmpDuration_LineEdit.editingFinished.connect(self.__updateSmpDurationEditLine)
-
+        self.SmpDuration_LineEdit.textChanged.connect(self.SampleDurationUpdate)
         
         self.StepMode_ComboBox_Widget = QWidget(self)
         self.StepMode_ComboBox_Widget.setGeometry(250, self.y, 120, 35)
@@ -125,6 +125,7 @@ class View(QMainWindow):
         self.StepLength_LineEdit.setGeometry(40, self.y, 150, 25)
         self.StepLength_LineEdit.setText("0.1")
         self.StepLength_LineEdit.editingFinished.connect(self.__updateStepLengthEditLine)
+        self.StepLength_LineEdit.textChanged.connect(self.StepLengthUpdate)
 
         self.ScanBetween_Button = QPushButton(self)
         self.ScanBetween_Button.setGeometry(250, self.y - 10, 120, 35)
@@ -222,8 +223,6 @@ class View(QMainWindow):
         self.setWindowFlags(Qt.WindowCloseButtonHint | Qt.WindowMinimizeButtonHint)
         self.setWindowTitle('Linear Stage Controller')
 
-        
-
     # def __updateSmpDurationSpinBox(self, value):
     #     self.SmpDuration_SpinBox.setValue(value)
 
@@ -320,5 +319,23 @@ class View(QMainWindow):
         print(round(a * round(float(value)/a),prec))
         return str(max(round(a * round(float(value)/a),prec),round(a,5)))
 
-
+    def SampleDurationUpdate(self):
+        self.calculateExpectedDuration()
     
+    def StepLengthUpdate(self):
+        self.calculateExpectedDuration()
+
+    def calculateExpectedDuration(self):
+        sampleDuration = float(self.SmpDuration_LineEdit.text())
+        stepLength = float(self.StepLength_LineEdit.text())
+        if (stepLength == 0 or sampleDuration == 0):
+            return
+
+        startPosition = float(self.P1_SpinBox.value())
+        endPosition = float(self.P2_SpinBox.value())
+
+        distance = abs(startPosition - endPosition)
+
+        expectedDuration = ((distance / stepLength) * sampleDuration * self.currentStepsPerMM) + (distance * 0.001 * self.currentStepsPerMM)
+
+        self.ExpectedDuration_Label.setText("Expected Duration: " + str(expectedDuration))

@@ -95,10 +95,12 @@ void MotorDriver::Calibrate(bool &stop){
         if (IsSwitchB1On()){
             stepsPerMM = numSteps / STAGE_LENGTH_MM;
             currentPosition = 0;
-            Serial::SendFloat(stepsPerMM);
+            Serial::WriteFlag(0xFD);
+            Serial::SendInt(stepsPerMM);
             break;
         }
     }
+   
 }
 
 void MotorDriver::StartSamplingHere(bool &stop){
