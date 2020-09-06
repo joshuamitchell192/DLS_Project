@@ -46,8 +46,7 @@
 /Objects/*
 
 # Debugger files
-# define exception below if needed
-*.ini
+# define exception below if neededs
 
 # Other files
 *.build_log.htm
