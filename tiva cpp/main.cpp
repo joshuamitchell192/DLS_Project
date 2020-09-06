@@ -1,6 +1,7 @@
-#include "registers.h"
 #include "serial.h"
 #include "DLS.h"
+#include "tm4c123gh6pm.h"
+#include <stdint.h>
 
 extern "C" void UART0_Handler (void);
 extern "C" void ADC0SS3_Handler (void);
@@ -26,10 +27,10 @@ void UART0_Handler(void) {
 
 void ADC0SS3_Handler (void)
 {
-    ADC0_ISC |= 0x8;
+    ADC0_ISC_R |= 0x8;
 
     // Get Data from FIFO
-    unsigned int sensorData = ADC0_SSFIFO3;
+    unsigned int sensorData = ADC0_SSFIFO3_R;
     dls.driver.sampleTotal += sensorData;
     dls.driver.numSamples++;
 }

@@ -388,11 +388,6 @@
               <FilePath>.\main.cpp</FilePath>
             </File>
             <File>
-              <FileName>registers.h</FileName>
-              <FileType>5</FileType>
-              <FilePath>.\registers.h</FilePath>
-            </File>
-            <File>
               <FileName>helpers.cpp</FileName>
               <FileType>8</FileType>
               <FilePath>.\helpers.cpp</FilePath>
@@ -456,6 +451,11 @@
               <FileName>serial.h</FileName>
               <FileType>5</FileType>
               <FilePath>.\serial.h</FilePath>
+            </File>
+            <File>
+              <FileName>tm4c123gh6pm.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>.\tm4c123gh6pm.h</FilePath>
             </File>
           </Files>
         </Group>

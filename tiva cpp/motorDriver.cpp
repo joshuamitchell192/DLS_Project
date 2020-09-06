@@ -1,10 +1,12 @@
 #include "motorDriver.h"
-#include "registers.h"
+#include "tm4c123gh6pm.h"
+#include <stdint.h>
 #include "helpers.h"
 #include "serial.h"
 
 #define MIN_SAMPLE_DURATION 0.001
 #define STAGE_LENGTH_MM 65.0
+#define TIVA_CLOCK_SPEED 16000000.0
 
 MotorDriver::MotorDriver(){
     stepsPerMM = 0.0;
@@ -19,19 +21,19 @@ MotorDriver::MotorDriver(){
 void MotorDriver::SetStepMode(int stepMode){
     //M0 = A6, M1 = A7
     if (stepMode == Quarter){
-        GPIOA_DATA &= ~0x40;
-        GPIOA_DATA |= 0x80;
+        GPIO_PORTA_DATA_R &= ~0x40;
+        GPIO_PORTA_DATA_R |= 0x80;
 
         stepAmount = 1;
     }
     else if(stepMode == Half){
-        GPIOA_DATA |= 0x40;
-        GPIOA_DATA &= ~0x80;
+        GPIO_PORTA_DATA_R |= 0x40;
+        GPIO_PORTA_DATA_R &= ~0x80;
         stepAmount = 2;
     }
     else if(stepMode == Full){
-        GPIOA_DATA &= ~0x40;
-        GPIOA_DATA &= ~0x80;
+        GPIO_PORTA_DATA_R  &= ~0x40;
+        GPIO_PORTA_DATA_R  &= ~0x80;
         stepAmount = 4;
     }
 }
@@ -52,21 +54,21 @@ void MotorDriver::SetDriverTimer(volatile double seconds){
     int prescale = Helpers::getPrescaler(seconds);
     int preload = Helpers::getPreload(seconds, prescale);
     
-    TIMER1_TAPR = prescale;
-    TIMER1_TAILR = preload;
+    TIMER1_TAPR_R = prescale;
+    TIMER1_TAILR_R = preload;
 
-    TIMER1_ICR |= 1;
-    TIMER1_CTL |= 1;
+    TIMER1_ICR_R |= 1;
+    TIMER1_CTL_R |= 1;
 }
 
 
 void MotorDriver::StepMotor(void){
-        while((TIMER1_RIS & 0x1) != 0x1);
-        TIMER1_ICR |= 1;
-        GPIOA_DATA |= 0x4;
-        while((TIMER1_RIS & 0x1) != 0x1);
-        TIMER1_ICR |= 1;
-        GPIOA_DATA &=~ 0x4;
+        while((TIMER1_RIS_R & 0x1) != 0x1);
+        TIMER1_ICR_R |= 1;
+        GPIO_PORTA_DATA_R |= 0x4;
+        while((TIMER1_RIS_R & 0x1) != 0x1);
+        TIMER1_ICR_R |= 1;
+        GPIO_PORTA_DATA_R  &=~ 0x4;
 }
 
 /*
@@ -79,7 +81,7 @@ void MotorDriver::StepMotor(void){
 void MotorDriver::Calibrate(bool &stop){
 
     SetStepMode(0);
-    GPIOA_DATA |= 0x8;
+    GPIO_PORTA_DATA_R  |= 0x8;
 
     SetDriverTimer(MIN_SAMPLE_DURATION);
 
@@ -87,7 +89,7 @@ void MotorDriver::Calibrate(bool &stop){
         StepMotor();
     }
 
-    GPIOA_DATA &= ~0x8;
+    GPIO_PORTA_DATA_R &= ~0x8;
     int numSteps = 1;
     while(!stop){
         StepMotor();
@@ -118,7 +120,6 @@ void MotorDriver::StartSamplingHere(bool &stop){
         
         Serial::WriteFlag(0xFE);
     }
-    
 }
 
 //goto rapid positioning to point 1
@@ -177,11 +178,11 @@ void MotorDriver::GoToPosition(bool &stop, int dest, double sampleDuration){
  int MotorDriver::SetDirection(int dest) {
     int dir;
     if (currentPosition > dest) {
-        GPIOA_DATA &= ~0x8;
+        GPIO_PORTA_DATA_R  &= ~0x8;
         dir = -1;
     }
     else if (currentPosition < dest ) {
-        GPIOA_DATA |= 0x8;
+        GPIO_PORTA_DATA_R  |= 0x8;
         dir = 1;
     }
     else {
@@ -244,26 +245,26 @@ void MotorDriver::WaitForSamples() {
 
 float MotorDriver::CalculateCurrentTime() {
     volatile int totalSecondsF = totalTimeElapsed;
-    volatile float leftOverTimeF = (float)(NVIC_ST_RELOAD - NVIC_ST_CURRENT) / TIVA_CLOCK_SPEED;
+    volatile float leftOverTimeF = (float)(NVIC_ST_RELOAD_R - NVIC_ST_CURRENT_R) / TIVA_CLOCK_SPEED;
     return ((float)(totalSecondsF) + leftOverTimeF);
 }
 
 bool MotorDriver::IsSwitchB2On(){
-    return (GPIOB_DATA & 0x2) == 0x2;
+    return (GPIO_PORTB_DATA_R & 0x2) == 0x2;
 }
 
 bool MotorDriver::IsSwitchB1On() {
-    return (GPIOB_DATA & 0x1) == 0x1;
+    return (GPIO_PORTB_DATA_R & 0x1) == 0x1;
 }
 
 bool MotorDriver::IsAdcOn(){
-    return (TIMER0_CTL & 0x1);
+    return (TIMER0_CTL_R & 0x1);
 }
 
 void MotorDriver::TurnAdcOn(){
-    TIMER0_CTL |= 0x1;
+    TIMER0_CTL_R |= 0x1;
 }
 
 void MotorDriver::TurnAdcOff(){
-    TIMER0_CTL &= ~1;
+    TIMER0_CTL_R &= ~1;
 }
