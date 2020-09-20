@@ -1,12 +1,35 @@
 #include "serial.h"
 #include "registers.h"
 #include <string.h>
+#include <stdio.h>
+#include "crc.h"
+
+const char Serial::sample_type = 's';
+const char Serial::time_type = 't';
+const char Serial::position_type = 'p';
 
 void Serial::WriteChar(unsigned int value)
 {
     while ((UART0_FR & 0x20) == 0x20);
     UART0_DR = value;
 }
+
+// void Serial::WriteCrc(unsigned)
+
+// void Serial::WriteChar(unsigned int value, char type, bool sendCrc){
+
+//     WriteChar(type);
+//     WriteChar(value);
+    
+//     if (sendCrc){
+//         crc_t crc = crc_init();
+//         crc = crc_update(crc, (unsigned char *)value , strlen((char *)value));
+//         crc = crc_finalize(crc);
+        
+//         while ((UART0_FR & 0x20) == 0x20);
+//         UART0_DR = crc;
+//     }
+// }
 
 unsigned int Serial::ReadChar()
 {

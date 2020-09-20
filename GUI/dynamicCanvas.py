@@ -112,11 +112,11 @@ class DynamicMplCanvas(MplCanvas):
 
 
         self.axes.cla()
-        if (len(self.positions) > 0):
-            self.axes.set_xlim([0,max(self.positions[-1], 10)])
-        else:
-            self.axes.set_xlim([0,10])
-        self.axes.set_xticks(position_tick_locations)
+        # if (len(self.positions) > 0):
+        #     self.axes.set_xlim([0,max(self.positions[-1], 10)])
+        # else:
+        #     self.axes.set_xlim([0,10])
+        # self.axes.set_xticks(position_tick_locations)
         self.axes.set_xticklabels(self.positionIntervals(self.positions))
         self.axes.plot(self.samples, 'r')
         self.axes.set_xlabel("Position")

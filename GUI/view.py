@@ -2,7 +2,7 @@ from PyQt5.QtWidgets import (QMainWindow, QSlider,
     QLabel, QApplication, QSpinBox, QPushButton, QComboBox, QFrame, QMenu, QWidget, QFileDialog, QLineEdit, QFormLayout)
 from PyQt5.QtCore import Qt, QSize, QRect, QTimer
 from PyQt5 import QtWidgets
-from PyQt5.QtGui import QPixmap, QDoubleValidator
+from PyQt5.QtGui import QPixmap, QDoubleValidator, QIcon
 import sys
 import csv
 import math
@@ -184,13 +184,12 @@ class View(QMainWindow):
 
         self.y += 120
 
-        self.Stop_Button = QPushButton(self)
-        self.Stop_Button.setGeometry(40, self.y, 100, 35)
-        self.Stop_Button.setText("Stop")
-        self.Stop_Button.setToolTip("Stops executing the current instruction")
-        self.Stop_Button.clicked.connect(self.toggleStop)
+        self.Pause_Button = QPushButton(self)
+        self.Pause_Button.setGeometry(40, self.y, 100, 35)
+        self.Pause_Button.setText("Pause")
+        self.Pause_Button.setToolTip("Stops executing the current instruction")
+        self.Pause_Button.clicked.connect(self.togglePause)
 
-        
         self.ClearQueue_Button = QPushButton(self)
         self.ClearQueue_Button.setGeometry(150, self.y, 100, 35)
         self.ClearQueue_Button.setText("Clear Queue")
@@ -222,6 +221,7 @@ class View(QMainWindow):
         self.setGeometry(300, 300, 1280, 720)
         self.setWindowFlags(Qt.WindowCloseButtonHint | Qt.WindowMinimizeButtonHint)
         self.setWindowTitle('Linear Stage Controller')
+        self.setWindowIcon(QIcon())
 
     # def __updateSmpDurationSpinBox(self, value):
     #     self.SmpDuration_SpinBox.setValue(value)
@@ -276,12 +276,12 @@ class View(QMainWindow):
     def __updateP2Slider(self, value):
         self.P2_Slider.setValue(value)
 
-    def toggleStop(self):
-        self.controller.handleStop()
-        if (self.controller.stop):
-            self.Stop_Button.setText("Resume")
+    def togglePause(self):
+        self.controller.handlePause()
+        if (self.controller.pause):
+            self.Pause_Button.setText("Resume")
         else:
-            self.Stop_Button.setText("Stop")
+            self.Pause_Button.setText("Pause")
 
     def fileQuit(self):
             self.close()

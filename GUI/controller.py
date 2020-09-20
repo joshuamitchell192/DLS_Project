@@ -10,9 +10,8 @@ class Controller:
         self.samples = []
         self.times = []
         self.positions = []
-        self.stop = False
+        self.pause = False
         self.stepsPerMM = 0.018
-        self.isSampling = False
 
     def handleCalibrate(self):
         self.isSampling = False
@@ -20,7 +19,7 @@ class Controller:
 
     def handleScanBetween(self, P1, P2, sampleDuration, mmBetweenSamples, stepMode):
         self.isSampling = False
-        self.serialConnection.sendInstruction(self.Instructions.Stop)
+        self.serialConnection.sendInstruction(self.Instructions.Pause)
         self.serialConnection.sendInstruction(self.Instructions.StartProgram)
         self.serialConnection.sendInstruction(self.Instructions.RapidPosition, [P1])
         self.serialConnection.sendInstruction(self.Instructions.SampleDuration, [sampleDuration])
@@ -84,21 +83,20 @@ class Controller:
     #         self.times.append(currentTime)
     #         QApplication.processEvents()
 
-    def handleStop(self):
+    def handlePause(self):
 
-        """ Sets the stop boolean to true so that we cease reading samples.
+        """ Sets the pause boolean to true so that we cease reading samples.
 
         """
         
-        if (self.stop):
-            self.stop = False
+        if (self.pause):
+            self.pause = False
             self.serialConnection.sendInstruction(self.Instructions.Resume)
         else:
-            self.stop = True
-            # Write to tiva to stop sampling on GUI
+            self.pause = True
+            # Write to tiva to pause sampling on GUI
             self.isSampling = False
-            self.serialConnection.sendInstruction(self.Instructions.Stop)
-
+            self.serialConnection.sendInstruction(self.Instructions.Pause)
 
     def handleGoToPoint(self, P1):
 
@@ -106,13 +104,13 @@ class Controller:
 
         """
         self.isSampling = False
-        self.serialConnection.sendInstruction(self.Instructions.Stop)
+        self.serialConnection.sendInstruction(self.Instructions.Pause)
         self.serialConnection.sendInstruction(self.Instructions.RapidPosition, [P1])
         self.serialConnection.sendInstruction(self.Instructions.Resume)
 
     def handleStartSample(self, averageInterval):
         self.isSampling = False
-        self.serialConnection.sendInstruction(self.Instructions.Stop)
+        self.serialConnection.sendInstruction(self.Instructions.Pause)
         self.serialConnection.sendInstruction(self.Instructions.StartProgram)
         self.serialConnection.sendInstruction(self.Instructions.AverageInterval, [averageInterval])
         self.serialConnection.sendInstruction(self.Instructions.TurnOnAdc)
@@ -212,6 +210,6 @@ class Controller:
     def handleClearQueue(self):
 
         self.isSampling = False
-        self.serialConnection.sendInstruction(self.Instructions.Stop)
+        self.serialConnection.sendInstruction(self.Instructions.Pause)
         self.serialConnection.sendInstruction(self.Instructions.Clear)
         self.serialConnection.sendInstruction(self.Instructions.Resume)

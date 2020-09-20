@@ -1,6 +1,6 @@
 class Instructions:
     StartProgram = 'M00'
-    Stop = 'M01'
+    Pause = 'M01'
     Resume = 'M02'
     EndProgram = 'M03'
     Calibrate = 'M04'
