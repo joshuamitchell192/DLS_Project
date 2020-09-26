@@ -114,6 +114,7 @@ class SerialConnection:
         ser_bytes_upper_upper = self.ser.read(1)
 
         print(f'{ser_bytes_upper_upper} - {ser_bytes_upper} - {ser_bytes_mid} - {ser_bytes_lower}')
+        print(f'{int.from_bytes(ser_bytes_upper_upper,"little")} - {int.from_bytes(ser_bytes_upper,"little")} - {int.from_bytes(ser_bytes_mid,"little")} - {int.from_bytes(ser_bytes_lower,"little")}')
 
         ser_bytes_total = ser_bytes_lower + ser_bytes_mid + ser_bytes_upper + ser_bytes_upper_upper 
         return struct.unpack('f', ser_bytes_total)[0]

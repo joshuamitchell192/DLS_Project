@@ -110,19 +110,22 @@ class DynamicMplCanvas(MplCanvas):
         time_tick_locations = np.array([.1, .2, .3, .4, .5, .6, .7, .8, .9])
         position_tick_locations = np.array([0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9])
 
-
         self.axes.cla()
         # if (len(self.positions) > 0):
         #     self.axes.set_xlim([0,max(self.positions[-1], 10)])
         # else:
         #     self.axes.set_xlim([0,10])
-        # self.axes.set_xticks(position_tick_locations)
+        # self.axes.set_xticks(time_tick_locations)
+        #print(self.positionIntervals(self.positions))
         self.axes.set_xticklabels(self.positionIntervals(self.positions))
         self.axes.plot(self.samples, 'r')
         self.axes.set_xlabel("Position")
         self.axes.set_ylabel("Sensor Value")
-        #self.axes2.set_xticks(time_tick_locations)
-        self.axes2.set_xticklabels(self.timeIntervals(self.times))
-        self.axes2.set_xlabel("Time")
-        
+
         self.draw()
+
+class data:
+    
+    def __init__(self, x, y):
+        self.x = x
+        self.y = y
