@@ -14,7 +14,22 @@ void Serial::WriteChar(unsigned int value)
     UART0_DR = value;
 }
 
-// void Serial::WriteCrc(unsigned)
+void Serial::WriteCrc(unsigned char * value)
+{
+    crc_t crc = crc_init();
+    int valueLength = strlen((char *) value);
+    crc = crc_update(crc, value, 4);
+    crc = crc_finalize(crc);
+    
+    unsigned char crcBytes[2];
+    intToBytes(crcBytes, crc);
+
+    for (int i = 0; i < 2; i++) {
+        WriteChar(crcBytes[i]);
+    }
+}
+    
+
 
 // void Serial::WriteChar(unsigned int value, char type, bool sendCrc){
 
@@ -58,7 +73,18 @@ void Serial::SendInt(int input){
     Serial::WriteChar(avgSample_upperHalf);
 }
 
-unsigned char * floatToBytes(unsigned char bytes[4], float input){
+unsigned char * Serial::intToBytes(unsigned char bytes[2], int input){
+    
+    union{
+        int a;
+        unsigned char bytes[2];
+    } intStore;
+    
+    intStore.a = input;
+    memcpy(bytes, intStore.bytes, 2);
+}
+
+unsigned char * Serial::floatToBytes(unsigned char bytes[4], float input){
     
     union{
         float a;
@@ -76,6 +102,8 @@ void Serial::SendFloat(float input){
     for (int i = 0; i < 4; i++){
         WriteChar(bytes[i]);
     }
+
+    WriteCrc(bytes);
 }
 
 void Serial::WriteFlag(int flag){
