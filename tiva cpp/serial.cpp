@@ -28,23 +28,6 @@ void Serial::WriteCrc(unsigned char * value)
         WriteChar(crcBytes[i]);
     }
 }
-    
-
-
-// void Serial::WriteChar(unsigned int value, char type, bool sendCrc){
-
-//     WriteChar(type);
-//     WriteChar(value);
-    
-//     if (sendCrc){
-//         crc_t crc = crc_init();
-//         crc = crc_update(crc, (unsigned char *)value , strlen((char *)value));
-//         crc = crc_finalize(crc);
-        
-//         while ((UART0_FR & 0x20) == 0x20);
-//         UART0_DR = crc;
-//     }
-// }
 
 unsigned int Serial::ReadChar()
 {
@@ -66,11 +49,19 @@ void Serial::SendSampleAverage(int &sampleTotal, int &numSamples){
 }
 
 void Serial::SendInt(int input){
-    unsigned int avgSample_lowerHalf = (0xFF & input); 
-    unsigned int avgSample_upperHalf = (0xF00 & input) >> 8;
+    // unsigned int avgSample_lowerHalf = (0xFF & input); 
+    // unsigned int avgSample_upperHalf = (0xF00 & input) >> 8;
 
-    Serial::WriteChar(avgSample_lowerHalf);
-    Serial::WriteChar(avgSample_upperHalf);
+    // Serial::WriteChar(avgSample_lowerHalf);
+    // Serial::WriteChar(avgSample_upperHalf);
+
+    unsigned char sampleBytes[2];
+    intToBytes(sampleBytes, input);
+
+    Serial::WriteChar(sampleBytes[0]);
+    Serial::WriteChar(sampleBytes[1]);
+
+    WriteCrc(sampleBytes);
 }
 
 unsigned char * Serial::intToBytes(unsigned char bytes[2], int input){
