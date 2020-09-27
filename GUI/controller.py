@@ -190,6 +190,7 @@ class Controller:
 
     def readSampleData(self, data1):
         data2 = self.serialConnection.ser.read(1)
+
         time = round(self.serialConnection.readFloat(), 4)
         position = round(self.serialConnection.readFloat(), 4)
         sample = int.from_bytes(data1, byteorder='little', signed=False) + (int.from_bytes(data2, byteorder='little', signed=False) << 8)
