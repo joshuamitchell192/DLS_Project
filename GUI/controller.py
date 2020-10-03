@@ -145,6 +145,32 @@ class Controller:
     #         # print(self.samples)
     #         QApplication.processEvents()
 
+    def readLoop1(self):
+
+        returnString = bytearray("", encoding="utf-8")
+
+        while True:
+            bytesToRead = self.serialConnection.ser.in_waiting
+
+            if (bytesToRead > 0):
+
+                messageType = self.serialConnection.ser.read(2)
+
+                if messageType == b'\xffff':
+                    pass
+                    #self.readSampleData
+                    # Read Sample
+                elif (messageType == b'\xfffe'):
+                    pass
+                    # ReadTime
+                elif (messageType == b'\xfffd'):
+                    pass
+                    # REad Position
+                
+                elif(messageType == b'\xfffc'):
+                    pass
+                    #Read Calibration
+
     def readLoop(self):
         returnString = bytearray("", encoding="utf-8")
         while True:

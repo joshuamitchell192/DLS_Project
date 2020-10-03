@@ -4,10 +4,6 @@
 #include <stdio.h>
 #include "crc.h"
 
-const char Serial::sample_type = 's';
-const char Serial::time_type = 't';
-const char Serial::position_type = 'p';
-
 void Serial::WriteChar(unsigned int value)
 {
     while ((UART0_FR_R & 0x20) == 0x20);
@@ -46,11 +42,11 @@ void Serial::WriteString(const char *string){
 void Serial::SendSampleAverage(int &sampleTotal, int &numSamples){
     int avg_sample = (double)sampleTotal / numSamples;
     
-    Serial::SendInt(avg_sample);
+    Serial::SendInt(avg_sample, MessageType::Sample);
 
 }
 
-void Serial::SendInt(int input){
+void Serial::SendInt(int input, char type){
     // unsigned int avgSample_lowerHalf = (0xFF & input); 
     // unsigned int avgSample_upperHalf = (0xF00 & input) >> 8;
 
@@ -63,15 +59,7 @@ void Serial::SendInt(int input){
     Serial::WriteChar(sampleBytes[0]);
     Serial::WriteChar(sampleBytes[1]);
 
-<<<<<<< HEAD:tiva cpp/src/serial/serial.cpp
-    if (input > 4095){
-        volatile bool error = true;
-    }
-    Serial::WriteChar(avgSample_lowerHalf);
-    Serial::WriteChar(avgSample_upperHalf);
-=======
     WriteCrc(sampleBytes);
->>>>>>> 4ffe8437ca4059cde92fad158cd9947ca7280f98:tiva cpp/serial.cpp
 }
 
 unsigned char * Serial::intToBytes(unsigned char bytes[2], int input){
@@ -96,7 +84,10 @@ unsigned char * Serial::floatToBytes(unsigned char bytes[4], float input){
     memcpy(bytes, floatStore.bytes, 4);
 }
 
-void Serial::SendFloat(float input){
+void Serial::SendFloat(float input, char type){
+
+    WriteFlag(type);
+
     unsigned char bytes[4];
     floatToBytes(bytes, input);
     

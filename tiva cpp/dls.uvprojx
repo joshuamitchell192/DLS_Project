@@ -338,7 +338,7 @@
               <MiscControls>--cpp11</MiscControls>
               <Define></Define>
               <Undefine></Undefine>
-              <IncludePath></IncludePath>
+              <IncludePath>src/include</IncludePath>
             </VariousControls>
           </Cads>
           <Aads>
@@ -430,7 +430,7 @@
             <File>
               <FileName>tm4c123gh6pm.h</FileName>
               <FileType>5</FileType>
-              <FilePath>.\src\tm4c123gh6pm.h</FilePath>
+              <FilePath>.\src\include\tm4c123gh6pm.h</FilePath>
             </File>
             <File>
               <FileName>main.h</FileName>
@@ -440,42 +440,42 @@
             <File>
               <FileName>setup.h</FileName>
               <FileType>5</FileType>
-              <FilePath>.\src\setup\setup.h</FilePath>
+              <FilePath>.\src\include\setup.h</FilePath>
             </File>
             <File>
               <FileName>crc.h</FileName>
               <FileType>5</FileType>
-              <FilePath>.\src\serial\crc.h</FilePath>
-            </File>
-            <File>
-              <FileName>serial.h</FileName>
-              <FileType>5</FileType>
-              <FilePath>.\src\serial\serial.h</FilePath>
-            </File>
-            <File>
-              <FileName>motorDriver.h</FileName>
-              <FileType>5</FileType>
-              <FilePath>.\src\drivers\motorDriver.h</FilePath>
+              <FilePath>.\src\include\crc.h</FilePath>
             </File>
             <File>
               <FileName>DLS.h</FileName>
               <FileType>5</FileType>
-              <FilePath>.\src\app\DLS.h</FilePath>
+              <FilePath>.\src\include\DLS.h</FilePath>
             </File>
             <File>
               <FileName>helpers.h</FileName>
               <FileType>5</FileType>
-              <FilePath>.\src\app\helpers.h</FilePath>
+              <FilePath>.\src\include\helpers.h</FilePath>
             </File>
             <File>
               <FileName>Instruction.h</FileName>
               <FileType>5</FileType>
-              <FilePath>.\src\app\Instruction.h</FilePath>
+              <FilePath>.\src\include\Instruction.h</FilePath>
+            </File>
+            <File>
+              <FileName>motorDriver.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>.\src\include\motorDriver.h</FilePath>
             </File>
             <File>
               <FileName>Queue.h</FileName>
               <FileType>5</FileType>
-              <FilePath>.\src\app\Queue.h</FilePath>
+              <FilePath>.\src\include\Queue.h</FilePath>
+            </File>
+            <File>
+              <FileName>serial.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>.\src\include\serial.h</FilePath>
             </File>
           </Files>
         </Group>

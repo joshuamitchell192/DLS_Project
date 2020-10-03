@@ -12,8 +12,6 @@ DLS dls;
 int main(void)
 {
     Serial::WriteString("Enter an instruction: ");
-
-    //Turn on adc timer for sampling
     dls.EventLoop();
 
     while(1);
