@@ -1,5 +1,5 @@
 #include "serial.h"
-#include "registers.h"
+#include "tm4c123gh6pm.h"
 #include <string.h>
 #include <stdio.h>
 #include "crc.h"
@@ -10,8 +10,8 @@ const char Serial::position_type = 'p';
 
 void Serial::WriteChar(unsigned int value)
 {
-    while ((UART0_FR & 0x20) == 0x20);
-    UART0_DR = value;
+    while ((UART0_FR_R & 0x20) == 0x20);
+    UART0_DR_R = value;
 }
 
 void Serial::WriteCrc(unsigned char * value)
@@ -41,16 +41,16 @@ void Serial::WriteCrc(unsigned char * value)
 //         crc = crc_update(crc, (unsigned char *)value , strlen((char *)value));
 //         crc = crc_finalize(crc);
         
-//         while ((UART0_FR & 0x20) == 0x20);
-//         UART0_DR = crc;
+//         while ((UART0_FR_R & 0x20) == 0x20);
+//         UART0_DR_R = crc;
 //     }
 // }
 
 unsigned int Serial::ReadChar()
 {
-    while ((UART0_FR & 0x10) == 0x10);
-    unsigned int data = (unsigned int)UART0_DR;
-    UART0_FR &= ~0x10;
+    while ((UART0_FR_R & 0x10) == 0x10);
+    unsigned int data = (unsigned int)UART0_DR_R;
+    UART0_FR_R &= ~0x10;
     return data;
 }
 
@@ -62,13 +62,18 @@ void Serial::WriteString(const char *string){
 
 void Serial::SendSampleAverage(int &sampleTotal, int &numSamples){
     int avg_sample = (double)sampleTotal / numSamples;
+    
     Serial::SendInt(avg_sample);
+
 }
 
 void Serial::SendInt(int input){
     unsigned int avgSample_lowerHalf = (0xFF & input); 
     unsigned int avgSample_upperHalf = (0xF00 & input) >> 8;
 
+    if (input > 4095){
+        volatile bool error = true;
+    }
     Serial::WriteChar(avgSample_lowerHalf);
     Serial::WriteChar(avgSample_upperHalf);
 }

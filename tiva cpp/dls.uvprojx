@@ -312,7 +312,7 @@
           </ArmAdsMisc>
           <Cads>
             <interw>1</interw>
-            <Optim>0</Optim>
+            <Optim>1</Optim>
             <oTime>0</oTime>
             <SplitLS>0</SplitLS>
             <OneElfS>1</OneElfS>
@@ -385,87 +385,97 @@
             <File>
               <FileName>main.cpp</FileName>
               <FileType>8</FileType>
-              <FilePath>.\main.cpp</FilePath>
-            </File>
-            <File>
-              <FileName>helpers.cpp</FileName>
-              <FileType>8</FileType>
-              <FilePath>.\helpers.cpp</FilePath>
-            </File>
-            <File>
-              <FileName>setup.cpp</FileName>
-              <FileType>8</FileType>
-              <FilePath>.\setup.cpp</FilePath>
+              <FilePath>.\src\main.cpp</FilePath>
             </File>
             <File>
               <FileName>DLS.cpp</FileName>
               <FileType>8</FileType>
-              <FilePath>.\DLS.cpp</FilePath>
+              <FilePath>.\src\app\DLS.cpp</FilePath>
             </File>
             <File>
-              <FileName>DLS.h</FileName>
-              <FileType>5</FileType>
-              <FilePath>.\DLS.h</FilePath>
-            </File>
-            <File>
-              <FileName>Startup.s</FileName>
-              <FileType>2</FileType>
-              <FilePath>.\Startup.s</FilePath>
-            </File>
-            <File>
-              <FileName>main.h</FileName>
-              <FileType>5</FileType>
-              <FilePath>.\main.h</FilePath>
+              <FileName>helpers.cpp</FileName>
+              <FileType>8</FileType>
+              <FilePath>.\src\app\helpers.cpp</FilePath>
             </File>
             <File>
               <FileName>Instruction.cpp</FileName>
               <FileType>8</FileType>
-              <FilePath>.\Instruction.cpp</FilePath>
+              <FilePath>.\src\app\Instruction.cpp</FilePath>
             </File>
             <File>
               <FileName>Queue.cpp</FileName>
               <FileType>8</FileType>
-              <FilePath>.\Queue.cpp</FilePath>
+              <FilePath>.\src\app\Queue.cpp</FilePath>
             </File>
             <File>
               <FileName>motorDriver.cpp</FileName>
               <FileType>8</FileType>
-              <FilePath>.\motorDriver.cpp</FilePath>
-            </File>
-            <File>
-              <FileName>motorDriver.h</FileName>
-              <FileType>5</FileType>
-              <FilePath>.\motorDriver.h</FilePath>
-            </File>
-            <File>
-              <FileName>Test.cpp</FileName>
-              <FileType>8</FileType>
-              <FilePath>.\Test.cpp</FilePath>
-            </File>
-            <File>
-              <FileName>serial.cpp</FileName>
-              <FileType>8</FileType>
-              <FilePath>.\serial.cpp</FilePath>
-            </File>
-            <File>
-              <FileName>serial.h</FileName>
-              <FileType>5</FileType>
-              <FilePath>.\serial.h</FilePath>
-            </File>
-            <File>
-              <FileName>tm4c123gh6pm.h</FileName>
-              <FileType>5</FileType>
-              <FilePath>.\tm4c123gh6pm.h</FilePath>
-            </File>
-            <File>
-              <FileName>crc.h</FileName>
-              <FileType>5</FileType>
-              <FilePath>.\crc.h</FilePath>
+              <FilePath>.\src\drivers\motorDriver.cpp</FilePath>
             </File>
             <File>
               <FileName>crc.cpp</FileName>
               <FileType>8</FileType>
-              <FilePath>.\crc.cpp</FilePath>
+              <FilePath>.\src\serial\crc.cpp</FilePath>
+            </File>
+            <File>
+              <FileName>serial.cpp</FileName>
+              <FileType>8</FileType>
+              <FilePath>.\src\serial\serial.cpp</FilePath>
+            </File>
+            <File>
+              <FileName>setup.cpp</FileName>
+              <FileType>8</FileType>
+              <FilePath>.\src\setup\setup.cpp</FilePath>
+            </File>
+            <File>
+              <FileName>tm4c123gh6pm.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>.\src\tm4c123gh6pm.h</FilePath>
+            </File>
+            <File>
+              <FileName>main.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>.\src\main.h</FilePath>
+            </File>
+            <File>
+              <FileName>setup.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>.\src\setup\setup.h</FilePath>
+            </File>
+            <File>
+              <FileName>crc.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>.\src\serial\crc.h</FilePath>
+            </File>
+            <File>
+              <FileName>serial.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>.\src\serial\serial.h</FilePath>
+            </File>
+            <File>
+              <FileName>motorDriver.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>.\src\drivers\motorDriver.h</FilePath>
+            </File>
+            <File>
+              <FileName>DLS.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>.\src\app\DLS.h</FilePath>
+            </File>
+            <File>
+              <FileName>helpers.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>.\src\app\helpers.h</FilePath>
+            </File>
+            <File>
+              <FileName>Instruction.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>.\src\app\Instruction.h</FilePath>
+            </File>
+            <File>
+              <FileName>Queue.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>.\src\app\Queue.h</FilePath>
             </File>
           </Files>
         </Group>

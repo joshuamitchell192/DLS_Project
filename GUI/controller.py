@@ -12,6 +12,7 @@ class Controller:
         self.positions = []
         self.pause = False
         self.stepsPerMM = 0.018
+        self.isSampling = False
 
     def handleCalibrate(self):
         self.isSampling = False
