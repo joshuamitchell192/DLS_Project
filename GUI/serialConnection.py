@@ -101,8 +101,16 @@ class SerialConnection:
         ser_bytes_sample1 = self.ser.read(1)
         ser_bytes_sample2 = self.ser.read(1)
 
+        crc = self.ser.read(2)
 
         ser_bytes_total = int.from_bytes(ser_bytes_sample1, byteorder='little', signed=False) + (int.from_bytes(ser_bytes_sample2, byteorder='little', signed=False) << 8)
+
+        crcData = ser_bytes_total + crc
+        remainder = self.crc.table_driven(crcData)
+        
+        if (remainder != 0):
+            print("---------- TRANMISSION ERROR OCCURED ----------")
+        print(f'Remainder: {remainder}')
 
         return ser_bytes_total
 

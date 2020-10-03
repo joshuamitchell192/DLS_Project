@@ -28,23 +28,6 @@ void Serial::WriteCrc(unsigned char * value)
         WriteChar(crcBytes[i]);
     }
 }
-    
-
-
-// void Serial::WriteChar(unsigned int value, char type, bool sendCrc){
-
-//     WriteChar(type);
-//     WriteChar(value);
-    
-//     if (sendCrc){
-//         crc_t crc = crc_init();
-//         crc = crc_update(crc, (unsigned char *)value , strlen((char *)value));
-//         crc = crc_finalize(crc);
-        
-//         while ((UART0_FR_R & 0x20) == 0x20);
-//         UART0_DR_R = crc;
-//     }
-// }
 
 unsigned int Serial::ReadChar()
 {
@@ -68,14 +51,27 @@ void Serial::SendSampleAverage(int &sampleTotal, int &numSamples){
 }
 
 void Serial::SendInt(int input){
-    unsigned int avgSample_lowerHalf = (0xFF & input); 
-    unsigned int avgSample_upperHalf = (0xF00 & input) >> 8;
+    // unsigned int avgSample_lowerHalf = (0xFF & input); 
+    // unsigned int avgSample_upperHalf = (0xF00 & input) >> 8;
 
+    // Serial::WriteChar(avgSample_lowerHalf);
+    // Serial::WriteChar(avgSample_upperHalf);
+
+    unsigned char sampleBytes[2];
+    intToBytes(sampleBytes, input);
+
+    Serial::WriteChar(sampleBytes[0]);
+    Serial::WriteChar(sampleBytes[1]);
+
+<<<<<<< HEAD:tiva cpp/src/serial/serial.cpp
     if (input > 4095){
         volatile bool error = true;
     }
     Serial::WriteChar(avgSample_lowerHalf);
     Serial::WriteChar(avgSample_upperHalf);
+=======
+    WriteCrc(sampleBytes);
+>>>>>>> 4ffe8437ca4059cde92fad158cd9947ca7280f98:tiva cpp/serial.cpp
 }
 
 unsigned char * Serial::intToBytes(unsigned char bytes[2], int input){

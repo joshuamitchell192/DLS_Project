@@ -67,6 +67,6 @@ crc_t crc_update(crc_t crc, const void *data, size_t data_len)
         tbl_idx = (crc ^ *d) & 0xff;
         crc = (crc_table[tbl_idx] ^ (crc >> 8)) & 0xffff;
         d++;
-    }
+    }                                                       
     return crc & 0xffff;
 }
