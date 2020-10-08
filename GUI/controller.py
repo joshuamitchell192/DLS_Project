@@ -153,23 +153,23 @@ class Controller:
             bytesToRead = self.serialConnection.ser.in_waiting
 
             if (bytesToRead > 0):
-
+                data = ""
                 messageType = self.serialConnection.ser.read(2)
 
-                if messageType == b'\xffff':
-                    pass
-                    #self.readSampleData
-                    # Read Sample
-                elif (messageType == b'\xfffe'):
-                    pass
-                    # ReadTime
-                elif (messageType == b'\xfffd'):
-                    pass
-                    # REad Position
-                
-                elif(messageType == b'\xfffc'):
+                if messageType == b'\xff\xff':
+
+                    data = self.readSampleData1()
+                    print(data)
+                    remainder = self.serialConnection.ser.read(2)
+                    print(f'Remainder: {remainder}')
+
+                elif(messageType == b'\xff\xfc'):
                     pass
                     #Read Calibration
+
+
+
+
 
     def readLoop(self):
         returnString = bytearray("", encoding="utf-8")
@@ -226,6 +226,33 @@ class Controller:
         self.samples.append(sample)
         self.times.append(time)
         self.positions.append(position)
+
+    def readSampleData1(self):
+        sample = self.serialConnection.ser.read(2)
+        print(f'Sample: {sample[0]}, {sample[1]}')
+
+        time = self.serialConnection.ser.read(4)
+        print(f'Time: {time[0]}, {time[1]}, {time[2]}, {time[3]}')
+
+        position = self.serialConnection.ser.read(4)
+        print(f'Time: {position[0]}, {position[1]}, {position[2]}, {position[3]}')
+
+        return sample + time + position
+
+        # time = round(self.serialConnection.readFloat(), 4)
+        # position = round(self.serialConnection.readFloat(), 4)
+        #sample = int.from_bytes(data1, byteorder='little', signed=False) + (int.from_bytes(data2, byteorder='little', signed=False) << 8)
+
+        # print(f'Total: {sample}, Data1: {data1} - Data2: {data2} - Time: {time} - Pos: {position}')
+        # self.samples.append(sample)
+        # self.times.append(time)
+        # self.positions.append(position)
+
+    def readCrc(self, data):
+        crc = self.serialConnection.read(2)
+        crcData = data + crc
+
+        return self.crc.table_driven(crcData)
 
     def handleClearSamples(self):
         """

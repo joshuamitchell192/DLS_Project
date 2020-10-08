@@ -98,7 +98,7 @@ void MotorDriver::Calibrate(bool &stop){
             stepsPerMM = numSteps / STAGE_LENGTH_MM;
             currentPosition = 0;
             Serial::WriteFlag(0xFD);
-            Serial::SendInt(stepsPerMM, Serial::MessageType::Calibration);
+            Serial::SendInt(stepsPerMM, Serial::Calibration);
             break;
         }
     }
@@ -113,9 +113,9 @@ void MotorDriver::StartSamplingHere(bool &stop){
         
         Serial::WriteFlag(0xFF);
         while(numSamples < averageInterval){
-            Serial::SendSampleAverage(sampleTotal, numSamples);
+            Serial::CalculateSampleAverage(sampleTotal, numSamples);
             float currentTime = CalculateCurrentTime();
-            Serial::SendFloat(currentTime, Serial::MessageType::Time);
+            Serial::SendFloat(currentTime, Serial::Time);
         }
         
         Serial::WriteFlag(0xFE);
@@ -234,13 +234,18 @@ void MotorDriver::WaitForSamples() {
     SetDriverTimer(sampleDuration_);
     StepMotor();
 
-    Serial::SendSampleAverage(sampleTotal, numSamples);
+    int sampleAvg = Serial::CalculateSampleAverage(sampleTotal, numSamples);
+    unsigned char sampleBytes[2] = Serial::SendInt(sampleAvg, Serial::Sample);
     volatile float currentTime = CalculateCurrentTime();
-    Serial::SendFloat(currentTime, Serial::MessageType::Time);
+    unsigned char timeBytes[4] = Serial::SendFloat(currentTime, Serial::Time);
 
     float currentPosMM = (float)(currentPosition / stepsPerMM / 4);
     
-    Serial::SendFloat(currentPosMM, Serial::MessageType::Position);
+    unsigned char positionBytes[4] = Serial::SendFloat(currentPosMM, Serial::Position);
+
+    unsigned char data[10] = sampleBytes + timeBytes + positionBytes;
+
+    Serial::WriteCrc(data, 10);
 }
 
 float MotorDriver::CalculateCurrentTime() {

@@ -88,8 +88,6 @@ class View(QMainWindow):
         self.StepMode_Combo.setGeometry(250, self.y, 150, 30)
         self.StepMode_Combo.setText("Step Mode")
 
-       
-
         self.y += 30
         self.SmpDuration_LineEdit = QLineEdit(self)
         self.SmpDuration_LineEdit.setValidator(QDoubleValidator(0.018,5.0, 3))
@@ -217,6 +215,7 @@ class View(QMainWindow):
         self.timer.timeout.connect(self.updateLabels)
         self.timer.start(100)
 
+        
         self.setFixedSize(QSize(1280, 720))
         self.setGeometry(300, 300, 1280, 720)
         self.setWindowFlags(Qt.WindowCloseButtonHint | Qt.WindowMinimizeButtonHint)

@@ -9,15 +9,15 @@ class Serial
             Calibration = 0xFC
         };
 
-        static void SendSampleAverage(int &sampleTotal, int &numSamples);
+        static int CalculateSampleAverage(int &sampleTotal, int &numSamples);
         static void SendTime(float Time);
         static void WriteChar(unsigned int value);
         static void WriteChar(unsigned int value, char type, bool sendCrc);
-        static void WriteCrc(unsigned char * value);
+        static void WriteCrc(unsigned char * value, int length);
         static unsigned int ReadChar();
         static void WriteString(const char* string);
-        static void SendInt(int input, char type);
-        static void SendFloat(float input, char type);
+        static unsigned char * SendInt(int input, char type);
+        static unsigned char * SendFloat(float input, char type);
         static void WriteFlag(int flag);
     
         static unsigned char * floatToBytes(unsigned char bytes[4], float input);

@@ -40,7 +40,7 @@ class App (QApplication):
         self.view = View(self.serialConnection, self.controller)
         self.view.show()
 
-        thread = threading.Thread(target=self.controller.readLoop, args=())
+        thread = threading.Thread(target=self.controller.readLoop1, args=())
         # probably should use an signalling mechanism like an Event to stop gracefully
         thread.daemon = True
         thread.start()
@@ -87,6 +87,9 @@ class App (QApplication):
         #self.serialConnection.connectionTest()
 
 if __name__ == '__main__':
+
+    if hasattr(Qt, 'AA_EnableHighDpiScaling'):
+        QApplication.setAttribute(Qt.AA_EnableHighDpiScaling, True)
     app = App(sys.argv)
 
     stylesheet = """

@@ -10,11 +10,11 @@ void Serial::WriteChar(unsigned int value)
     UART0_DR_R = value;
 }
 
-void Serial::WriteCrc(unsigned char * value)
+void Serial::WriteCrc(unsigned char * value, int length)
 {
     crc_t crc = crc_init();
-    int valueLength = strlen((char *) value);
-    crc = crc_update(crc, value, 4);
+
+    crc = crc_update(crc, value, length);
     crc = crc_finalize(crc);
     
     unsigned char crcBytes[2];
@@ -39,14 +39,11 @@ void Serial::WriteString(const char *string){
     }
 }
 
-void Serial::SendSampleAverage(int &sampleTotal, int &numSamples){
-    int avg_sample = (double)sampleTotal / numSamples;
-    
-    Serial::SendInt(avg_sample, MessageType::Sample);
-
+int Serial::CalculateSampleAverage(int &sampleTotal, int &numSamples){
+    return (double)sampleTotal / numSamples;
 }
 
-void Serial::SendInt(int input, char type){
+unsigned char * Serial::SendInt(int input, char type){
     // unsigned int avgSample_lowerHalf = (0xFF & input); 
     // unsigned int avgSample_upperHalf = (0xF00 & input) >> 8;
 
@@ -59,7 +56,7 @@ void Serial::SendInt(int input, char type){
     Serial::WriteChar(sampleBytes[0]);
     Serial::WriteChar(sampleBytes[1]);
 
-    WriteCrc(sampleBytes);
+    return sampleBytes;
 }
 
 unsigned char * Serial::intToBytes(unsigned char bytes[2], int input){
@@ -84,9 +81,7 @@ unsigned char * Serial::floatToBytes(unsigned char bytes[4], float input){
     memcpy(bytes, floatStore.bytes, 4);
 }
 
-void Serial::SendFloat(float input, char type){
-
-    WriteFlag(type);
+unsigned char * Serial::SendFloat(float input, char type){
 
     unsigned char bytes[4];
     floatToBytes(bytes, input);
@@ -95,7 +90,7 @@ void Serial::SendFloat(float input, char type){
         WriteChar(bytes[i]);
     }
 
-    WriteCrc(bytes);
+    return bytes;
 }
 
 void Serial::WriteFlag(int flag){
