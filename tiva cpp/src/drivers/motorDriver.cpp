@@ -207,10 +207,11 @@ void MotorDriver::ScanBetween(bool &stop, int dest) {
     
     int direction = SetDirection(dest);
     
-    Serial::WriteFlag(0xFF);
+    
 
     if (direction == 1) {
         while (currentPosition < dest && !stop && !IsSwitchB2On()){
+            Serial::WriteFlag(0xFF);
             WaitForSamples();
             currentPosition += stepAmount;
             GoToPosition(stop, currentPosition + stepsBetweenSamples, MIN_SAMPLE_DURATION);
@@ -218,6 +219,7 @@ void MotorDriver::ScanBetween(bool &stop, int dest) {
     }
     else if (direction == -1) {
         while (currentPosition > dest && !stop && !IsSwitchB1On()){
+            Serial::WriteFlag(0xFF);
             WaitForSamples();
             currentPosition -= stepAmount;
             GoToPosition(stop, currentPosition + (stepsBetweenSamples * direction), MIN_SAMPLE_DURATION);
