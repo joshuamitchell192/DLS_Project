@@ -228,15 +228,20 @@ class Controller:
         self.positions.append(position)
 
     def readSampleData1(self):
-        sample = self.serialConnection.ser.read(2)
-        print(f'Sample: {sample[0]}, {sample[1]}')
+        sample = self.serialConnection.readInt()
+        print(f'Sample: {sample}')
 
-        time = self.serialConnection.ser.read(4)
-        print(f'Time: {time[0]}, {time[1]}, {time[2]}, {time[3]}')
+        time = round(self.serialConnection.readFloat(), 4)
+        #print(f'Time: {time[0]}, {time[1]}, {time[2]}, {time[3]}')
+        print(f'Time: {time}')
 
-        position = self.serialConnection.ser.read(4)
-        print(f'Time: {position[0]}, {position[1]}, {position[2]}, {position[3]}')
+        position = round(self.serialConnection.readFloat(), 4)
+        #print(f'Time: {position[0]}, {position[1]}, {position[2]}, {position[3]}')
+        print(f'Position: {position}')
 
+        self.samples.append(sample)
+        self.times.append(time)
+        self.positions.append(position)
         return sample + time + position
 
         # time = round(self.serialConnection.readFloat(), 4)
