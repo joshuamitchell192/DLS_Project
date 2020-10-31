@@ -7,6 +7,7 @@
 #define MIN_SAMPLE_DURATION 0.001
 #define STAGE_LENGTH_MM 65.0
 #define TIVA_CLOCK_SPEED 16000000.0
+#define SCANBETWEEN_PACKAGE_LENGTH 10
 
 MotorDriver::MotorDriver(){
     stepsPerMM = 0.0;
@@ -98,7 +99,7 @@ void MotorDriver::Calibrate(bool &stop){
             stepsPerMM = numSteps / STAGE_LENGTH_MM;
             currentPosition = 0;
             Serial::WriteFlag(0xFD);
-            Serial::SendInt(stepsPerMM, Serial::Calibration);
+            //Serial::SendShort(stepsPerMM, Serial::Calibration);
             break;
         }
     }
@@ -115,7 +116,7 @@ void MotorDriver::StartSamplingHere(bool &stop){
         while(numSamples < averageInterval){
             Serial::CalculateSampleAverage(sampleTotal, numSamples);
             float currentTime = CalculateCurrentTime();
-            Serial::SendFloat(currentTime, Serial::Time);
+            //Serial::SendFloat(currentTime, Serial::Time);
         }
         
         Serial::WriteFlag(0xFE);
@@ -206,8 +207,6 @@ void MotorDriver::ScanBetween(bool &stop, int dest) {
     totalTimeElapsed = 0;
     
     int direction = SetDirection(dest);
-    
-    
 
     if (direction == 1) {
         while (currentPosition < dest && !stop && !IsSwitchB2On()){
@@ -229,7 +228,11 @@ void MotorDriver::ScanBetween(bool &stop, int dest) {
     Serial::WriteFlag(0xFE);
 }
 
+/**
+ * 
+ */
 void MotorDriver::WaitForSamples() {
+
     sampleTotal = 0;
     numSamples = 1;
 
@@ -237,19 +240,38 @@ void MotorDriver::WaitForSamples() {
     StepMotor();
 
     int sampleAvg = Serial::CalculateSampleAverage(sampleTotal, numSamples);
-    unsigned char sampleBytes[2] = Serial::SendInt(sampleAvg, Serial::Sample);
+    //unsigned char sampleBytes[2];
+    unsigned char * sampleBytes = Serial::SendShort(sampleAvg, Serial::Sample);
+    sampleBytes = (unsigned char*)"123";
+
     volatile float currentTime = CalculateCurrentTime();
-    unsigned char timeBytes[4] = Serial::SendFloat(currentTime, Serial::Time);
+    //currentTime = 4.0;
+
+    //unsigned char timeBytes[sizeof(float)];
+    // Serial::floatToBytes(timeBytes, currentTime);
+
+    unsigned char * timeBytes = Serial::SendFloat(currentTime, Serial::Time);
 
     float currentPosMM = (float)(currentPosition / stepsPerMM / 4);
+    //unsigned char positionBytes[sizeof(float)];
+    // Serial::floatToBytes(positionBytes, currentPosition);
+
+    unsigned char * positionBytes = Serial::SendFloat(currentPosMM, Serial::Position);
+    unsigned char crcData[30];
     
-    unsigned char positionBytes[4] = Serial::SendFloat(currentPosMM, Serial::Position);
+//    Helpers::appendBytes(crcData, 0, sampleBytes, sizeof(short));
+//    Helpers::appendBytes(crcData, sizeof(short), timeBytes, sizeof(float));
+//    Helpers::appendBytes(crcData, sizeof(short) + sizeof(float), positionBytes, sizeof(float));
+    strcpy((char *)crcData, (char *)sampleBytes);
+    strcat((char *)crcData, (char *)timeBytes);
+    strcat((char *)crcData, (char *)positionBytes); // Hard Fault here!
 
-    unsigned char data[10] = sampleBytes + timeBytes + positionBytes;
-
-    Serial::WriteCrc(data, 10);
+    Serial::WriteCrc(crcData, SCANBETWEEN_PACKAGE_LENGTH);
 }
 
+/**
+ * 
+ */
 float MotorDriver::CalculateCurrentTime() {
     volatile int totalSecondsF = totalTimeElapsed;
     volatile float leftOverTimeF = (float)(NVIC_ST_RELOAD_R - NVIC_ST_CURRENT_R) / TIVA_CLOCK_SPEED;

@@ -26,12 +26,6 @@ class View(QMainWindow):
         self.Calibrate_Button.setText("Calibrate")
         self.Calibrate_Button.clicked.connect(lambda: self.controller.handleCalibrate())
 
-        
-        self.GoTo_Button = QPushButton(self)
-        self.GoTo_Button.setGeometry(150, self.y, 120, 35)
-        self.GoTo_Button.setText("Move to Start")
-        self.GoTo_Button.clicked.connect(lambda: self.controller.handleGoToPoint(self.P1_Slider.value()))
-
         self.y += 80
 
         self.P1_Label = QLabel(self)
@@ -89,6 +83,7 @@ class View(QMainWindow):
         self.StepMode_Combo.setText("Step Mode")
 
         self.y += 30
+
         self.SmpDuration_LineEdit = QLineEdit(self)
         self.SmpDuration_LineEdit.setValidator(QDoubleValidator(0.018,5.0, 3))
         self.SmpDuration_LineEdit.setGeometry(40, self.y, 150, 25)
@@ -159,6 +154,11 @@ class View(QMainWindow):
         self.ScanAtPoint_Button.setText("Start Sampling")
         self.ScanAtPoint_Button.clicked.connect(lambda: self.controller.handleStartSample(self.AvgInterval_SpinBox.value()))
 
+        self.GoTo_Button = QPushButton(self)
+        self.GoTo_Button.setGeometry(390, self.y - 10, 120, 35)
+        self.GoTo_Button.setText("Move to Start")
+        self.GoTo_Button.clicked.connect(lambda: self.controller.handleGoToPoint(self.P1_Slider.value()))
+
         self.y += 5
 
         self.TimeElapsed_Label = QLabel(self)
@@ -182,11 +182,11 @@ class View(QMainWindow):
 
         self.y += 120
 
-        self.Pause_Button = QPushButton(self)
-        self.Pause_Button.setGeometry(40, self.y, 100, 35)
-        self.Pause_Button.setText("Pause")
-        self.Pause_Button.setToolTip("Stops executing the current instruction")
-        self.Pause_Button.clicked.connect(self.togglePause)
+        self.Stop_Button = QPushButton(self)
+        self.Stop_Button.setGeometry(40, self.y, 100, 35)
+        self.Stop_Button.setText("Stop")
+        self.Stop_Button.setToolTip("Stops executing the current instruction")
+        self.Stop_Button.clicked.connect(self.toggleStop)
 
         self.ClearQueue_Button = QPushButton(self)
         self.ClearQueue_Button.setGeometry(150, self.y, 100, 35)
@@ -215,8 +215,9 @@ class View(QMainWindow):
         self.timer.timeout.connect(self.updateLabels)
         self.timer.start(100)
 
-        
-        self.setFixedSize(QSize(1280, 720))
+        #self.setBaseSize(QSize(1280, 720))
+        self.setMinimumSize(QSize(704, 480))
+        self.setMaximumSize(QSize(1920, 1080))
         self.setGeometry(300, 300, 1280, 720)
         self.setWindowFlags(Qt.WindowCloseButtonHint | Qt.WindowMinimizeButtonHint)
         self.setWindowTitle('Linear Stage Controller')
@@ -275,12 +276,12 @@ class View(QMainWindow):
     def __updateP2Slider(self, value):
         self.P2_Slider.setValue(value)
 
-    def togglePause(self):
+    def toggleStop(self):
         self.controller.handlePause()
         if (self.controller.pause):
-            self.Pause_Button.setText("Resume")
+            self.Stop_Button.setText("Resume")
         else:
-            self.Pause_Button.setText("Pause")
+            self.Stop_Button.setText("Stop")
 
     def fileQuit(self):
             self.close()

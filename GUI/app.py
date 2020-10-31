@@ -1,4 +1,4 @@
-from PyQt5.QtWidgets import (QApplication, QDialog)
+from PyQt5.QtWidgets import (QApplication, QDialog, QErrorMessage)
 from PyQt5.QtCore import Qt, QTimer
 import serial.tools.list_ports as port_list
 import sys, threading, configparser
@@ -14,17 +14,24 @@ class App (QApplication):
     def __init__(self, sys_argv):
         super(App, self).__init__(sys_argv)
 
+        self.serialConnection = SerialConnection()
+
         try:
             port = self.loadConfigComPort()
 
-            if (port == ""):
-            
-                self.getPortDialog = PortDialog()
-                self.getPortDialog.setModal(True)
-                self.getPortDialog.exec()
-                port = self.getPortDialog.Port_LineEdit.text()
+            if (self.serialConnection.connectionTest(port)):
+                self.serialConnection.establishConnection(port)
 
-        except:
+            else:
+                while (not self.serialConnection.connectionTest(port)):
+                    # error_dialog = QErrorMessage()
+                    # error_dialog.setWindowTitle("Connection Failed")
+                    # error_dialog.showMessage('Failed to connect to the given port')
+                    port = self.openPortModal()
+
+                self.serialConnection.establishConnection(port)
+        except Exception as ex:
+            print(ex)
             ports = list(port_list.comports())
             print()
             for p in ports:
@@ -32,10 +39,9 @@ class App (QApplication):
             print()
             port = input("Enter the COM port you're connected to: ")
 
-
         print("Connecting to " + port.upper())
 
-        self.serialConnection = SerialConnection(port)
+
         self.controller = Controller(self.serialConnection, Instructions)
         self.view = View(self.serialConnection, self.controller)
         self.view.show()
@@ -85,6 +91,16 @@ class App (QApplication):
                 self.view.AvgInterval_SpinBox.setValue(int(defaultSettings["AverageInterval"]))
 
         #self.serialConnection.connectionTest()
+
+    def openPortModal(self):
+        self.getPortDialog = PortDialog()
+        self.getPortDialog.setModal(True)
+
+        if (self.getPortDialog.exec() == QDialog.Accepted):
+            return self.getPortDialog.PortList.currentText()
+        else:
+            sys.exit()
+            
 
 if __name__ == '__main__':
 

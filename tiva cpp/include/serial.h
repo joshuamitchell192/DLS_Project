@@ -16,10 +16,11 @@ class Serial
         static void WriteCrc(unsigned char * value, int length);
         static unsigned int ReadChar();
         static void WriteString(const char* string);
-        static unsigned char * SendInt(int input, char type);
+        static void WriteBytes(unsigned char * bytes, int length);
+        static unsigned char * SendShort(int input, char type);
         static unsigned char * SendFloat(float input, char type);
         static void WriteFlag(int flag);
     
         static unsigned char * floatToBytes(unsigned char bytes[4], float input);
-        static unsigned char * intToBytes(unsigned char bytes[2], int input);
+        static unsigned char * shortToBytes(unsigned char bytes[2], short input);
 };

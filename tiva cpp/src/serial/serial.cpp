@@ -4,12 +4,18 @@
 #include <stdio.h>
 #include "crc.h"
 
+/**
+ * 
+ */
 void Serial::WriteChar(unsigned int value)
 {
     while ((UART0_FR_R & 0x20) == 0x20);
     UART0_DR_R = value;
 }
 
+/**
+ * 
+ */
 void Serial::WriteCrc(unsigned char * value, int length)
 {
     crc_t crc = crc_init();
@@ -18,13 +24,16 @@ void Serial::WriteCrc(unsigned char * value, int length)
     crc = crc_finalize(crc);
     
     unsigned char crcBytes[2];
-    intToBytes(crcBytes, crc);
+    shortToBytes(crcBytes, crc);
 
     for (int i = 0; i < 2; i++) {
         WriteChar(crcBytes[i]);
     }
 }
 
+/**
+ * 
+ */
 unsigned int Serial::ReadChar()
 {
     while ((UART0_FR_R & 0x10) == 0x10);
@@ -33,66 +42,97 @@ unsigned int Serial::ReadChar()
     return data;
 }
 
+/**
+ * 
+ */
 void Serial::WriteString(const char *string){
     for (int i = 0; i < strlen(string); i++){
         WriteChar(string[i]);
     }
 }
 
+/**
+ * 
+ */
+void Serial::WriteBytes(unsigned char *bytes, int length) {
+    for (int i = 0; i < length; i++) {
+        WriteChar(bytes[i]);
+    }
+}
+
+/**
+ * Calculates the sample average from the given sample total and number of samples
+ * 
+ * @param sampleTotal : the total sum of the samples collected
+ * @param numSamples : number of samples to average the sample total by
+ */
 int Serial::CalculateSampleAverage(int &sampleTotal, int &numSamples){
     return (double)sampleTotal / numSamples;
 }
 
-unsigned char * Serial::SendInt(int input, char type){
-    // unsigned int avgSample_lowerHalf = (0xFF & input); 
-    // unsigned int avgSample_upperHalf = (0xF00 & input) >> 8;
-
-    // Serial::WriteChar(avgSample_lowerHalf);
-    // Serial::WriteChar(avgSample_upperHalf);
-
-    unsigned char sampleBytes[2];
-    intToBytes(sampleBytes, input);
-
-    Serial::WriteChar(sampleBytes[0]);
-    Serial::WriteChar(sampleBytes[1]);
-
-    return sampleBytes;
-}
-
-unsigned char * Serial::intToBytes(unsigned char bytes[2], int input){
+/**
+ * Converts a 16 bit int into an array of chars of length 2
+ */
+unsigned char * Serial::shortToBytes(unsigned char bytes[2], short input){
     
     union{
-        int a;
+        short a;
         unsigned char bytes[2];
-    } intStore;
+    } shortStore;
     
-    intStore.a = input;
-    memcpy(bytes, intStore.bytes, 2);
+    shortStore.a = input;
+    memcpy(bytes, shortStore.bytes, sizeof(short));
 }
 
+/**
+ * Converts a 32 bit float into an array of chars of length 4
+ */
 unsigned char * Serial::floatToBytes(unsigned char bytes[4], float input){
-    
+
     union{
         float a;
         unsigned char bytes[4];
     } floatStore;
-    
+
     floatStore.a = input;
-    memcpy(bytes, floatStore.bytes, 4);
+    memcpy(bytes, floatStore.bytes, sizeof(float));
 }
 
-unsigned char * Serial::SendFloat(float input, char type){
+/** 
+ * Sends a 16 bit int over the serial connection after converting to an array of chars
+ */
+unsigned char * Serial::SendShort(int input, char type){
 
-    unsigned char bytes[4];
-    floatToBytes(bytes, input);
-    
-    for (int i = 0; i < 4; i++){
-        WriteChar(bytes[i]);
-    }
+    unsigned char bytes[2];
+    Serial::shortToBytes(bytes, input);
+
+    Serial::WriteChar(bytes[0]);
+    Serial::WriteChar(bytes[1]);
+
+    // Serial::WriteBytes(bytes, sizeof(short));
 
     return bytes;
 }
 
+/**
+ * Sends a 32 bit float over the serial connection by first converting to an array of chars
+ */
+unsigned char * Serial::SendFloat(float input, char type){
+
+    unsigned char bytes[sizeof(float)];
+    Serial::floatToBytes(bytes, input);
+
+    for (int i = 0; i < 4; i++){
+        WriteChar(bytes[i]);
+    }
+    // Serial::WriteBytes(bytes, sizeof(float));
+
+    return bytes;
+}
+
+/**
+ * Sends a 16 bit flag value over the serial connection
+ */
 void Serial::WriteFlag(int flag){
     WriteChar(0xFF);
     WriteChar(flag);

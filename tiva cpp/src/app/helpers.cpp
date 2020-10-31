@@ -33,6 +33,14 @@ unsigned int Helpers::getPreload(double seconds, int prescaler){
     
 }
 
+unsigned char * Helpers::appendBytes(unsigned char * byteArray, int endPosition, unsigned char * newBytes, int newBytesLength) {
+    for (int i = 0; i < newBytesLength; i++) {
+        byteArray[endPosition + i] = newBytes[i];
+    }
+
+    return byteArray;
+}
+
 int Helpers::ToInt(char* string) {
     char *ptr;
     return strtol(string, &ptr, 10);

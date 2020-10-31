@@ -11,7 +11,7 @@ import pycrc.algorithms
 
 class SerialConnection:
 
-    def __init__(self, port):
+    def __init__(self):
 
         """ Sets up the serial connection with the specified configuration.
 
@@ -19,22 +19,22 @@ class SerialConnection:
 
         """
         self.crc = pycrc.algorithms.Crc(width=16, poly=0x8005, reflect_in=True, xor_in= 0x0000, reflect_out=True, xor_out = 0x0000)
+        #self.ser = serial.Serial(port=port.upper(), baudrate=57600, bytesize=serial.EIGHTBITS, parity=serial.PARITY_ODD, stopbits=serial.STOPBITS_TWO, xonxoff=False, timeout=200)
+
+    def establishConnection(self, port):
         self.ser = serial.Serial(port=port.upper(), baudrate=57600, bytesize=serial.EIGHTBITS, parity=serial.PARITY_ODD, stopbits=serial.STOPBITS_TWO, xonxoff=False, timeout=200)
 
-    def connectionTest(self):
+    def connectionTest(self, port):
 
-        """ Sends two characters to the tiva and waits to receive them back to ensure that communication is ready to begin running the program.
+        """ Attempts to connect to the given port and returns if the connection was successful.
 
         """
 
-        print("Turn on the Tiva")
-        g_byte = self.ser.read(1)
-        o_byte = self.ser.read(1)
-
-        if (g_byte.decode("ascii") != "G") | (o_byte.decode("ascii") != "O"):
-            print("Unsuccessful Serial Connection to Tiva, Try Again")
-        else:
-            print("Successful Serial Connection to Tiva")
+        try:
+            serial.Serial(port=port.upper(), baudrate=57600, bytesize=serial.EIGHTBITS, parity=serial.PARITY_ODD, stopbits=serial.STOPBITS_TWO, xonxoff=False, timeout=200)
+            return True
+        except(Exception):
+            return False
 
     
 
@@ -119,6 +119,7 @@ class SerialConnection:
         data2 = self.ser.read(1)
         
         return int.from_bytes(data1, byteorder='little', signed=False) + (int.from_bytes(data2, byteorder='little', signed=False) << 8)
+        # return data1 + data2
 
     def readFloat(self):
         ser_bytes_lower = self.ser.read(1)
@@ -129,32 +130,17 @@ class SerialConnection:
         print(f'{ser_bytes_upper_upper} - {ser_bytes_upper} - {ser_bytes_mid} - {ser_bytes_lower}')
         print(f'{int.from_bytes(ser_bytes_upper_upper,"little")} - {int.from_bytes(ser_bytes_upper,"little")} - {int.from_bytes(ser_bytes_mid,"little")} - {int.from_bytes(ser_bytes_lower,"little")}')
 
-        crc = self.ser.read(1)
-        crc2 = self.ser.read(1)
+        # crc = self.ser.read(1)
+        # crc2 = self.ser.read(1)
 
         ser_bytes_total = ser_bytes_lower + ser_bytes_mid + ser_bytes_upper + ser_bytes_upper_upper 
-        crcData = ser_bytes_lower + ser_bytes_mid + ser_bytes_upper + ser_bytes_upper_upper + crc + crc2
+        # ser_bytes_total = ser_bytes_upper_upper + ser_bytes_upper + ser_bytes_mid + ser_bytes_lower
+        # crcData = ser_bytes_lower + ser_bytes_mid + ser_bytes_upper + ser_bytes_upper_upper + crc + crc2
 
-        remainder = self.crc.table_driven(crcData)
-        if (remainder != 0):
-            print("---------- TRANMISSION ERROR OCCURED ----------")
-        print(f'Remainder: {remainder}')
+        # remainder = self.crc.table_driven(crcData)
+        # if (remainder != 0):
+        #     print("---------- TRANMISSION ERROR OCCURED ----------")
+        # print(f'Remainder: {remainder}')
 
         return struct.unpack('f', ser_bytes_total)[0]
-
-    def sendStopInstruction(self, instruction):
-
-        """ Sends an '!' character so the Tiva will interrupt and stop running any task that's currently executing.
-
-            :param: '!' instruction sent by the Stop Button handleStop function.
-        """
-
-        print(f'Sending: {instruction}\n')
-        self.ser.write(instruction.encode("ascii"))
-
-        self.ser.reset_input_buffer()
-        ser_bytes = self.ser.read(1)
-
-    #def receiveFloat(self):
-
-    #def recieveInt(self):
+        # return ser_bytes_total

@@ -2,6 +2,8 @@ from view import View
 from serialConnection import SerialConnection
 from PyQt5.QtWidgets import QApplication
 import time, configparser
+import struct
+import pycrc.algorithms
 
 class Controller:
     def __init__(self, serialConnection, Instructions):
@@ -13,6 +15,7 @@ class Controller:
         self.pause = False
         self.stepsPerMM = 0.018
         self.isSampling = False
+        self.crc = pycrc.algorithms.Crc(width=16, poly=0x8005, reflect_in=True, xor_in= 0x0000, reflect_out=True, xor_out = 0x0000)
 
     def handleCalibrate(self):
         self.isSampling = False
@@ -31,58 +34,6 @@ class Controller:
         self.serialConnection.sendInstruction(self.Instructions.TurnOffAdc)
         self.serialConnection.sendInstruction(self.Instructions.EndProgram)
         self.serialConnection.sendInstruction(self.Instructions.Resume)
-
-    # def handleScanBetween(self, P1, P2, sampleDuration, stepLength, stepSize):
-
-    #     """ Sends the TWOPOS_SCAN instruction along with its associated values.
-
-    #         :param: P1 - the first position from the top slider widget
-    #         :param: P2 - the second position from the bottom slider widget
-    #         :param: sampleDuration - the value from sampleDuration spinbox indicating how low to sample for at each step.
-    #         :param: stepLength - the value selected in the stepLength_combobox (Full, Half, or Quarter)
-
-    #     """
-    #     self.handleStop()
-    #     self.stop = False
-    #     self.serialConnection.sendInstruction(self.Instructions.TWOPOS_SCAN)
-    #     self.serialConnection.sendValue(P1)
-    #     self.serialConnection.sendValue(P2)
-
-    #     sampleDurationWhole = int(float(sampleDuration) * 1000)
-    #     sampleDurationLower = sampleDurationWhole & 0xFF
-    #     sampleDurationMiddle = (sampleDurationWhole & 0xFF00) >> 8
-    #     sampleDurationUpper = (sampleDurationWhole & 0xFF0000) >> 16
-
-    #     self.serialConnection.sendValue(sampleDurationLower)
-    #     self.serialConnection.sendValue(sampleDurationMiddle)
-    #     self.serialConnection.sendValue(sampleDurationUpper)
-
-    #     stepLengthWhole = int(float(stepLength) * 1000)
-    #     stepLengthLower = stepLengthWhole & 0xFF
-    #     stepLengthUpper = (stepLengthWhole & 0xFF00) >> 8
-
-    #     self.serialConnection.sendValue(stepLengthLower)
-    #     self.serialConnection.sendValue(stepLengthUpper)
-
-    #     if (stepSize == "Full"):
-    #         self.serialConnection.sendValue(2)
-    #     elif (stepSize == "Half"):
-    #         self.serialConnection.sendValue(1)
-    #     elif (stepSize == "Quarter"):
-    #         self.serialConnection.sendValue(0)
-    #     else:
-    #         self.serialConnection.sendValue(2)
-
-    #     while(not self.stop):
-    #         currentSample = self.serialConnection.readSample()
-    #         if currentSample == 0xFFFF:
-    #             break
-    #         currentTime = self.serialConnection.readTime()
-    #         print(currentTime)
-    #         self.samples.append(currentSample)
-            
-    #         self.times.append(currentTime)
-    #         QApplication.processEvents()
 
     def handlePause(self):
 
@@ -160,50 +111,48 @@ class Controller:
 
                     data = self.readSampleData1()
                     print(data)
-                    remainder = self.serialConnection.ser.read(2)
+                    remainder = self.readCrc(data)
+                    if (remainder != 0):
+                        print("---------- TRANMISSION ERROR OCCURED ----------")
                     print(f'Remainder: {remainder}')
 
                 elif(messageType == b'\xff\xfc'):
                     pass
                     #Read Calibration
 
+    # def readLoop(self):
+    #     returnString = bytearray("", encoding="utf-8")
+    #     while True:
+    #         bytesToRead = self.serialConnection.ser.in_waiting
+    #         if (bytesToRead > 0):
 
+    #             data1 = self.serialConnection.ser.read(1)
 
+    #             if data1 == b'\xff':
+    #                 data2 = self.serialConnection.ser.read(1)
+    #                 if data2 == b'\xff':
+    #                     self.isSampling = True
+    #                     print(f'Sampling is: {self.isSampling}')
+    #                     continue
+    #                 elif data2 == b'\xfe':
+    #                     self.isSampling = False
+    #                     print(f'Sampling is: {self.isSampling}')
+    #                     continue
+    #                 elif data2 == b'\xfd':
+    #                     stepsPerMM = self.serialConnection.readInt()
+    #                     self.saveSetting('Calibration', 'stepsPerMM', str(stepsPerMM))
 
+    #             else:
+    #                 if self.isSampling:
+    #                     self.readSampleData(data1)
 
-    def readLoop(self):
-        returnString = bytearray("", encoding="utf-8")
-        while True:
-            bytesToRead = self.serialConnection.ser.in_waiting
-            if (bytesToRead > 0):
-
-                data1 = self.serialConnection.ser.read(1)
-
-                if data1 == b'\xff':
-                    data2 = self.serialConnection.ser.read(1)
-                    if data2 == b'\xff':
-                        self.isSampling = True
-                        print(f'Sampling is: {self.isSampling}')
-                        continue
-                    elif data2 == b'\xfe':
-                        self.isSampling = False
-                        print(f'Sampling is: {self.isSampling}')
-                        continue
-                    elif data2 == b'\xfd':
-                        stepsPerMM = self.serialConnection.readInt()
-                        self.saveSetting('Calibration', 'stepsPerMM', str(stepsPerMM))
-
-                else:
-                    if self.isSampling:
-                        self.readSampleData(data1)
-
-                    else:
-                        if (data1 == b'\n'):
-                            print(f"Receiving: {str(returnString)}")
-                            returnString = bytearray("", encoding="utf-8")
-                        else:
-                            returnString = returnString + data1
-                self.serialConnection.ser.reset_input_buffer()
+    #                 else:
+    #                     if (data1 == b'\n'):
+    #                         print(f"Receiving: {str(returnString)}")
+    #                         returnString = bytearray("", encoding="utf-8")
+    #                     else:
+    #                         returnString = returnString + data1
+    #             self.serialConnection.ser.reset_input_buffer()
 
     def saveSetting(self, section, field, value):
         config = configparser.ConfigParser()
@@ -215,34 +164,47 @@ class Controller:
             config.write(configFile)
 
 
-    def readSampleData(self, data1):
-        data2 = self.serialConnection.ser.read(1)
+    # def readSampleData(self, data1):
+    #     data2 = self.serialConnection.ser.read(1)
 
-        time = round(self.serialConnection.readFloat(), 4)
-        position = round(self.serialConnection.readFloat(), 4)
-        sample = int.from_bytes(data1, byteorder='little', signed=False) + (int.from_bytes(data2, byteorder='little', signed=False) << 8)
+    #     time = round(self.serialConnection.readFloat(), 4)
+    #     position = round(self.serialConnection.readFloat(), 4)
+    #     sample = int.from_bytes(data1, byteorder='little', signed=False) + (int.from_bytes(data2, byteorder='little', signed=False) << 8)
 
-        print(f'Total: {sample}, Data1: {data1} - Data2: {data2} - Time: {time} - Pos: {position}')
-        self.samples.append(sample)
-        self.times.append(time)
-        self.positions.append(position)
+    #     print(f'Total: {sample}, Data1: {data1} - Data2: {data2} - Time: {time} - Pos: {position}')
+    #     self.samples.append(sample)
+    #     self.times.append(time)
+    #     self.positions.append(position)
 
     def readSampleData1(self):
         sample = self.serialConnection.readInt()
-        print(f'Sample: {sample}')
 
         time = round(self.serialConnection.readFloat(), 4)
+        # timeBytes = self.serialConnection.readFloat()
         #print(f'Time: {time[0]}, {time[1]}, {time[2]}, {time[3]}')
-        print(f'Time: {time}')
 
         position = round(self.serialConnection.readFloat(), 4)
+        # positionBytes = self.serialConnection.readFloat()
         #print(f'Time: {position[0]}, {position[1]}, {position[2]}, {position[3]}')
+
+
+        # sample = struct.unpack('h', sampleBytes)[0]
+        # time = struct.unpack('f', timeBytes)[0]
+        # position = struct.unpack('f', positionBytes)[0]
+
+        print(f'Sample: {sample}')
+        print(f'Time: {time}')
         print(f'Position: {position}')
 
-        self.samples.append(sample)
-        self.times.append(time)
-        self.positions.append(position)
-        return sample + time + position
+        self.samples.append(round(sample, 4))
+        self.times.append(round(time, 4))
+        self.positions.append(round(position, 4))
+
+        # data = sampleBytes + timeBytes + positionBytes
+
+        # print(' '.join(hex(letter) for letter in data))
+
+        return struct.pack('h',sample) #+ timeBytes + positionBytes
 
         # time = round(self.serialConnection.readFloat(), 4)
         # position = round(self.serialConnection.readFloat(), 4)
@@ -254,7 +216,7 @@ class Controller:
         # self.positions.append(position)
 
     def readCrc(self, data):
-        crc = self.serialConnection.read(2)
+        crc = self.serialConnection.ser.read(2)
         crcData = data + crc
 
         return self.crc.table_driven(crcData)
