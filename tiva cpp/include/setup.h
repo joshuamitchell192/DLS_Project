@@ -5,7 +5,7 @@ class Setup {
         static void SensorGPIOSetup(void);
         static void SensorTimerSetup(void);
     
-        static void SampleDurationTimer(void);
+        static void MotorStepDelayTimerSetup(void);
 
         static void Uart0TerminalSetup(void);
 
@@ -14,7 +14,7 @@ class Setup {
 
         static void StepSizeGPIOSetup(void);
 
-        static void DriverTimerSetup(void);
+        static void SampleDurationTimerSetup(void);
 
         static void sysTickSamplingTimerSetup(void);
 

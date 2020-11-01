@@ -162,15 +162,15 @@ class View(QMainWindow):
         self.y += 5
 
         self.TimeElapsed_Label = QLabel(self)
-        self.TimeElapsed_Label.setGeometry(650, self.y, 120, 30)
+        self.TimeElapsed_Label.setGeometry(650, self.y, 150, 30)
         self.TimeElapsed_Label.setText("Time Elapsed: ")
 
         self.CurrentPosition_Label = QLabel(self)
-        self.CurrentPosition_Label.setGeometry(650, self.y + 30, 120, 30)
+        self.CurrentPosition_Label.setGeometry(650, self.y + 30, 150, 30)
         self.CurrentPosition_Label.setText("Current Position:")
 
         self.ExpectedDuration_Label = QLabel(self)
-        self.ExpectedDuration_Label.setGeometry(650, self.y + 60, 120, 30)
+        self.ExpectedDuration_Label.setGeometry(650, self.y + 60, 150, 30)
         self.ExpectedDuration_Label.setText("Expected Duration:")
 
 
@@ -326,16 +326,24 @@ class View(QMainWindow):
         self.calculateExpectedDuration()
 
     def calculateExpectedDuration(self):
+        stepLength = self.StepLength_LineEdit.text()
+        if (stepLength == ""):
+            return
+        stepLength = float(stepLength)
         sampleDuration = float(self.SmpDuration_LineEdit.text())
-        stepLength = float(self.StepLength_LineEdit.text())
-        if (stepLength == 0 or sampleDuration == 0):
+        if (stepLength == "" or stepLength == 0 or sampleDuration == "" or sampleDuration == 0):
             return
 
+        #sampleDuration = sampleDuration
+        #stepLength = float(stepLength)
         startPosition = float(self.P1_SpinBox.value())
         endPosition = float(self.P2_SpinBox.value())
 
         distance = abs(startPosition - endPosition)
+        print(distance)
+        print((distance / stepLength) * sampleDuration)
+        print(sampleDuration * 1000)
 
-        expectedDuration = ((distance / stepLength) * sampleDuration * self.currentStepsPerMM) + (distance * 0.001 * self.currentStepsPerMM)
+        expectedDuration = ((distance / stepLength) * sampleDuration * 1.65 ) + 0.22 * distance#* self.currentStepsPerMM) + (distance * 0.001 * self.currentStepsPerMM)
 
         self.ExpectedDuration_Label.setText("Expected Duration: " + str(expectedDuration))

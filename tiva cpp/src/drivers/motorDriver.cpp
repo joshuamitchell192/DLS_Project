@@ -12,7 +12,8 @@
 MotorDriver::MotorDriver(){
     stepsPerMM = 0.0;
     currentPosition = 0;
-    sampleDuration_ = 0.0017;
+    sampleDuration = 0.0017;
+    motorStepDelay = 0.0017;
     stepsBetweenSamples = 48;
     stepAmount = 4;
     totalTimeElapsed = 0;
@@ -43,15 +44,15 @@ void MotorDriver::SetAverageInterval(int averageInterval_) {
     averageInterval = averageInterval_;
 }
 
-void MotorDriver::SetSampleDuration(double sampleDuration){
-    sampleDuration_ = sampleDuration;
+void MotorDriver::SetSampleDuration(double sampleDuration_){
+    sampleDuration = sampleDuration_;
 }
 
 void MotorDriver::SetStepsBetweenSamples(double stepLength){
     stepsBetweenSamples = stepLength * stepsPerMM * 4;
 }
 
-void MotorDriver::SetDriverTimer(volatile double seconds){
+void MotorDriver::SetMotorStepDelayTimer(volatile double seconds){
     int prescale = Helpers::getPrescaler(seconds);
     int preload = Helpers::getPreload(seconds, prescale);
     
@@ -60,6 +61,15 @@ void MotorDriver::SetDriverTimer(volatile double seconds){
 
     TIMER1_ICR_R |= 1;
     TIMER1_CTL_R |= 1;
+}
+void MotorDriver::SetSampleDurationTimer(double seconds) {
+    int prescale = Helpers::getPrescaler(seconds);
+    int preload = Helpers::getPreload(seconds, prescale);
+
+    TIMER2_TAPR_R = prescale;
+    TIMER2_TAILR_R = preload;
+
+    TIMER2_CTL_R |= 1;
 }
 
 
@@ -70,6 +80,13 @@ void MotorDriver::StepMotor(void){
         while((TIMER1_RIS_R & 0x1) != 0x1);
         TIMER1_ICR_R |= 1;
         GPIO_PORTA_DATA_R  &=~ 0x4;
+}
+
+void MotorDriver::RunSampleDurationTimer() {
+
+    TIMER2_ICR_R |= 1;
+    while((TIMER2_RIS_R & 0x1) != 0x1);
+
 }
 
 /*
@@ -84,12 +101,12 @@ void MotorDriver::Calibrate(bool &stop){
     SetStepMode(0);
     GPIO_PORTA_DATA_R  |= 0x8;
 
-    SetDriverTimer(MIN_SAMPLE_DURATION);
+    SetMotorStepDelayTimer(MIN_SAMPLE_DURATION);
 
     while(!stop && !IsSwitchB2On()){
         StepMotor();
     }
-
+    // change direction to negative
     GPIO_PORTA_DATA_R &= ~0x8;
     int numSteps = 1;
     while(!stop){
@@ -113,11 +130,17 @@ void MotorDriver::StartSamplingHere(bool &stop){
         numSamples = 1;
         
         Serial::WriteFlag(0xFF);
-        while(numSamples < averageInterval){
-            Serial::CalculateSampleAverage(sampleTotal, numSamples);
-            float currentTime = CalculateCurrentTime();
-            //Serial::SendFloat(currentTime, Serial::Time);
-        }
+        // Change to average interval
+        SetSampleDurationTimer(averageInterval);
+        RunSampleDurationTimer();
+
+        WaitForSamples();
+        // Start the timer
+        // while(numSamples < averageInterval){
+        //     Serial::CalculateSampleAverage(sampleTotal, numSamples);
+        //     float currentTime = CalculateCurrentTime();
+        //     //Serial::SendFloat(currentTime, Serial::Time);
+        // }
         
         Serial::WriteFlag(0xFE);
     }
@@ -136,21 +159,21 @@ void MotorDriver::Move(bool &stop, double dest, bool setMaxSpeed) {
     int destination = (int)(dest * stepsPerMM * 4);
     
     if (setMaxSpeed){
-        sampleDuration_ = MIN_SAMPLE_DURATION;
+        sampleDuration = MIN_SAMPLE_DURATION;
     }
 
     if (MotorDriver::IsAdcOn()){
         ScanBetween( stop, destination);
     }
     else {
-        GoToPosition(stop, destination, sampleDuration_);
+        GoToPosition(stop, destination, sampleDuration);
     }
 }
 
 
 void MotorDriver::GoToPosition(bool &stop, int dest, double sampleDuration){
     SetStepMode(2);
-    SetDriverTimer(sampleDuration);
+    SetMotorStepDelayTimer(sampleDuration);
 
     int dir = SetDirection(dest);
     if (dir == 1) {
@@ -194,7 +217,7 @@ void MotorDriver::GoToPosition(bool &stop, int dest, double sampleDuration){
 }
 
 /**
- * Moves to destination position while taking samples
+ * Moves to destination position while taking samples. 
  * 
  * This will run if given a G01 instruction after a T1 instruction (ADC is on).
  * 
@@ -212,7 +235,7 @@ void MotorDriver::ScanBetween(bool &stop, int dest) {
         while (currentPosition < dest && !stop && !IsSwitchB2On()){
             Serial::WriteFlag(0xFF);
             WaitForSamples();
-            currentPosition += stepAmount;
+            //currentPosition += stepAmount;
             GoToPosition(stop, currentPosition + stepsBetweenSamples, MIN_SAMPLE_DURATION);
         }
     }
@@ -220,7 +243,7 @@ void MotorDriver::ScanBetween(bool &stop, int dest) {
         while (currentPosition > dest && !stop && !IsSwitchB1On()){
             Serial::WriteFlag(0xFF);
             WaitForSamples();
-            currentPosition -= stepAmount;
+            //currentPosition -= stepAmount;
             GoToPosition(stop, currentPosition + (stepsBetweenSamples * direction), MIN_SAMPLE_DURATION);
         }
     }
@@ -236,37 +259,34 @@ void MotorDriver::WaitForSamples() {
     sampleTotal = 0;
     numSamples = 1;
 
-    SetDriverTimer(sampleDuration_);
-    StepMotor();
+    // SetDriverTimer(sampleDuration_);
+    // StepMotor();
+
+    SetSampleDurationTimer(sampleDuration);
+
+    RunSampleDurationTimer();
+
+    // Start sample timer
+    // Wait for it to end
 
     int sampleAvg = Serial::CalculateSampleAverage(sampleTotal, numSamples);
-    //unsigned char sampleBytes[2];
+    //sampleAvg = 400;
     unsigned char * sampleBytes = Serial::SendShort(sampleAvg, Serial::Sample);
-    sampleBytes = (unsigned char*)"123";
 
     volatile float currentTime = CalculateCurrentTime();
     //currentTime = 4.0;
-
-    //unsigned char timeBytes[sizeof(float)];
-    // Serial::floatToBytes(timeBytes, currentTime);
-
     unsigned char * timeBytes = Serial::SendFloat(currentTime, Serial::Time);
 
     float currentPosMM = (float)(currentPosition / stepsPerMM / 4);
-    //unsigned char positionBytes[sizeof(float)];
-    // Serial::floatToBytes(positionBytes, currentPosition);
-
+    //currentPosMM = 10.0;
     unsigned char * positionBytes = Serial::SendFloat(currentPosMM, Serial::Position);
-    unsigned char crcData[30];
-    
-//    Helpers::appendBytes(crcData, 0, sampleBytes, sizeof(short));
-//    Helpers::appendBytes(crcData, sizeof(short), timeBytes, sizeof(float));
-//    Helpers::appendBytes(crcData, sizeof(short) + sizeof(float), positionBytes, sizeof(float));
-    strcpy((char *)crcData, (char *)sampleBytes);
-    strcat((char *)crcData, (char *)timeBytes);
-    strcat((char *)crcData, (char *)positionBytes); // Hard Fault here!
 
-    Serial::WriteCrc(crcData, SCANBETWEEN_PACKAGE_LENGTH);
+    //unsigned char crcData[11];
+    //strcpy((char *)crcData, (char *)sampleBytes);
+    //strcat((char *)crcData, (char *)timeBytes);
+    //strcat((char *)crcData, (char *)positionBytes);
+
+    //Serial::WriteCrc(crcData, SCANBETWEEN_PACKAGE_LENGTH);
 }
 
 /**

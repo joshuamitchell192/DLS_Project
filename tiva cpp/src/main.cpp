@@ -9,9 +9,12 @@ extern "C" void SysTick_Handler(void);
 
 DLS dls;
 
+bool terminalMode = false;
+
 int main(void)
 {
-    Serial::WriteString("Enter an instruction: ");
+    if (terminalMode) Serial::WriteString("Enter an instruction: ");
+
     dls.EventLoop();
 
     while(1);
@@ -20,7 +23,8 @@ int main(void)
 void UART0_Handler(void) {
     char c = Serial::ReadChar();
     dls.ReadSerial(c);
-    Serial::WriteChar(c);
+
+    if (terminalMode) Serial::WriteChar(c);
 }
 
 void ADC0SS3_Handler (void)
@@ -32,17 +36,6 @@ void ADC0SS3_Handler (void)
     dls.driver.sampleTotal += sensorData;
     dls.driver.numSamples++;
 }
-
-//void delayMS(int n)
-//{
-//    int i, j;
-
-//    for (i = 0; i < n; i++)
-//        for(j = 0; j < 3180; j++)
-//        {
-//        }
-
-//}
 
 void SysTick_Handler(void){
 	dls.driver.totalTimeElapsed += 1.048575;

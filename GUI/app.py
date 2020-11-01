@@ -2,6 +2,7 @@ from PyQt5.QtWidgets import (QApplication, QDialog, QErrorMessage)
 from PyQt5.QtCore import Qt, QTimer
 import serial.tools.list_ports as port_list
 import sys, threading, configparser
+from pycrc.models import CrcModels
 
 from view import View
 from serialConnection import SerialConnection
@@ -14,39 +15,14 @@ class App (QApplication):
     def __init__(self, sys_argv):
         super(App, self).__init__(sys_argv)
 
-        self.serialConnection = SerialConnection()
+        port = self.loadConfigComPort()
 
-        try:
-            port = self.loadConfigComPort()
-
-            if (self.serialConnection.connectionTest(port)):
-                self.serialConnection.establishConnection(port)
-
-            else:
-                while (not self.serialConnection.connectionTest(port)):
-                    # error_dialog = QErrorMessage()
-                    # error_dialog.setWindowTitle("Connection Failed")
-                    # error_dialog.showMessage('Failed to connect to the given port')
-                    port = self.openPortModal()
-
-                self.serialConnection.establishConnection(port)
-        except Exception as ex:
-            print(ex)
-            ports = list(port_list.comports())
-            print()
-            for p in ports:
-                print (f"{p} is visible")
-            print()
-            port = input("Enter the COM port you're connected to: ")
-
-        print("Connecting to " + port.upper())
-
-
+        self.serialConnection = SerialConnection(port)
         self.controller = Controller(self.serialConnection, Instructions)
         self.view = View(self.serialConnection, self.controller)
         self.view.show()
 
-        thread = threading.Thread(target=self.controller.readLoop1, args=())
+        thread = threading.Thread(target=self.controller.readLoop, args=())
         # probably should use an signalling mechanism like an Event to stop gracefully
         thread.daemon = True
         thread.start()
@@ -89,8 +65,6 @@ class App (QApplication):
 
             if ("AverageInterval" in defaultSettings):
                 self.view.AvgInterval_SpinBox.setValue(int(defaultSettings["AverageInterval"]))
-
-        #self.serialConnection.connectionTest()
 
     def openPortModal(self):
         self.getPortDialog = PortDialog()

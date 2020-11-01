@@ -110,6 +110,7 @@ unsigned char * Serial::SendShort(int input, char type){
     Serial::WriteChar(bytes[1]);
 
     // Serial::WriteBytes(bytes, sizeof(short));
+    Serial::WriteCrc(bytes, sizeof(short));
 
     return bytes;
 }
@@ -126,6 +127,8 @@ unsigned char * Serial::SendFloat(float input, char type){
         WriteChar(bytes[i]);
     }
     // Serial::WriteBytes(bytes, sizeof(float));
+    
+    Serial::WriteCrc(bytes, sizeof(float));
 
     return bytes;
 }

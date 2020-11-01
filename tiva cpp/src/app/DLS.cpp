@@ -11,7 +11,8 @@ DLS::DLS () {
     Setup::SensorADCSetup();
     Setup::Uart0TerminalSetup();
     Setup::DriverGPIOSetup();
-    Setup::DriverTimerSetup();
+    Setup::MotorStepDelayTimerSetup();
+    Setup::SampleDurationTimerSetup();
     //Setup::TimeElapsedTimer();
     Setup::LimitSwitchesGPIOSetup();
     Setup::sysTickSamplingTimerSetup();
@@ -66,17 +67,6 @@ void DLS::ReadSerial(char inChar){
         strcpy(inputString, "");
         return;
     }
-}
-
-void delayMS(int n)
-{
-    int i, j;
-
-    for (i = 0; i < n; i++)
-        for(j = 0; j < 3180; j++)
-        {
-        }
-
 }
 
 void DLS::EventLoop(){
@@ -171,7 +161,7 @@ void DLS::PrintState() {
     char stateString[20];
 
     Serial::WriteString("\n\rSample Duration: ");
-    snprintf(stateString, 20, "%f", driver.sampleDuration_);
+    snprintf(stateString, 20, "%f", driver.sampleDuration);
     Serial::WriteString(stateString);
     
     Serial::WriteString("\n\rStepMode: ");

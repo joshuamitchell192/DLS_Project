@@ -33,7 +33,7 @@ void Setup::sysTickSamplingTimerSetup(void){
 // 	MotorDriver::setStepAmount(2);
 // }
 
-void Setup::DriverTimerSetup(void){
+void Setup::MotorStepDelayTimerSetup(void){
 	
 	SYSCTL_RCGCTIMER_R |= 0x2;
 	while((SYSCTL_PRTIMER_R & 0x2) != 0x2);
@@ -194,7 +194,29 @@ void Setup::SensorTimerSetup(void)
 	
 }
 
-void Setup::TimeElapsedTimer(void) {
+// void Setup::TimeElapsedTimer(void) {
+//     // Setup for timer 
+// 	SYSCTL_RCGCTIMER_R |= 0x4;
+// 	while ((SYSCTL_PRTIMER_R & 0x4) != 0x4);
+	
+// 	// Disable timer
+// 	TIMER2_CTL_R &= ~0x1;
+// 	// Set to 32 bit config
+// 	TIMER2_CFG_R &= ~0x5;
+	
+// 	// Ensure capture mode doesn't enable with 0x3;
+// 	TIMER2_TAMR_R &= ~0x1;
+// 	// Set to periodic timer
+// 	TIMER2_TAMR_R |= 0x2;
+	
+// 	// Set delay of 1000 clock cycles (6.25x10^-5 seconds)
+// 	TIMER2_TAILR_R = Helpers::getPreload(2.0, Helpers::getPrescaler(2.0));
+	
+// 	// Clear interrupts
+// 	TIMER2_ICR_R |= 0x1;
+// }
+
+void Setup::SampleDurationTimerSetup(void) {
     // Setup for timer 
 	SYSCTL_RCGCTIMER_R |= 0x4;
 	while ((SYSCTL_PRTIMER_R & 0x4) != 0x4);
@@ -210,33 +232,11 @@ void Setup::TimeElapsedTimer(void) {
 	TIMER2_TAMR_R |= 0x2;
 	
 	// Set delay of 1000 clock cycles (6.25x10^-5 seconds)
-	TIMER2_TAILR_R = Helpers::getPreload(2.0, Helpers::getPrescaler(2.0));
+	//TIMER2_TAILR_R = Helpers::getPreload(2.0, Helpers::getPrescaler(2.0));
 	
 	// Clear interrupts
 	TIMER2_ICR_R |= 0x1;
 }
-
-// void Setup::SampleDurationTimer(void) {
-//     // Setup for timer 
-// 	SYSCTL_RCGCTIMER |= 0x4;
-// 	while ((SYSCTL_PRTIMER & 0x4) != 0x4);
-	
-// 	// Disable timer
-// 	TIMER2_CTL &= ~0x1;
-// 	// Set to 32 bit config
-// 	TIMER2_CFG &= ~0x5;
-	
-// 	// Ensure capture mode doesn't enable with 0x3;
-// 	TIMER2_TAMR &= ~0x1;
-// 	// Set to periodic timer
-// 	TIMER2_TAMR |= 0x2;
-	
-// 	// Set delay of 1000 clock cycles (6.25x10^-5 seconds)
-// 	TIMER2_TAILR = Helpers::getPreload(2.0, Helpers::getPrescaler(2.0));
-	
-// 	// Clear interrupts
-// 	TIMER2_ICR |= 0x1;
-// }
 
 void Setup::Uart0TerminalSetup(void)
 {
