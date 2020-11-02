@@ -8,13 +8,12 @@ extern "C" void ADC0SS3_Handler (void);
 extern "C" void SysTick_Handler(void);
 
 DLS dls;
-
 bool terminalMode = false;
 
 int main(void)
 {
     if (terminalMode) Serial::WriteString("Enter an instruction: ");
-
+    dls.SetTerminalMode(terminalMode);
     dls.EventLoop();
 
     while(1);

@@ -61,7 +61,7 @@ class SerialConnection:
         
         # Add a time delay to allow the microcontroller to keep up
         # between sending multiple instructions
-        time.sleep(0.018)
+        time.sleep(0.03)
 
     def readInt(self):
         data1 = self.ser.read(1)

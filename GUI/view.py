@@ -145,7 +145,7 @@ class View(QMainWindow):
         self.AvgInterval_SpinBox = QSpinBox(self)
         self.AvgInterval_SpinBox.setGeometry(40, self.y, 120, 25)
         self.AvgInterval_SpinBox.setRange(1, 1000)
-        self.AvgInterval_SpinBox.setValue(100)
+        self.AvgInterval_SpinBox.setValue(2)
         self.AvgInterval_SpinBox.valueChanged[int].connect(self.__updateAvgIntervalSpinBox)
 
         

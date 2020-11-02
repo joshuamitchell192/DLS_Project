@@ -57,6 +57,7 @@ class Controller:
         """
         self.isSampling = False
         self.serialConnection.sendInstruction(self.Instructions.Pause)
+        self.serialConnection.sendInstruction(self.Instructions.TurnOffAdc)
         self.serialConnection.sendInstruction(self.Instructions.RapidPosition, [P1])
         self.serialConnection.sendInstruction(self.Instructions.Resume)
 
@@ -78,10 +79,12 @@ class Controller:
 
             #if (bytesToRead > 0):
                 messageType = self.serialConnection.ser.read(2)
-
                 if messageType == b'\xff\xff':
 
                     self.readSampleData()
+
+                    #endFrame = self.serialConnection.ser.read(2)
+                    #print(f'End Frame: {endFrame}')
 
                 elif(messageType == b'\xff\xfc'):
                     pass

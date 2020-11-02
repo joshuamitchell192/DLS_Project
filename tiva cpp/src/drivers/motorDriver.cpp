@@ -125,7 +125,7 @@ void MotorDriver::Calibrate(bool &stop){
 
 void MotorDriver::StartSamplingHere(bool &stop){
     
-    while (!stop){
+    // while (!stop){
         sampleTotal = 0;
         numSamples = 1;
         
@@ -143,7 +143,7 @@ void MotorDriver::StartSamplingHere(bool &stop){
         // }
         
         Serial::WriteFlag(0xFE);
-    }
+    // }
 }
 
 //goto rapid positioning to point 1
@@ -315,5 +315,5 @@ void MotorDriver::TurnAdcOn(){
 }
 
 void MotorDriver::TurnAdcOff(){
-    TIMER0_CTL_R &= ~1;
+    TIMER0_CTL_R &= ~0x1;
 }

@@ -12,11 +12,13 @@ class DLS{
         
         bool stop;
         bool wait;
+        bool terminalMode;
         Queue program;
 
     public:
         DLS();
         void EventLoop();
         void ReadSerial(char inChar);
+        void SetTerminalMode(bool mode);
         MotorDriver driver;
 };

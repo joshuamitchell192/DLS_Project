@@ -19,7 +19,6 @@ DLS::DLS () {
 
     stop = false;
     wait = false;
-
 }
 
 void DLS::ReadSerial(char inChar){
@@ -62,7 +61,7 @@ void DLS::ReadSerial(char inChar){
             }
         }
 
-        Serial::WriteChar('\r');
+        if (DLS::terminalMode) Serial::WriteChar('\r');
         
         strcpy(inputString, "");
         return;
@@ -131,7 +130,6 @@ void DLS::EventLoop(){
                 driver.SetAverageInterval(Helpers::ToInt(parsedInstruction.parameters[0]));
             }
             if (!stop){
-                //Serial::WriteString(currentInstruction);
                 queue.dequeue();
             }
 
@@ -207,4 +205,8 @@ void DLS::PrintState() {
         Serial::WriteString("False");
     }
 
+}
+
+void DLS::SetTerminalMode(bool mode) {
+    terminalMode = mode;
 }
