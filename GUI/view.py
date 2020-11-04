@@ -227,7 +227,7 @@ class View(QMainWindow):
 
     def updateLabels(self):
         if (len(self.controller.times) > 0):
-            self.TimeElapsed_Label.setText("Time Elapsed: " + str(round(self.controller.times[-1], 3)))
+            self.TimeElapsed_Label.setText("Time Elapsed: " + str(self.controller.times[-1]))
         else:
             self.TimeElapsed_Label.setText("Time Elapsed:")
 

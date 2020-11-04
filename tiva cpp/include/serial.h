@@ -4,8 +4,6 @@ class Serial
 
         enum MessageType {
             Sample = 0xFF,
-            Time = 0xFE,
-            Position = 0xFD,
             Calibration = 0xFC
         };
 
@@ -17,8 +15,8 @@ class Serial
         static unsigned int ReadChar();
         static void WriteString(const char* string);
         static void WriteBytes(unsigned char * bytes, int length);
-        static unsigned char * SendShort(int input, char type);
-        static unsigned char * SendFloat(float input, char type);
+        static unsigned char * SendShort(int input);
+        static unsigned char * SendFloat(float input);
         static void WriteFlag(int flag);
     
         static unsigned char * floatToBytes(unsigned char bytes[4], float input);

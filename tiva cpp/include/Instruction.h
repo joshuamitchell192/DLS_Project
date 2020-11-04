@@ -89,6 +89,12 @@ public:
         Description: 
    */
   static const char *S4;
+
+  /* Set Steps Per MM
+        Usage: S5 101
+        Description:
+  */
+ static const char *S5;
   
   /* Calibrate Stage
         Usage: M04

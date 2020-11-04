@@ -32,7 +32,8 @@ void Serial::WriteCrc(unsigned char * value, int length)
 }
 
 /**
- * 
+ * If the Uart Receive Flag register is set then the value from the
+ * data register is read and returned after clearing the receive flag.
  */
 unsigned int Serial::ReadChar()
 {
@@ -43,7 +44,7 @@ unsigned int Serial::ReadChar()
 }
 
 /**
- * 
+ * Writes an array of characters to the serial connection until reaching the null terminating character
  */
 void Serial::WriteString(const char *string){
     for (int i = 0; i < strlen(string); i++){
@@ -52,7 +53,7 @@ void Serial::WriteString(const char *string){
 }
 
 /**
- * 
+ * Writes an array of raw bytes to the serial connection until the specified length is reached.
  */
 void Serial::WriteBytes(unsigned char *bytes, int length) {
     for (int i = 0; i < length; i++) {
@@ -99,9 +100,9 @@ unsigned char * Serial::floatToBytes(unsigned char bytes[4], float input){
 }
 
 /** 
- * Sends a 16 bit int over the serial connection after converting to an array of chars
+ * Sends a 16 bit int (short) over the serial connection after converting to an array of chars
  */
-unsigned char * Serial::SendShort(int input, char type){
+unsigned char * Serial::SendShort(int input){
 
     unsigned char bytes[2];
     Serial::shortToBytes(bytes, input);
@@ -118,7 +119,7 @@ unsigned char * Serial::SendShort(int input, char type){
 /**
  * Sends a 32 bit float over the serial connection by first converting to an array of chars
  */
-unsigned char * Serial::SendFloat(float input, char type){
+unsigned char * Serial::SendFloat(float input){
 
     unsigned char bytes[sizeof(float)];
     Serial::floatToBytes(bytes, input);

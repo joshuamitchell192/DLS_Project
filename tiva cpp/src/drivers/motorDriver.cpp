@@ -7,13 +7,12 @@
 #define MIN_SAMPLE_DURATION 0.001
 #define STAGE_LENGTH_MM 65.0
 #define TIVA_CLOCK_SPEED 16000000.0
-#define SCANBETWEEN_PACKAGE_LENGTH 10
 
 MotorDriver::MotorDriver(){
     stepsPerMM = 0.0;
     currentPosition = 0;
     sampleDuration = 0.0017;
-    motorStepDelay = 0.0017;
+    motorStepDelay = MIN_SAMPLE_DURATION;
     stepsBetweenSamples = 48;
     stepAmount = 4;
     totalTimeElapsed = 0;
@@ -62,6 +61,7 @@ void MotorDriver::SetMotorStepDelayTimer(volatile double seconds){
     TIMER1_ICR_R |= 1;
     TIMER1_CTL_R |= 1;
 }
+
 void MotorDriver::SetSampleDurationTimer(double seconds) {
     int prescale = Helpers::getPrescaler(seconds);
     int preload = Helpers::getPreload(seconds, prescale);
@@ -86,7 +86,6 @@ void MotorDriver::RunSampleDurationTimer() {
 
     TIMER2_ICR_R |= 1;
     while((TIMER2_RIS_R & 0x1) != 0x1);
-
 }
 
 /*
@@ -115,20 +114,25 @@ void MotorDriver::Calibrate(bool &stop){
         if (IsSwitchB1On()){
             stepsPerMM = numSteps / STAGE_LENGTH_MM;
             currentPosition = 0;
-            Serial::WriteFlag(0xFD);
-            //Serial::SendShort(stepsPerMM, Serial::Calibration);
+            
+            Serial::WriteFlag(Serial::Calibration);
+            Serial::SendShort(stepsPerMM);
+
             break;
         }
     }
    
 }
 
+/**
+ * 
+ */
 void MotorDriver::StartSamplingHere(bool &stop){
 
         sampleTotal = 0;
         numSamples = 1;
         
-        Serial::WriteFlag(0xFF);
+        Serial::WriteFlag(Serial::Sample);
         // Change to average interval
         SetSampleDurationTimer(averageInterval);
         RunSampleDurationTimer();
@@ -144,27 +148,30 @@ void MotorDriver::StartSamplingHere(bool &stop){
 //  average and send samples
 //  goto rapid positioning currentPos + stepSize
 
-void MotorDriver::Move(bool &stop, double dest, bool setMaxSpeed) {
+/**
+ * Moves to a given destination with or without taking samples.
+ * Destination is converted to the number of quarter steps required.
+ * 
+ * @param stop: Flag to stop and return to event loop if true
+ * @param dest: Destination value in millimetres
+ */
+void MotorDriver::Move(bool &stop, double dest) {
     
     int destination = (int)(dest * stepsPerMM * 4);
-    
-    if (setMaxSpeed){
-        sampleDuration = MIN_SAMPLE_DURATION;
-    }
 
     if (MotorDriver::IsAdcOn()){
         ScanBetween( stop, destination);
     }
     else {
-        GoToPosition(stop, destination, sampleDuration);
+        GoToPosition(stop, destination);
     }
 }
 
-
-void MotorDriver::GoToPosition(bool &stop, int dest, double sampleDuration){
+/**
+ * 
+ */
+void MotorDriver::GoToPosition(bool &stop, int dest){
     SetStepMode(2);
-    SetMotorStepDelayTimer(sampleDuration);
-
     int dir = SetDirection(dest);
     if (dir == 1) {
         while (currentPosition < dest && !stop && !IsSwitchB2On()){
@@ -223,22 +230,19 @@ void MotorDriver::ScanBetween(bool &stop, int dest) {
 
     if (direction == 1) {
         while (currentPosition < dest && !stop && !IsSwitchB2On()){
-            Serial::WriteFlag(0xFF);
+            Serial::WriteFlag(Serial::Sample);
             WaitForSamples();
-            //currentPosition += stepAmount;
-            GoToPosition(stop, currentPosition + stepsBetweenSamples, MIN_SAMPLE_DURATION);
+            GoToPosition(stop, currentPosition + stepsBetweenSamples);
         }
     }
     else if (direction == -1) {
         while (currentPosition > dest && !stop && !IsSwitchB1On()){
-            Serial::WriteFlag(0xFF);
+            Serial::WriteFlag(Serial::Sample);
             WaitForSamples();
-            //currentPosition -= stepAmount;
-            GoToPosition(stop, currentPosition + (stepsBetweenSamples * direction), MIN_SAMPLE_DURATION);
+            GoToPosition(stop, currentPosition + (stepsBetweenSamples * direction));
         }
     }
 
-    //Serial::WriteFlag(0xFE);
 }
 
 /**
@@ -249,30 +253,17 @@ void MotorDriver::WaitForSamples() {
     sampleTotal = 0;
     numSamples = 1;
 
-    // SetDriverTimer(sampleDuration_);
-    // StepMotor();
-
     SetSampleDurationTimer(sampleDuration);
     RunSampleDurationTimer();
 
     int sampleAvg = Serial::CalculateSampleAverage(sampleTotal, numSamples);
-    //sampleAvg = 400;
-    unsigned char * sampleBytes = Serial::SendShort(sampleAvg, Serial::Sample);
+    unsigned char * sampleBytes = Serial::SendShort(sampleAvg);
 
     volatile float currentTime = CalculateCurrentTime();
-    //currentTime = 4.0;
-    unsigned char * timeBytes = Serial::SendFloat(currentTime, Serial::Time);
+    unsigned char * timeBytes = Serial::SendFloat(currentTime);
 
     float currentPosMM = (float)(currentPosition / stepsPerMM / 4);
-    //currentPosMM = 10.0;
-    unsigned char * positionBytes = Serial::SendFloat(currentPosMM, Serial::Position);
-
-    //unsigned char crcData[11];
-    //strcpy((char *)crcData, (char *)sampleBytes);
-    //strcat((char *)crcData, (char *)timeBytes);
-    //strcat((char *)crcData, (char *)positionBytes);
-
-    //Serial::WriteCrc(crcData, SCANBETWEEN_PACKAGE_LENGTH);
+    unsigned char * positionBytes = Serial::SendFloat(currentPosMM);
 }
 
 /**

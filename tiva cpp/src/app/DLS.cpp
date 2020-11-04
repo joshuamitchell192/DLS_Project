@@ -13,7 +13,6 @@ DLS::DLS () {
     Setup::DriverGPIOSetup();
     Setup::MotorStepDelayTimerSetup();
     Setup::SampleDurationTimerSetup();
-    //Setup::TimeElapsedTimer();
     Setup::LimitSwitchesGPIOSetup();
     Setup::sysTickSamplingTimerSetup();
 
@@ -21,6 +20,9 @@ DLS::DLS () {
     wait = false;
 }
 
+/**
+ * 
+ */
 void DLS::ReadSerial(char inChar){
 
     if (inChar == 'p'){
@@ -68,6 +70,9 @@ void DLS::ReadSerial(char inChar){
     }
 }
 
+/**
+ * 
+ */
 void DLS::EventLoop(){
 
     for (;;) {
@@ -97,11 +102,11 @@ void DLS::EventLoop(){
             }
 
             if (strcmp(parsedInstruction.instruction, Instruction::G01) == 0){
-                driver.Move(stop, Helpers::ToDouble(parsedInstruction.parameters[0]), false);
+                driver.Move(stop, Helpers::ToDouble(parsedInstruction.parameters[0]));
             }
 
             if (strcmp(parsedInstruction.instruction, Instruction::G00) == 0){
-                driver.Move(stop, Helpers::ToDouble(parsedInstruction.parameters[0]), true);
+                driver.Move(stop, Helpers::ToDouble(parsedInstruction.parameters[0]));
             }
             if (strcmp(parsedInstruction.instruction, Instruction::S1) == 0){
                 driver.SetSampleDuration(Helpers::ToDouble(parsedInstruction.parameters[0]));
@@ -137,6 +142,9 @@ void DLS::EventLoop(){
     }
 }
 
+/**
+ * 
+ */
 void DLS::LoadProgram() {
     int programLength = program.size();
     for (int i = 0; i < programLength; i++){
@@ -147,6 +155,9 @@ void DLS::LoadProgram() {
     }
 }
 
+/**
+ * 
+ */
 void DLS::PrintState() {
     Serial::WriteString("\n\rADC : ");
     if (MotorDriver::IsAdcOn()){
@@ -207,6 +218,9 @@ void DLS::PrintState() {
 
 }
 
+/**
+ * 
+ */
 void DLS::SetTerminalMode(bool mode) {
     terminalMode = mode;
 }

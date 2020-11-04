@@ -75,20 +75,18 @@ class Controller:
     def readLoop(self):
 
         while True:
-            #bytesToRead = self.serialConnection.ser.in_waiting
+            messageType = self.serialConnection.ser.read(2)
+            if messageType == b'\xff\xff':
 
-            #if (bytesToRead > 0):
-                messageType = self.serialConnection.ser.read(2)
-                if messageType == b'\xff\xff':
+                self.readSampleData()
 
-                    self.readSampleData()
+            elif(messageType == b'\xff\xfc'):
+                
+                stepsPerMMBytes = self.serialConnection.readInt()
+                stageCalibrationStepsPerMM = struct.unpack('h', stepsPerMMBytes)[0]
 
-                    #endFrame = self.serialConnection.ser.read(2)
-                    #print(f'End Frame: {endFrame}')
+                self.saveSetting("Calibration", "stepspermm", str(stageCalibrationStepsPerMM))
 
-                elif(messageType == b'\xff\xfc'):
-                    pass
-                    #Read Calibration
 
     def saveSetting(self, section, field, value):
         config = configparser.ConfigParser()
@@ -120,13 +118,19 @@ class Controller:
         time = struct.unpack('f', timeBytes)[0]
         position = struct.unpack('f', positionBytes)[0]
 
-        # print(f'Sample: {sample}')
-        # print(f'Time: {time}')
-        # print(f'Position: {position}')
+        time = self.secondsToRTC(time)
 
         self.samples.append(round(sample, 4))
-        self.times.append(round(time, 4))
+        self.times.append(time)
         self.positions.append(round(position, 4))
+
+    def secondsToRTC(self, time):
+        minutes = time // 60
+        seconds = round(time - (minutes * 60), 4)
+        #milliSeconds = round(seconds // )
+        #hours = minutes // 60
+
+        return f'{int(minutes)} m : {seconds}s'#:{milliSeconds}ms'
 
     def readCrc(self, data):
         crc = self.serialConnection.ser.read(2)
