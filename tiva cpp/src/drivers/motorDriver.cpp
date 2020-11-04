@@ -40,7 +40,7 @@ void MotorDriver::SetStepMode(int stepMode){
     }
 }
 
-void MotorDriver::SetAverageInterval(int averageInterval_) {
+void MotorDriver::SetAverageInterval(float averageInterval_) {
     averageInterval = averageInterval_;
 }
 
@@ -124,8 +124,7 @@ void MotorDriver::Calibrate(bool &stop){
 }
 
 void MotorDriver::StartSamplingHere(bool &stop){
-    
-    // while (!stop){
+
         sampleTotal = 0;
         numSamples = 1;
         
@@ -135,15 +134,6 @@ void MotorDriver::StartSamplingHere(bool &stop){
         RunSampleDurationTimer();
 
         WaitForSamples();
-        // Start the timer
-        // while(numSamples < averageInterval){
-        //     Serial::CalculateSampleAverage(sampleTotal, numSamples);
-        //     float currentTime = CalculateCurrentTime();
-        //     //Serial::SendFloat(currentTime, Serial::Time);
-        // }
-        
-        Serial::WriteFlag(0xFE);
-    // }
 }
 
 //goto rapid positioning to point 1
@@ -248,7 +238,7 @@ void MotorDriver::ScanBetween(bool &stop, int dest) {
         }
     }
 
-    Serial::WriteFlag(0xFE);
+    //Serial::WriteFlag(0xFE);
 }
 
 /**
@@ -263,11 +253,7 @@ void MotorDriver::WaitForSamples() {
     // StepMotor();
 
     SetSampleDurationTimer(sampleDuration);
-
     RunSampleDurationTimer();
-
-    // Start sample timer
-    // Wait for it to end
 
     int sampleAvg = Serial::CalculateSampleAverage(sampleTotal, numSamples);
     //sampleAvg = 400;

@@ -45,6 +45,7 @@
 /Listings/*
 /Objects/*
 
+
 # Debugger files
 # define exception below if neededs
 
@@ -104,3 +105,4 @@ yarn-debug.log*
 yarn-error.log*
 
 Research
+GUI/executable

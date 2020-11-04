@@ -102,7 +102,6 @@ void Setup::SensorADCSetup(void)
 	// NVIC for IRQ 17 (ADC0 Sequencer 3)
 	NVIC_EN0_R |= (1<<17);
 	
-	
 	Helpers::EnableInterrupts();
 	
 	// Clear interrupts for sequencer 3

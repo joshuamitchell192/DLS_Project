@@ -127,7 +127,7 @@ void DLS::EventLoop(){
             }
 
             if (strcmp(parsedInstruction.instruction, Instruction::S4) == 0) {
-                driver.SetAverageInterval(Helpers::ToInt(parsedInstruction.parameters[0]));
+                driver.SetAverageInterval(Helpers::ToDouble(parsedInstruction.parameters[0]));
             }
             if (!stop){
                 queue.dequeue();

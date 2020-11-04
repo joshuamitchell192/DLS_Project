@@ -1,5 +1,5 @@
 from PyQt5.QtWidgets import (QMainWindow, QSlider,
-    QLabel, QApplication, QSpinBox, QPushButton, QComboBox, QFrame, QMenu, QWidget, QFileDialog, QLineEdit, QFormLayout)
+    QLabel, QApplication, QSpinBox, QDoubleSpinBox, QPushButton, QComboBox, QFrame, QMenu, QWidget, QFileDialog, QLineEdit, QFormLayout)
 from PyQt5.QtCore import Qt, QSize, QRect, QTimer
 from PyQt5 import QtWidgets
 from PyQt5.QtGui import QPixmap, QDoubleValidator, QIcon
@@ -139,14 +139,13 @@ class View(QMainWindow):
         self.AvgInterval_Label.setGeometry(40, self.y, 200, 30)
         self.AvgInterval_Label.setText("Averaging Interval")
 
-
         self.y += 30
 
-        self.AvgInterval_SpinBox = QSpinBox(self)
+        self.AvgInterval_SpinBox = QDoubleSpinBox(self)
         self.AvgInterval_SpinBox.setGeometry(40, self.y, 120, 25)
         self.AvgInterval_SpinBox.setRange(1, 1000)
-        self.AvgInterval_SpinBox.setValue(2)
-        self.AvgInterval_SpinBox.valueChanged[int].connect(self.__updateAvgIntervalSpinBox)
+        self.AvgInterval_SpinBox.setValue(5.0)
+        self.AvgInterval_SpinBox.valueChanged[float].connect(self.__updateAvgIntervalSpinBox)
 
         
         self.ScanAtPoint_Button = QPushButton(self)

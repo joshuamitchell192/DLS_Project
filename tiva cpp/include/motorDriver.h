@@ -22,7 +22,7 @@ class MotorDriver{
         int numSamples;
         int stepsBetweenSamples;
         float totalTimeElapsed;
-        int averageInterval;
+        float averageInterval;
         
     
         
@@ -35,7 +35,7 @@ class MotorDriver{
         void StartSamplingHere(bool &stop);
         void GoToPosition(bool &stop, int dest, double sampleDuration);
         void ScanBetween(bool &stop, int dest);
-        void SetAverageInterval(int averageInterval_);
+        void SetAverageInterval(float averageInterval_);
         void SetStepMode(int stepMode);
         void SetStepsBetweenSamples(double stepLength);
         void SetSampleDuration(double sampleDuration);

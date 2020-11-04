@@ -23,23 +23,23 @@ unsigned int Helpers::getPrescaler(double seconds){
 }
 
 unsigned int Helpers::getPreload(double seconds, int prescaler){
-    volatile double preload = (seconds * 16000000)/(prescaler + 1) -1;
-    volatile double fractional = preload - ((long)preload);
-    if (fractional > 0.5){
-            return (int)preload + 1;
+    int secondsWholeNum = (long)seconds;
+    double secondsFraction = seconds - secondsWholeNum;
+    
+    volatile int preloadInt = (secondsWholeNum * 16000000) / (prescaler + 1) -1;
+    volatile double preloadDouble = (secondsFraction * 16000000)/(prescaler + 1) -1;
+    volatile double preloadRemainder = preloadDouble - (long)preloadDouble;
+ 
+    preloadInt += (long)preloadDouble;
+    
+    //volatile double fractional = preload - ((long)preload);
+    if (preloadRemainder > 0.5){
+            return (int)preloadInt + 1;
     }
 
-    return (unsigned int)preload;
+    return (unsigned int)preloadInt;
     
 }
-
-// unsigned char * Helpers::appendBytes(unsigned char * byteArray, int endPosition, unsigned char * newBytes, int newBytesLength) {
-//     for (int i = 0; i < newBytesLength; i++) {
-//         byteArray[endPosition + i] = newBytes[i];
-//     }
-
-//     return byteArray;
-// }
 
 int Helpers::ToInt(char* string) {
     char *ptr;

@@ -8,7 +8,7 @@ from view import View
 from serialConnection import SerialConnection
 from controller import Controller
 from instructions import Instructions
-from portDialog import PortDialog
+
 
 class App (QApplication):
     
@@ -65,15 +65,6 @@ class App (QApplication):
 
             if ("AverageInterval" in defaultSettings):
                 self.view.AvgInterval_SpinBox.setValue(int(defaultSettings["AverageInterval"]))
-
-    def openPortModal(self):
-        self.getPortDialog = PortDialog()
-        self.getPortDialog.setModal(True)
-
-        if (self.getPortDialog.exec() == QDialog.Accepted):
-            return self.getPortDialog.PortList.currentText()
-        else:
-            sys.exit()
             
 
 if __name__ == '__main__':

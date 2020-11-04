@@ -1,3 +1,4 @@
+from PyQt5.QtWidgets import (QDialog)
 from pycrc.models import CrcModels
 from instructions import Instructions
 import serial
@@ -7,6 +8,7 @@ import sys
 import struct
 import binascii
 import pycrc.algorithms
+from portDialog import PortDialog
 
 
 class SerialConnection:
@@ -77,3 +79,12 @@ class SerialConnection:
 
         ser_bytes_total = ser_bytes_lower + ser_bytes_mid + ser_bytes_upper + ser_bytes_upper_upper
         return ser_bytes_total
+    
+    def openPortModal(self):
+        self.getPortDialog = PortDialog()
+        self.getPortDialog.setModal(True)
+
+        if (self.getPortDialog.exec() == QDialog.Accepted):
+            return self.getPortDialog.PortList.currentText()
+        else:
+            sys.exit()
