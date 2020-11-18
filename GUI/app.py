@@ -1,27 +1,58 @@
+<<<<<<< HEAD
+from PyQt5.QtWidgets import (QApplication)
+# from dialog import Ui_Dialog as Form
+import serial.tools.list_ports as port_list
+import sys
+=======
 from PyQt5.QtWidgets import (QApplication, QDialog, QErrorMessage)
 from PyQt5.QtCore import Qt, QTimer
 import serial.tools.list_ports as port_list
 import sys, threading, configparser
 from pycrc.models import CrcModels
+>>>>>>> tivaCpp
 
 from view import View
 from serialConnection import SerialConnection
 from controller import Controller
 from instructions import Instructions
 
+<<<<<<< HEAD
+=======
 
+>>>>>>> tivaCpp
 class App (QApplication):
     
     def __init__(self, sys_argv):
         super(App, self).__init__(sys_argv)
+<<<<<<< HEAD
+        
+        # dialog = QDialog()
+        # dialog.ui = Form()
+        # dialog.ui.setupUi(dialog)
+        # dialog.exec_()
+        # dialog.show()
+
+        ports = list(port_list.comports())
+        for p in ports:
+            print (f'{p} is visible')
+
+        port = input("Enter the COM port you're connected to: ")
+=======
 
         port = self.loadConfigComPort()
+>>>>>>> tivaCpp
 
         self.serialConnection = SerialConnection(port)
         self.controller = Controller(self.serialConnection, Instructions)
         self.view = View(self.serialConnection, self.controller)
         self.view.show()
 
+<<<<<<< HEAD
+        #self.serialConnection.connectionTest()
+
+if __name__ == '__main__':
+    app = App(sys.argv)
+=======
         thread = threading.Thread(target=self.controller.readLoop, args=())
         # probably should use an signalling mechanism like an Event to stop gracefully
         thread.daemon = True
@@ -80,4 +111,5 @@ if __name__ == '__main__':
         """
 
     app.setStyleSheet(stylesheet)
+>>>>>>> tivaCpp
     sys.exit(app.exec_())

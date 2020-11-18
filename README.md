@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+# DLS_Project
+Microprocessor Techniques - Drivable Linear Stage Project
+=======
 # DLS Project
 DLS (Drivable Linear Stage) is a project written for tiva microcontrollers to control a stage that moves along an axis using a stepper motor, limit switches and a motor driver. The project uses a GUI to send instructions via UART serial communication to the tiva that are then interpreted and executed. The instructions are based on the GCode CNC language which allows for flexible and modular instructions that are combined to execute more complex behaviours.
 
@@ -32,3 +36,4 @@ https://github.com/josh2397/DLS_Project/wiki
 
 
 
+>>>>>>> tivaCpp

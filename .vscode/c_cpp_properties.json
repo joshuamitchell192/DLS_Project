@@ -3,8 +3,12 @@
         {
             "name": "keil",
             "includePath": [
+<<<<<<< HEAD
+                "c:\\Users\\newuser\\OneDrive\\Documents\\University Documents\\Griffith Year 3\\Microprocessor Techniques\\Assignment\\DLS Project"
+=======
                 "c:\\Users\\newuser\\OneDrive\\Documents\\University Documents\\Griffith Year 3\\Microprocessor Techniques\\Assignment\\DLS Project",
                 "./tiva cpp/include"
+>>>>>>> tivaCpp
             ],
             "defines": [
                 "__CC_ARM",
