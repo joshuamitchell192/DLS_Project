@@ -17,6 +17,7 @@ MotorDriver::MotorDriver(){
     stepAmount = 4;
     totalTimeElapsed = 0;
     averageInterval = 20;
+    calibrationStepCount = 1;
 }
 
 void MotorDriver::SetStepMode(int stepMode){
@@ -102,25 +103,26 @@ void MotorDriver::Calibrate(bool &stop){
 
     SetMotorStepDelayTimer(MIN_SAMPLE_DURATION);
 
-    while(!stop && !IsSwitchB2On()){
+    while(!stop && !IsSwitchB2On() && calibrationStepCount == 1){
         StepMotor();
     }
     // change direction to negative
     GPIO_PORTA_DATA_R &= ~0x8;
-    int numSteps = 1;
     while(!stop){
         StepMotor();
-        numSteps++;
+        calibrationStepCount++;
         if (IsSwitchB1On()){
-            stepsPerMM = numSteps / STAGE_LENGTH_MM;
+            stepsPerMM = calibrationStepCount / STAGE_LENGTH_MM;
             currentPosition = 0;
             
             Serial::WriteFlag(Serial::Calibration);
             Serial::SendShort(stepsPerMM);
-
+            calibrationStepCount = 1;
             break;
         }
     }
+
+    
    
 }
 
@@ -228,6 +230,8 @@ void MotorDriver::ScanBetween(bool &stop, int dest) {
     
     int direction = SetDirection(dest);
 
+    OffSetStage(stop, direction);
+
     if (direction == 1) {
         while (currentPosition < dest && !stop && !IsSwitchB2On()){
             Serial::WriteFlag(Serial::Sample);
@@ -243,6 +247,18 @@ void MotorDriver::ScanBetween(bool &stop, int dest) {
         }
     }
 
+}
+
+void MotorDriver::OffSetStage(bool &stop, int direction)
+{
+        while (!IsSwitchB2On());
+        int returnPosition = currentPosition;
+        int dest = currentPosition - stepAmount * direction * 100;
+        SetDirection(dest);
+        GoToPosition(stop, dest);
+        SetDirection(returnPosition);
+        GoToPosition(stop, returnPosition);
+        while (!IsSwitchB1On());
 }
 
 /**

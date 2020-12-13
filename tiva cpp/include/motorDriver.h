@@ -23,6 +23,7 @@ class MotorDriver{
         int stepsBetweenSamples;
         float totalTimeElapsed;
         float averageInterval;
+        int calibrationStepCount;
 
         void Calibrate(bool &stop);
         void StepSizeMove(bool &stop, int dest);
@@ -41,6 +42,7 @@ class MotorDriver{
         int SetDirection(int dest);
         void WaitForSamples();
         float CalculateCurrentTime();
+        void OffSetStage(bool &stop, int direction);
         
         static void SendInt(int input);
         
