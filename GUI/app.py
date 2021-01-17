@@ -8,7 +8,6 @@ from view import View
 from serialConnection import SerialConnection
 from controller import Controller
 from instructions import Instructions
-
 class App (QApplication):
     
     def __init__(self, sys_argv):
@@ -77,6 +76,5 @@ if __name__ == '__main__':
                 background-color: white;
             }
         """
-
     app.setStyleSheet(stylesheet)
     sys.exit(app.exec_())

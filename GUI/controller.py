@@ -4,19 +4,22 @@ from PyQt5.QtWidgets import QApplication
 import time, configparser
 import struct
 import pycrc.algorithms
-
+import tracemalloc
+import  os
 class Controller:
+    def __init__(self):
+        pass
     def __init__(self, serialConnection, Instructions):
         self.serialConnection = serialConnection
         self.Instructions = Instructions
-        self.samples = []
-        self.times = []
-        self.positions = []
+        self.samples = [[]]
+        self.times = [[]]
+        self.positions = [[]]
         self.pause = False
         self.stepsPerMM = 0.018
         self.isSampling = False
         self.crc = pycrc.algorithms.Crc(width=16, poly=0x8005, reflect_in=True, xor_in= 0x0000, reflect_out=True, xor_out = 0x0000)
-
+        self.currentRow = 0
     def handleCalibrate(self):
         self.isSampling = False
         self.serialConnection.sendInstruction(self.Instructions.Calibrate)
@@ -74,7 +77,12 @@ class Controller:
 
     def readLoop(self):
 
+        # tracemalloc.start(40)
+        # time1 = tracemalloc.take_snapshot()
+        # timeout = time.time() + 60*3   # 5 minutes from now
         while True:
+            # if time.time() > timeout:
+            #     break
             messageType = self.serialConnection.ser.read(2)
             if messageType == b'\xff\xff':
 
@@ -86,15 +94,22 @@ class Controller:
                 stageCalibrationStepsPerMM = struct.unpack('h', stepsPerMMBytes)[0]
 
                 self.saveSetting("Calibration", "stepspermm", str(stageCalibrationStepsPerMM))
+        # time2 = tracemalloc.take_snapshot()
 
+        # stats = time2.compare_to(time1, 'lineno')
+        # for stat in stats[:10]:
+        #     print(stat)
+        #     for line in stat.traceback.format():
+        #         print(line)
 
-    def saveSetting(self, section, field, value):
+    @staticmethod
+    def saveSetting(section, field, value):
         config = configparser.ConfigParser()
-        config.read('./GUI/settings.ini')
+        config.read(os.getcwd() + '/GUI/settings.ini')
 
         config[section][field] = value
 
-        with open('./GUI/settings.ini', 'w') as configFile:
+        with open(os.getcwd() + '/GUI/settings.ini', 'w') as configFile:
             config.write(configFile)
 
     def readSampleData(self):
@@ -118,11 +133,11 @@ class Controller:
         time = struct.unpack('f', timeBytes)[0]
         position = struct.unpack('f', positionBytes)[0]
 
-        time = self.secondsToRTC(time)
+        #time = self.secondsToRTC(time)
 
-        self.samples.append(round(sample, 4))
-        self.times.append(time)
-        self.positions.append(round(position, 4))
+        self.samples[self.currentRow].append(round(sample, 4))
+        self.times[self.currentRow].append(time)
+        self.positions[self.currentRow].append(round(position, 4))
 
     def secondsToRTC(self, time):
         minutes = time // 60
@@ -130,7 +145,7 @@ class Controller:
         #milliSeconds = round(seconds // )
         #hours = minutes // 60
 
-        return f'{int(minutes)} m : {seconds}s'#:{milliSeconds}ms'
+        return f'{int(minutes)} m : {seconds} s'#:{milliSeconds} ms'
 
     def readCrc(self, data):
         crc = self.serialConnection.ser.read(2)
@@ -142,9 +157,9 @@ class Controller:
         """
             Clear the samples list for the controller. [ Need to relink the list on the view. ]
         """
-        self.samples = []
-        self.times = []
-        self.positions = []
+        self.samples = [[]]
+        self.times = [[]]
+        self.positions = [[]]
 
     def handleClearQueue(self):
 
@@ -152,3 +167,10 @@ class Controller:
         self.serialConnection.sendInstruction(self.Instructions.Pause)
         self.serialConnection.sendInstruction(self.Instructions.Clear)
         self.serialConnection.sendInstruction(self.Instructions.Resume)
+
+    def addDataRow(self):
+        if (len(self.samples) > 1):
+            self.samples.append([])
+            self.times.append([])
+            self.positions.append([])
+            self.currentRow += 1

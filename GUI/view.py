@@ -6,8 +6,10 @@ from PyQt5.QtGui import QPixmap, QDoubleValidator, QIcon
 import sys
 import csv
 import math
+from matplotlib import animation
+# from animatedCanvas4 import AnimatedMplCanvasWidget
 
-from dynamicCanvas import DynamicMplCanvas
+from dynamicCanvas2 import DynamicMplCanvas
 
 class View(QMainWindow):
 
@@ -123,7 +125,7 @@ class View(QMainWindow):
         self.ScanBetween_Button = QPushButton(self)
         self.ScanBetween_Button.setGeometry(250, self.y - 10, 120, 35)
         self.ScanBetween_Button.setText("Scan Between")
-        self.ScanBetween_Button.clicked.connect(lambda: self.controller.handleScanBetween(self.P1_Slider.value(), self.P2_Slider.value(), self.SmpDuration_LineEdit.text(), self.StepLength_LineEdit.text(), self.StepMode_ComboBox.currentText()))
+        self.ScanBetween_Button.clicked.connect(lambda: self.handleScanBetween())
 
         self.y += 60
 
@@ -196,8 +198,14 @@ class View(QMainWindow):
         self.graph_widget = QtWidgets.QWidget(self)
 
         l = QtWidgets.QVBoxLayout(self.graph_widget)
-        self.dc = DynamicMplCanvas(self.graph_widget, self.controller.samples, self.controller.times, self.controller.positions, width=5, height=4, dpi=90)
+        self.dc = DynamicMplCanvas(self.graph_widget, self.controller.samples, self.controller.times, self.controller.positions, width=5, height=4, dpi=100)
         l.addWidget(self.dc)
+        self.dc.show()
+
+        # anim = animation.FuncAnimation(self.dc.canvas.fig, self.dc.animate,  interval=16, init_func=self.dc.init_func, blit=True)
+
+        # self.aw = AnimatedMplCanvasWidget(self.graph_widget, self.controller.samples, self.controller.times, self.controller.positions, width=5, height=4, dpi=100)
+        # l.addWidget(self.aw)
 
         self.graph_widget.setGeometry(575, 30, 700, 500)
 
@@ -212,7 +220,7 @@ class View(QMainWindow):
 
         self.timer = QTimer()
         self.timer.timeout.connect(self.updateLabels)
-        self.timer.start(100)
+        self.timer.start(32)
 
         #self.setBaseSize(QSize(1280, 720))
         self.setMinimumSize(QSize(704, 480))
@@ -226,13 +234,13 @@ class View(QMainWindow):
     #     self.SmpDuration_SpinBox.setValue(value)
 
     def updateLabels(self):
-        if (len(self.controller.times) > 0):
-            self.TimeElapsed_Label.setText("Time Elapsed: " + str(self.controller.times[-1]))
+        if (len(self.controller.times[self.controller.currentRow]) > 0):
+            self.TimeElapsed_Label.setText("Time Elapsed: " + str( self.controller.secondsToRTC(self.controller.times[self.controller.currentRow][-1])))
         else:
             self.TimeElapsed_Label.setText("Time Elapsed:")
 
-        if (len(self.controller.positions) > 0):
-            self.CurrentPosition_Label.setText("Current Position: " + str(round(self.controller.positions[-1], 3)))
+        if (len(self.controller.positions[self.controller.currentRow]) > 0):
+            self.CurrentPosition_Label.setText("Current Position: " + str(round(self.controller.positions[self.controller.currentRow][-1], 3)))
         else:
             self.CurrentPosition_Label.setText("Current Position:")
 
@@ -251,7 +259,7 @@ class View(QMainWindow):
         self.StepLength_LineEdit.setText(value)
 
     def __updateStepModeComboBox(self, value):
-        print(value)
+        # print(value)
         if value == 0:
             self.currentStepsPerMM = self.controller.stepsPerMM / 4
         elif value == 1:
@@ -275,6 +283,12 @@ class View(QMainWindow):
     def __updateP2Slider(self, value):
         self.P2_Slider.setValue(value)
 
+    def handleScanBetween(self):
+        self.dc.addDataRow()
+        self.controller.addDataRow()
+
+        self.controller.handleScanBetween(self.P1_Slider.value(), self.P2_Slider.value(), self.SmpDuration_LineEdit.text(), self.StepLength_LineEdit.text(), self.StepMode_ComboBox.currentText())
+
     def toggleStop(self):
         self.controller.handlePause()
         if (self.controller.pause):
@@ -294,22 +308,27 @@ class View(QMainWindow):
             if (fileName[-4:] != ".csv"):
                 fileName = fileName + ".csv"
             with open(fileName, 'w+' ) as newFile:
+                newFile.write("Sample, Time, Position\n")
                 for i in range(len(self.controller.samples)):
-                    newFile.write(str(self.controller.samples[i]))
-                    newFile.write(str(self.controller.times[i]))
-                    newFile.write(str(self.controller.positions[i]))
-                    newFile.write('\n')
+                    newFile.write("Line " + str(i + 1) + "\n")
+                    for j in range(len(self.controller.samples[i])):
+                        newFile.write(str(self.controller.samples[i][j]) + ", ")
+                        newFile.write(str(self.controller.times[i][j])+ ", ")
+                        newFile.write(str(self.controller.positions[i][j])+ ", ")
+                        newFile.write('\n')
     
     def loadProgram(self):
         pass
 
     def clearGraph(self):
-        self.controller.samples = []
-        self.controller.times = []
-        self.controller.positions = []
+        self.controller.samples = [[]]
+        self.controller.times = [[]]
+        self.controller.positions = [[]]
+        self.dc.currentRow = 0
+        self.controller.currentRow = 0
         self.dc.resetSamples(self.controller.samples, self.controller.times, self.controller.positions)
-        self.dc.compute_initial_figure()
-        self.dc.update_figure()
+        # self.dc.compute_initial_figure()
+        # self.dc.update_figure()
 
     def closeEvent(self, ce):
         self.fileQuit()
@@ -339,10 +358,8 @@ class View(QMainWindow):
         endPosition = float(self.P2_SpinBox.value())
 
         distance = abs(startPosition - endPosition)
-        print(distance)
-        print((distance / stepLength) * sampleDuration)
-        print(sampleDuration * 1000)
 
         expectedDuration = ((distance / stepLength) * sampleDuration * 1.65 ) + 0.22 * distance#* self.currentStepsPerMM) + (distance * 0.001 * self.currentStepsPerMM)
 
         self.ExpectedDuration_Label.setText("Expected Duration: " + str(expectedDuration))
+
