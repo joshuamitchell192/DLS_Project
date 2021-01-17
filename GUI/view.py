@@ -9,7 +9,8 @@ import math
 from matplotlib import animation
 # from animatedCanvas4 import AnimatedMplCanvasWidget
 
-from dynamicCanvas2 import DynamicMplCanvas
+from dynamicCanvas import DynamicMplCanvas
+from dynamicCanvasPerformance import DynamicMplCanvasPerformance
 
 class View(QMainWindow):
 
@@ -198,14 +199,10 @@ class View(QMainWindow):
         self.graph_widget = QtWidgets.QWidget(self)
 
         l = QtWidgets.QVBoxLayout(self.graph_widget)
+
         self.dc = DynamicMplCanvas(self.graph_widget, self.controller.samples, self.controller.times, self.controller.positions, width=5, height=4, dpi=100)
         l.addWidget(self.dc)
         self.dc.show()
-
-        # anim = animation.FuncAnimation(self.dc.canvas.fig, self.dc.animate,  interval=16, init_func=self.dc.init_func, blit=True)
-
-        # self.aw = AnimatedMplCanvasWidget(self.graph_widget, self.controller.samples, self.controller.times, self.controller.positions, width=5, height=4, dpi=100)
-        # l.addWidget(self.aw)
 
         self.graph_widget.setGeometry(575, 30, 700, 500)
 

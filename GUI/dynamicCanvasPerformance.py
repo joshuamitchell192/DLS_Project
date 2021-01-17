@@ -85,7 +85,7 @@ class MplCanvas(FigureCanvas):
 
 
 
-class DynamicMplCanvas(QtWidgets.QWidget):
+class DynamicMplCanvasPerformance(QtWidgets.QWidget):
 
     """ Creates a dynamic canvas that updates based on the timers' frequency, changing if there's new data within the samples list.
 
