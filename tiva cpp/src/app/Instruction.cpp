@@ -61,7 +61,9 @@ bool Instruction::exists(char *instruction) {
 
 
 
-
+/**
+ * Splits an instruction into its constituent single instruction name and one or more data value parts. 
+ */
 instruction Instruction::splitInstruction(char *instruction, char *delimiters) {
 
     char *parameters[10];
@@ -76,6 +78,8 @@ instruction Instruction::splitInstruction(char *instruction, char *delimiters) {
     while (token != NULL){
       token = strtok(NULL, delimiters);
       if (token != '\0'){
+        // If the first character in the data value in a coordinate indicator, then skip the first character.
+        // This syntax would allow coordinates to be entered out of order.
         if (token[0] == 'X' || token[0] == 'Y' || token[0] == 'Z') token = &token[1];
         parameters[instructionIndex] = token; 
         instructionIndex++;

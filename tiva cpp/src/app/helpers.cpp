@@ -12,6 +12,9 @@ void Helpers::DisableInterrupts(void)
     __asm("CPSID i");
 }
 
+/**
+* Calculates the prescaler value for the motor step and sample duration timers.
+*/
 unsigned int Helpers::getPrescaler(double seconds){
     volatile double preload = 0xFFFFFFFF;
     volatile double prescaler = (seconds * 16000000)/(preload+1) -1;
@@ -21,7 +24,9 @@ unsigned int Helpers::getPrescaler(double seconds){
     }
     return (unsigned int)prescaler;
 }
-
+/**
+ * Calculates the preload value for the motor step and sample duration timers. 
+ */
 unsigned int Helpers::getPreload(double seconds, int prescaler){
     int secondsWholeNum = (long)seconds;
     double secondsFraction = seconds - secondsWholeNum;
@@ -41,15 +46,22 @@ unsigned int Helpers::getPreload(double seconds, int prescaler){
     
 }
 
+/**
+ * Converts a string value to integer. Used for parsing instruction data values.
+ */
 int Helpers::ToInt(char* string) {
     char *ptr;
     return strtol(string, &ptr, 10);
 }
 
+/**
+ * Converts a string value to a double. Used for parsing instruction data values.
+ */
 double Helpers::ToDouble(char* string) {
     char *ptr;
     return strtod(string, &ptr);
 }
+
 
 bool Helpers::IsDouble(char* string) {
     for (int i = 0; i < strlen(string); i++) {

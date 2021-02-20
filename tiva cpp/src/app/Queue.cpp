@@ -10,18 +10,6 @@ Queue::Queue()
     count = 0;
 }
 
-// Destructor to free memory allocated to the queue
-//Queue::~Queue()
-//{
-//   for (int i = 0; i < DEFAULT_QUEUE_CAPACITY; i++){
-//       for (int j = 0; j < DEFAULT_QUEUE_INSTRUCTION_SIZE; j++){
-//           delete [] arr;
-//       }
-//       delete arr[i]
-//   }
-//   
-//}
-
 // Utility function to remove front element from the queue
 void Queue::dequeue()
 {
@@ -60,6 +48,9 @@ char* Queue::peek()
     return arr[front];
 }
 
+/**
+ * Prints out all instructions within the queue. Used for debugging.
+ */
 void Queue::printToSerial(){
     Serial::WriteString("Queue:\n\r");
     for (int i = front; i <= rear; i++){

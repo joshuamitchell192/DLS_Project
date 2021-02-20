@@ -127,7 +127,9 @@ void MotorDriver::Calibrate(bool &stop){
 }
 
 /**
+ * Takes ADC samples at the current position without stepping the motor.
  * 
+ * @param stop : System state flag to stop and return to event loop if true.
  */
 void MotorDriver::StartSamplingHere(bool &stop){
 
@@ -170,7 +172,10 @@ void MotorDriver::Move(bool &stop, double dest) {
 }
 
 /**
+ * Steps the motor to the given position, unless a limit switch is turned on in the oncoming direction.
  * 
+ * @param stop : System state flag to stop and return to event loop if true.
+ * @param dest : Position destination that we wish to step toward.
  */
 void MotorDriver::GoToPosition(bool &stop, int dest){
     SetStepMode(2);
@@ -220,7 +225,7 @@ void MotorDriver::GoToPosition(bool &stop, int dest){
  * 
  * This will run if given a G01 instruction after a T1 instruction (ADC is on).
  * 
- * @param stop : Flag to stop and return to event loop if true
+ * @param stop : System state flag to stop and return to event loop if true.
  * @param dest : Destination position
 */
 void MotorDriver::ScanBetween(bool &stop, int dest) {
@@ -249,6 +254,12 @@ void MotorDriver::ScanBetween(bool &stop, int dest) {
 
 }
 
+/**
+ * Offsets the stage a few steps back before it begins sampling to avoid stepper motor inaccuracy upon direction changes.
+ * 
+ * @param stop : System state flag to stop and return to event loop if true.
+ * @param direction : The direction that we wish to travel when sampling. Used to calculate the direction of offset.
+ */ 
 void MotorDriver::OffSetStage(bool &stop, int direction)
 {
         while (!IsSwitchB2On());
@@ -262,7 +273,8 @@ void MotorDriver::OffSetStage(bool &stop, int direction)
 }
 
 /**
- * 
+ * Retrieves and calculates each part of the ADC sample and writes it back to the serial connection.
+ * (Sample average, time when sample was averaged, and the current position where the sample was taken).
  */
 void MotorDriver::WaitForSamples() {
 
@@ -283,7 +295,7 @@ void MotorDriver::WaitForSamples() {
 }
 
 /**
- * 
+ * Calculates the current elapsed time from the sysTick timer since the start of sampling.
  */
 float MotorDriver::CalculateCurrentTime() {
     volatile int totalSecondsF = totalTimeElapsed;
