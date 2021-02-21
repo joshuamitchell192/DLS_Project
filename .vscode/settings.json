@@ -3,5 +3,6 @@
         "system_error": "cpp",
         "type_traits": "cpp",
         "xtr1common": "cpp"
-    }
+    },
+    "python.pythonPath": "/usr/local/bin/python3"
 }

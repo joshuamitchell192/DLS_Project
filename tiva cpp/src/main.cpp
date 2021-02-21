@@ -15,10 +15,11 @@ int main(void)
     if (terminalMode) Serial::WriteString("Enter an instruction: ");
     dls.SetTerminalMode(terminalMode);
     dls.EventLoop();
-
-    while(1);
 }
 
+/**
+* Interrupt Handler for the UART receive buffer to read out the data.
+*/
 void UART0_Handler(void) {
     char c = Serial::ReadChar();
     dls.ReadSerial(c);
@@ -26,6 +27,10 @@ void UART0_Handler(void) {
     if (terminalMode) Serial::WriteChar(c);
 }
 
+/**
+* Interrupt handler to read data out of the ADC data registers and add it to the sample total
+* while incrementing the sample count.
+*/
 void ADC0SS3_Handler (void)
 {
     ADC0_ISC_R |= 0x8;
@@ -36,6 +41,10 @@ void ADC0SS3_Handler (void)
     dls.driver.numSamples++;
 }
 
+/**
+* Interupt handler to increment the sampling time value when the 
+* sysTick timer reaches its max value.
+*/
 void SysTick_Handler(void){
 	dls.driver.totalTimeElapsed += 1.048575;
 }
