@@ -13,11 +13,6 @@ class PortDialog(QDialog):
         ports = list(port_list.comports())
         for port in ports:
             self.PortList.addItem(str(port.device))
-    
-        
-
-        # self.Port_LineEdit = QLineEdit()
-        # self.Port_LineEdit.setGeometry(0, 10, 200, 35)
 
         self.buttonBox = QDialogButtonBox(QDialogButtonBox.Save)
         self.buttonBox.accepted.connect(self.accept)
@@ -26,11 +21,6 @@ class PortDialog(QDialog):
         self.layout.addWidget(self.PortList)
         self.layout.addWidget(self.buttonBox)
         self.setLayout(self.layout)
-
-    # def closeEvent(self, event):
-    #     print("trying to close")
-    #     self.PortList.setCurrentText("Closed")
-    #     self.accept()
 
 
 

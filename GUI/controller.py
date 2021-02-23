@@ -6,20 +6,22 @@ import struct
 import pycrc.algorithms
 import tracemalloc
 import  os
+from settings import Settings
 class Controller:
     def __init__(self):
         pass
     def __init__(self, serialConnection, Instructions):
         self.serialConnection = serialConnection
         self.Instructions = Instructions
-        self.samples = [[]]
-        self.times = [[]]
-        self.positions = [[]]
+        self.samples = []
+        self.times = []
+        self.positions = []
         self.pause = False
         self.stepsPerMM = 0.018
         self.isSampling = False
         self.crc = pycrc.algorithms.Crc(width=16, poly=0x8005, reflect_in=True, xor_in= 0x0000, reflect_out=True, xor_out = 0x0000)
-        self.currentRow = 0
+        self.currentRow = -1
+
     def handleCalibrate(self):
         self.isSampling = False
         self.serialConnection.sendInstruction(self.Instructions.Calibrate)
@@ -53,15 +55,15 @@ class Controller:
             self.isSampling = False
             self.serialConnection.sendInstruction(self.Instructions.Pause)
 
-    def handleGoToPoint(self, P1):
+    def handleGoToPoint(self, position):
 
-        """ sends the Rapid Position instruction to move to position 1
+        """ sends the Rapid Position instruction to move to the given position
 
         """
         self.isSampling = False
         self.serialConnection.sendInstruction(self.Instructions.Pause)
         self.serialConnection.sendInstruction(self.Instructions.TurnOffAdc)
-        self.serialConnection.sendInstruction(self.Instructions.RapidPosition, [P1])
+        self.serialConnection.sendInstruction(self.Instructions.RapidPosition, [position])
         self.serialConnection.sendInstruction(self.Instructions.Resume)
 
     def handleStartSample(self, averageInterval):
@@ -77,12 +79,7 @@ class Controller:
 
     def readLoop(self):
 
-        # tracemalloc.start(40)
-        # time1 = tracemalloc.take_snapshot()
-        # timeout = time.time() + 60*3   # 5 minutes from now
         while True:
-            # if time.time() > timeout:
-            #     break
             messageType = self.serialConnection.ser.read(2)
             if messageType == b'\xff\xff':
 
@@ -93,24 +90,8 @@ class Controller:
                 stepsPerMMBytes = self.serialConnection.readInt()
                 stageCalibrationStepsPerMM = struct.unpack('h', stepsPerMMBytes)[0]
 
-                self.saveSetting("Calibration", "stepspermm", str(stageCalibrationStepsPerMM))
-        # time2 = tracemalloc.take_snapshot()
+                Settings.saveSetting("Calibration", "stepspermm", str(stageCalibrationStepsPerMM))
 
-        # stats = time2.compare_to(time1, 'lineno')
-        # for stat in stats[:10]:
-        #     print(stat)
-        #     for line in stat.traceback.format():
-        #         print(line)
-
-    @staticmethod
-    def saveSetting(section, field, value):
-        config = configparser.ConfigParser()
-        config.read(os.getcwd() + '/GUI/settings.ini')
-
-        config[section][field] = value
-
-        with open(os.getcwd() + '/GUI/settings.ini', 'w') as configFile:
-            config.write(configFile)
 
     def readSampleData(self):
         sampleBytes = self.serialConnection.readInt()
@@ -157,9 +138,9 @@ class Controller:
         """
             Clear the samples list for the controller. [ Need to relink the list on the view. ]
         """
-        self.samples = [[]]
-        self.times = [[]]
-        self.positions = [[]]
+        self.samples = []
+        self.times = []
+        self.positions = []
 
     def handleClearQueue(self):
 
@@ -168,9 +149,6 @@ class Controller:
         self.serialConnection.sendInstruction(self.Instructions.Clear)
         self.serialConnection.sendInstruction(self.Instructions.Resume)
 
-    def addDataRow(self):
-        if (len(self.samples) > 1):
-            self.samples.append([])
-            self.times.append([])
-            self.positions.append([])
+    def moveToNextSampleSet(self):
+        if (len(self.samples) > 0):
             self.currentRow += 1

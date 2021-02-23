@@ -59,13 +59,13 @@
         {
             "name": "Target 1",
             "includePath": [
-                "d:\\DLS_Project\\tiva cpp\\include",
-                "d:\\DLS_Project\\tiva cpp\\src",
-                "d:\\DLS_Project\\tiva cpp\\src\\app",
-                "d:\\DLS_Project\\tiva cpp\\src\\drivers",
-                "d:\\DLS_Project\\tiva cpp\\src\\serial",
-                "d:\\DLS_Project\\tiva cpp\\src\\setup",
-                "d:\\DLS_Project\\tiva cpp"
+                "c:\\Users\\newuser\\OneDrive\\Documents\\University Documents\\Griffith Year 3\\Microprocessor Techniques\\Assignment\\DLS Project\\tiva cpp\\include",
+                "c:\\Users\\newuser\\OneDrive\\Documents\\University Documents\\Griffith Year 3\\Microprocessor Techniques\\Assignment\\DLS Project\\tiva cpp\\src",
+                "c:\\Users\\newuser\\OneDrive\\Documents\\University Documents\\Griffith Year 3\\Microprocessor Techniques\\Assignment\\DLS Project\\tiva cpp\\src\\app",
+                "c:\\Users\\newuser\\OneDrive\\Documents\\University Documents\\Griffith Year 3\\Microprocessor Techniques\\Assignment\\DLS Project\\tiva cpp\\src\\drivers",
+                "c:\\Users\\newuser\\OneDrive\\Documents\\University Documents\\Griffith Year 3\\Microprocessor Techniques\\Assignment\\DLS Project\\tiva cpp\\src\\serial",
+                "c:\\Users\\newuser\\OneDrive\\Documents\\University Documents\\Griffith Year 3\\Microprocessor Techniques\\Assignment\\DLS Project\\tiva cpp\\src\\setup",
+                "c:\\Users\\newuser\\OneDrive\\Documents\\University Documents\\Griffith Year 3\\Microprocessor Techniques\\Assignment\\DLS Project\\tiva cpp"
             ],
             "defines": [
                 "__CC_ARM",

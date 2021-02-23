@@ -45,15 +45,9 @@
 /Listings/*
 /Objects/*
 
-<<<<<<< HEAD
-# Debugger files
-# define exception below if needed
-*.ini
-=======
 
 # Debugger files
 # define exception below if neededs
->>>>>>> tivaCpp
 
 # Other files
 *.build_log.htm
@@ -72,10 +66,7 @@
 *.sct
 *.sfd
 *.sfr
-<<<<<<< HEAD
-=======
 *.log
->>>>>>> tivaCpp
 
 # Miscellaneous
 *.tra
@@ -115,3 +106,5 @@ yarn-error.log*
 
 Research
 GUI/executable
+GUI/__pycache__
+.vscode/*

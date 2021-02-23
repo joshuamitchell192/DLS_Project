@@ -144,14 +144,6 @@ void MotorDriver::StartSamplingHere(bool &stop){
         WaitForSamples();
 }
 
-//goto rapid positioning to point 1
-//set sample duration, step size, step amount
-//scan between to point 2
-//  set driver timer to sample duration
-//  step the motor (which will take sample duration time)
-//  average and send samples
-//  goto rapid positioning currentPos + stepSize
-
 /**
  * Moves to a given destination with or without taking samples.
  * Destination is converted to the number of quarter steps required.
@@ -262,14 +254,14 @@ void MotorDriver::ScanBetween(bool &stop, int dest) {
  */ 
 void MotorDriver::OffSetStage(bool &stop, int direction)
 {
-        while (!IsSwitchB2On());
+        //while (!IsSwitchB2On());
         int returnPosition = currentPosition;
         int dest = currentPosition - stepAmount * direction * 100;
         SetDirection(dest);
         GoToPosition(stop, dest);
         SetDirection(returnPosition);
         GoToPosition(stop, returnPosition);
-        while (!IsSwitchB1On());
+        //while (!IsSwitchB1On());
 }
 
 /**

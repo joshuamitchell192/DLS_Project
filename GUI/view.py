@@ -29,7 +29,7 @@ class View(QMainWindow):
         self.Calibrate_Button.setText("Calibrate")
         self.Calibrate_Button.clicked.connect(lambda: self.controller.handleCalibrate())
 
-        self.y += 80
+        self.y += 60
 
         self.P1_Label = QLabel(self)
         self.P1_Label.setGeometry(40, self.y, 100, 30)
@@ -47,10 +47,12 @@ class View(QMainWindow):
 
         self.y -= 5
 
-        self.P1_SpinBox = QSpinBox(self)
+        self.P1_SpinBox = QDoubleSpinBox(self)
         self.P1_SpinBox.setGeometry(460, self.y, 60, 25)
         self.P1_SpinBox.setRange(0, 65)
-        self.P1_SpinBox.valueChanged[int].connect(self.__updateP1Slider)
+        self.P1_SpinBox.setDecimals(1)
+        self.P1_SpinBox.setSingleStep(0.1)
+        self.P1_SpinBox.valueChanged[float].connect(self.__updateP1Slider)
 
         self.y += 50
 
@@ -69,11 +71,13 @@ class View(QMainWindow):
 
         self.y -= 5
 
-        self.P2_SpinBox = QSpinBox(self)
+        self.P2_SpinBox = QDoubleSpinBox(self)
         self.P2_SpinBox.setGeometry(460, self.y, 60, 25)
         self.P2_SpinBox.setRange(0, 65)
         self.P2_SpinBox.setValue(10)
-        self.P2_SpinBox.valueChanged[int].connect(self.__updateP2Slider)
+        self.P2_SpinBox.setDecimals(1)
+        self.P2_SpinBox.setSingleStep(0.1)
+        self.P2_SpinBox.valueChanged[float].connect(self.__updateP2Slider)
 
         self.y += 80
 
@@ -135,14 +139,39 @@ class View(QMainWindow):
         self.seperator.setGeometry(QRect(30, self.y, 550, 5))
         self.seperator.setFrameShape(QFrame.HLine)
         self.seperator.setFrameShadow(QFrame.Raised)
-        
+
         self.y += 25
+
+        self.AvgInterval_Label = QLabel(self)
+        self.AvgInterval_Label.setGeometry(40, self.y, 200, 30)
+        self.AvgInterval_Label.setText("Averaging Interval Position")
+        
+        self.y += 30
+
+        self.AvgIntervalPosition_Slider = QSlider(Qt.Horizontal, self)
+        self.AvgIntervalPosition_Slider.setFocusPolicy(Qt.NoFocus)
+        self.AvgIntervalPosition_Slider.setGeometry(40, self.y, 400, 15)
+        self.AvgIntervalPosition_Slider.setRange(0, 65)
+        self.AvgIntervalPosition_Slider.setTickInterval(5)
+        self.AvgIntervalPosition_Slider.TickPosition(self.AvgIntervalPosition_Slider.TicksBelow)
+        self.AvgIntervalPosition_Slider.valueChanged[int].connect(self.__updateAverageIntervalPosition_SpinBox)
+
+        self.y -= 5
+
+        self.AvgIntervalPosition_SpinBox = QDoubleSpinBox(self)
+        self.AvgIntervalPosition_SpinBox.setGeometry(460, self.y, 60, 25)
+        self.AvgIntervalPosition_SpinBox.setRange(0, 65)
+        self.AvgIntervalPosition_SpinBox.setDecimals(1)
+        self.AvgIntervalPosition_SpinBox.setSingleStep(0.1)
+        self.AvgIntervalPosition_SpinBox.valueChanged[float].connect(self.__updateAverageIntervalPosition_Slider)
+
+        self.y += 45
         
         self.AvgInterval_Label = QLabel(self)
         self.AvgInterval_Label.setGeometry(40, self.y, 200, 30)
         self.AvgInterval_Label.setText("Averaging Interval")
 
-        self.y += 30
+        self.y += 25
 
         self.AvgInterval_SpinBox = QDoubleSpinBox(self)
         self.AvgInterval_SpinBox.setGeometry(40, self.y, 120, 25)
@@ -159,7 +188,7 @@ class View(QMainWindow):
         self.GoTo_Button = QPushButton(self)
         self.GoTo_Button.setGeometry(390, self.y - 10, 120, 35)
         self.GoTo_Button.setText("Move to Start")
-        self.GoTo_Button.clicked.connect(lambda: self.controller.handleGoToPoint(self.P1_Slider.value()))
+        self.GoTo_Button.clicked.connect(lambda: self.controller.handleGoToPoint(self.AvgIntervalPosition_SpinBox.value()))
 
         self.y += 5
 
@@ -180,9 +209,9 @@ class View(QMainWindow):
         self.ClearGraph_Button.setGeometry(1075, self.y, 120, 35)
         self.ClearGraph_Button.setText("Clear Samples")
         # self.ClearGraph_Button.clicked.connect(lambda: self.controller.handleClearSamples())
-        self.ClearGraph_Button.clicked.connect(lambda: self.clearGraph())
+        self.ClearGraph_Button.clicked.connect(lambda: self.clearGraphData())
 
-        self.y += 120
+        self.y += 80
 
         self.Stop_Button = QPushButton(self)
         self.Stop_Button.setGeometry(40, self.y, 100, 35)
@@ -200,7 +229,7 @@ class View(QMainWindow):
 
         l = QtWidgets.QVBoxLayout(self.graph_widget)
 
-        self.dc = DynamicMplCanvas(self.graph_widget, self.controller.samples, self.controller.times, self.controller.positions, width=5, height=4, dpi=100)
+        self.dc = DynamicMplCanvasPerformance(self.graph_widget, self.controller.samples, self.controller.times, self.controller.positions, width=5, height=4, dpi=100)
         l.addWidget(self.dc)
         self.dc.show()
 
@@ -231,12 +260,12 @@ class View(QMainWindow):
     #     self.SmpDuration_SpinBox.setValue(value)
 
     def updateLabels(self):
-        if (len(self.controller.times[self.controller.currentRow]) > 0):
+        if (len(self.controller.times) > 0 and len(self.controller.times[self.controller.currentRow]) > 0):
             self.TimeElapsed_Label.setText("Time Elapsed: " + str( self.controller.secondsToRTC(self.controller.times[self.controller.currentRow][-1])))
         else:
             self.TimeElapsed_Label.setText("Time Elapsed:")
 
-        if (len(self.controller.positions[self.controller.currentRow]) > 0):
+        if (len(self.controller.positions) > 0 and len(self.controller.positions[self.controller.currentRow]) > 0):
             self.CurrentPosition_Label.setText("Current Position: " + str(round(self.controller.positions[self.controller.currentRow][-1], 3)))
         else:
             self.CurrentPosition_Label.setText("Current Position:")
@@ -256,7 +285,6 @@ class View(QMainWindow):
         self.StepLength_LineEdit.setText(value)
 
     def __updateStepModeComboBox(self, value):
-        # print(value)
         if value == 0:
             self.currentStepsPerMM = self.controller.stepsPerMM / 4
         elif value == 1:
@@ -268,22 +296,34 @@ class View(QMainWindow):
     def __updateAvgIntervalSpinBox(self, value):
         self.AvgInterval_SpinBox.setValue(value)
 
+    def __updateAverageIntervalPosition_SpinBox(self, value):
+        self.AvgIntervalPosition_SpinBox.setValue(value)
+
+    def __updateAverageIntervalPosition_Slider(self, value):
+        value = round(value, 1)
+        if (value - int(value) == 0):
+            self.AvgIntervalPosition_Slider.setValue(int(value))
+
     def __updateP1SpinBox(self, value):
         self.P1_SpinBox.setValue(value)
 
     def __updateP1Slider(self, value):
-        self.P1_Slider.setValue(value)
+        value = round(value, 1)
+        if (value - int(value) == 0):
+            self.P1_Slider.setValue(int(value))
 
     def __updateP2SpinBox(self, value):
         self.P2_SpinBox.setValue(value)
 
     def __updateP2Slider(self, value):
-        self.P2_Slider.setValue(value)
+        value = round(value, 1)
+        if (value - int(value) == 0):
+            self.P2_Slider.setValue(int(value))
 
     def handleScanBetween(self):
-        self.dc.addDataRow()
-        self.controller.addDataRow()
-
+        
+        self.dc.addLine()
+        self.controller.moveToNextSampleSet()
         self.controller.handleScanBetween(self.P1_Slider.value(), self.P2_Slider.value(), self.SmpDuration_LineEdit.text(), self.StepLength_LineEdit.text(), self.StepMode_ComboBox.currentText())
 
     def toggleStop(self):
@@ -317,12 +357,12 @@ class View(QMainWindow):
     def loadProgram(self):
         pass
 
-    def clearGraph(self):
-        self.controller.samples = [[]]
-        self.controller.times = [[]]
-        self.controller.positions = [[]]
-        self.dc.currentRow = 0
-        self.controller.currentRow = 0
+    def clearGraphData(self):
+        self.controller.samples = []
+        self.controller.times = []
+        self.controller.positions = []
+        self.dc.currentRow = -1
+        self.controller.currentRow = -1
         self.dc.resetSamples(self.controller.samples, self.controller.times, self.controller.positions)
         # self.dc.compute_initial_figure()
         # self.dc.update_figure()
@@ -349,14 +389,12 @@ class View(QMainWindow):
         if (stepLength == "" or stepLength == 0 or sampleDuration == "" or sampleDuration == 0):
             return
 
-        #sampleDuration = sampleDuration
-        #stepLength = float(stepLength)
         startPosition = float(self.P1_SpinBox.value())
         endPosition = float(self.P2_SpinBox.value())
 
         distance = abs(startPosition - endPosition)
 
-        expectedDuration = ((distance / stepLength) * sampleDuration * 1.65 ) + 0.22 * distance#* self.currentStepsPerMM) + (distance * 0.001 * self.currentStepsPerMM)
+        expectedDuration = ((distance / stepLength) * sampleDuration * 1.65 ) + 0.22 * distance
 
         self.ExpectedDuration_Label.setText("Expected Duration: " + str(expectedDuration))
 
