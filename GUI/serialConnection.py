@@ -84,7 +84,7 @@ class SerialConnection:
         self.getPortDialog = PortDialog()
         self.getPortDialog.setModal(True)
 
-        if (self.getPortDialog.exec() == QDialog.Accepted):
+        if (self.getPortDialog.exec_() == QDialog.Accepted):
             return self.getPortDialog.PortList.currentText()
         else:
             sys.exit()

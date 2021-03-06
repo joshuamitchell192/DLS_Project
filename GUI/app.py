@@ -1,8 +1,10 @@
 from PyQt5.QtWidgets import (QApplication, QDialog, QErrorMessage)
 from PyQt5.QtCore import Qt, QTimer
+from PyQt5.QtGui import QFont
 import serial.tools.list_ports as port_list
 import sys, threading, configparser
 from pycrc.models import CrcModels
+from pathlib import Path
 
 from view import View
 from serialConnection import SerialConnection
@@ -69,12 +71,13 @@ if __name__ == '__main__':
 
     if hasattr(Qt, 'AA_EnableHighDpiScaling'):
         QApplication.setAttribute(Qt.AA_EnableHighDpiScaling, True)
+
+    QApplication.setAttribute(Qt.AA_DisableWindowContextHelpButton)
+
     app = App(sys.argv)
 
-    stylesheet = """
-            View {
-                background-color: white;
-            }
-        """
-    app.setStyleSheet(stylesheet)
+    ssFile = "./GUI/stylesheet.qss"
+    with open(ssFile) as fh:
+        app.setStyleSheet(fh.read())
+
     sys.exit(app.exec_())

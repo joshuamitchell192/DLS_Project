@@ -25,7 +25,7 @@ class View(QMainWindow):
         self.y = 50
 
         self.Calibrate_Button = QPushButton(self)
-        self.Calibrate_Button.setGeometry(40, self.y, 100, 35)
+        self.Calibrate_Button.setGeometry(40, self.y, 85, 33)
         self.Calibrate_Button.setText("Calibrate")
         self.Calibrate_Button.clicked.connect(lambda: self.controller.handleCalibrate())
 
@@ -48,10 +48,11 @@ class View(QMainWindow):
         self.y -= 5
 
         self.P1_SpinBox = QDoubleSpinBox(self)
-        self.P1_SpinBox.setGeometry(460, self.y, 60, 25)
+        self.P1_SpinBox.setGeometry(460, self.y, 70, 25)
         self.P1_SpinBox.setRange(0, 65)
         self.P1_SpinBox.setDecimals(1)
         self.P1_SpinBox.setSingleStep(0.1)
+        self.P1_SpinBox.setSuffix(" mm")
         self.P1_SpinBox.valueChanged[float].connect(self.__updateP1Slider)
 
         self.y += 50
@@ -72,11 +73,12 @@ class View(QMainWindow):
         self.y -= 5
 
         self.P2_SpinBox = QDoubleSpinBox(self)
-        self.P2_SpinBox.setGeometry(460, self.y, 60, 25)
+        self.P2_SpinBox.setGeometry(460, self.y, 70, 25)
         self.P2_SpinBox.setRange(0, 65)
         self.P2_SpinBox.setValue(10)
         self.P2_SpinBox.setDecimals(1)
         self.P2_SpinBox.setSingleStep(0.1)
+        self.P2_SpinBox.setSuffix(" mm")
         self.P2_SpinBox.valueChanged[float].connect(self.__updateP2Slider)
 
         self.y += 80
@@ -128,7 +130,7 @@ class View(QMainWindow):
         self.StepLength_LineEdit.textChanged.connect(self.StepLengthUpdate)
 
         self.ScanBetween_Button = QPushButton(self)
-        self.ScanBetween_Button.setGeometry(250, self.y - 10, 120, 35)
+        self.ScanBetween_Button.setGeometry(250, self.y - 10, 110, 33)
         self.ScanBetween_Button.setText("Scan Between")
         self.ScanBetween_Button.clicked.connect(lambda: self.handleScanBetween())
 
@@ -159,10 +161,11 @@ class View(QMainWindow):
         self.y -= 5
 
         self.AvgIntervalPosition_SpinBox = QDoubleSpinBox(self)
-        self.AvgIntervalPosition_SpinBox.setGeometry(460, self.y, 60, 25)
+        self.AvgIntervalPosition_SpinBox.setGeometry(460, self.y, 70, 25)
         self.AvgIntervalPosition_SpinBox.setRange(0, 65)
         self.AvgIntervalPosition_SpinBox.setDecimals(1)
         self.AvgIntervalPosition_SpinBox.setSingleStep(0.1)
+        self.AvgIntervalPosition_SpinBox.setSuffix(" mm")
         self.AvgIntervalPosition_SpinBox.valueChanged[float].connect(self.__updateAverageIntervalPosition_Slider)
 
         self.y += 45
@@ -181,16 +184,16 @@ class View(QMainWindow):
 
         
         self.ScanAtPoint_Button = QPushButton(self)
-        self.ScanAtPoint_Button.setGeometry(250, self.y - 10, 120, 35)
+        self.ScanAtPoint_Button.setGeometry(250, self.y - 10, 110, 33)
         self.ScanAtPoint_Button.setText("Start Sampling")
         self.ScanAtPoint_Button.clicked.connect(lambda: self.controller.handleStartSample(self.AvgInterval_SpinBox.value()))
 
         self.GoTo_Button = QPushButton(self)
-        self.GoTo_Button.setGeometry(390, self.y - 10, 120, 35)
+        self.GoTo_Button.setGeometry(390, self.y - 10, 105, 33)
         self.GoTo_Button.setText("Move to Start")
         self.GoTo_Button.clicked.connect(lambda: self.controller.handleGoToPoint(self.AvgIntervalPosition_SpinBox.value()))
 
-        self.y += 5
+        self.y -= 15
 
         self.TimeElapsed_Label = QLabel(self)
         self.TimeElapsed_Label.setGeometry(650, self.y, 150, 30)
@@ -206,21 +209,21 @@ class View(QMainWindow):
 
 
         self.ClearGraph_Button = QPushButton(self)
-        self.ClearGraph_Button.setGeometry(1075, self.y, 120, 35)
+        self.ClearGraph_Button.setGeometry(1075, self.y, 105, 33)
         self.ClearGraph_Button.setText("Clear Samples")
         # self.ClearGraph_Button.clicked.connect(lambda: self.controller.handleClearSamples())
         self.ClearGraph_Button.clicked.connect(lambda: self.clearGraphData())
 
-        self.y += 80
+        self.y += 100
 
         self.Stop_Button = QPushButton(self)
-        self.Stop_Button.setGeometry(40, self.y, 100, 35)
+        self.Stop_Button.setGeometry(40, self.y, 85, 33)
         self.Stop_Button.setText("Stop")
         self.Stop_Button.setToolTip("Stops executing the current instruction")
         self.Stop_Button.clicked.connect(self.toggleStop)
 
         self.ClearQueue_Button = QPushButton(self)
-        self.ClearQueue_Button.setGeometry(150, self.y, 100, 35)
+        self.ClearQueue_Button.setGeometry(150, self.y, 90, 32)
         self.ClearQueue_Button.setText("Clear Queue")
         self.ClearQueue_Button.setToolTip("Clears all instructions yet to be executed")
         self.ClearQueue_Button.clicked.connect(lambda: self.controller.handleClearQueue())
