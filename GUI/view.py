@@ -7,18 +7,18 @@ import sys
 import csv
 import math
 from matplotlib import animation
-# from animatedCanvas4 import AnimatedMplCanvasWidget
 
 from dynamicCanvas import DynamicMplCanvas
 from dynamicCanvasPerformance import DynamicMplCanvasPerformance
 
 class View(QMainWindow):
 
-    def __init__(self, serialConnection, controller):
+    def __init__(self, serialConnection, controller, sampleData):
         super(View, self).__init__()
         self.serialConnection = serialConnection
         self.controller = controller
         self.currentStepsPerMM = self.controller.stepsPerMM
+        self.sampleData = sampleData
 
         self.setAttribute(Qt.WA_DeleteOnClose)
 
@@ -146,7 +146,7 @@ class View(QMainWindow):
 
         self.AvgInterval_Label = QLabel(self)
         self.AvgInterval_Label.setGeometry(40, self.y, 200, 30)
-        self.AvgInterval_Label.setText("Averaging Interval Position")
+        self.AvgInterval_Label.setText("Stationary Sample Position")
         
         self.y += 30
 
@@ -156,17 +156,17 @@ class View(QMainWindow):
         self.AvgIntervalPosition_Slider.setRange(0, 65)
         self.AvgIntervalPosition_Slider.setTickInterval(5)
         self.AvgIntervalPosition_Slider.TickPosition(self.AvgIntervalPosition_Slider.TicksBelow)
-        self.AvgIntervalPosition_Slider.valueChanged[int].connect(self.__updateAverageIntervalPosition_SpinBox)
+        self.AvgIntervalPosition_Slider.valueChanged[int].connect(self.__updateStationarySamplePosition_SpinBox)
 
         self.y -= 5
 
-        self.AvgIntervalPosition_SpinBox = QDoubleSpinBox(self)
-        self.AvgIntervalPosition_SpinBox.setGeometry(460, self.y, 70, 25)
-        self.AvgIntervalPosition_SpinBox.setRange(0, 65)
-        self.AvgIntervalPosition_SpinBox.setDecimals(1)
-        self.AvgIntervalPosition_SpinBox.setSingleStep(0.1)
-        self.AvgIntervalPosition_SpinBox.setSuffix(" mm")
-        self.AvgIntervalPosition_SpinBox.valueChanged[float].connect(self.__updateAverageIntervalPosition_Slider)
+        self.StationarySamplePosition_SpinBox = QDoubleSpinBox(self)
+        self.StationarySamplePosition_SpinBox.setGeometry(460, self.y, 70, 25)
+        self.StationarySamplePosition_SpinBox.setRange(0, 65)
+        self.StationarySamplePosition_SpinBox.setDecimals(1)
+        self.StationarySamplePosition_SpinBox.setSingleStep(0.1)
+        self.StationarySamplePosition_SpinBox.setSuffix(" mm")
+        self.StationarySamplePosition_SpinBox.valueChanged[float].connect(self.__updateStationarySamplePosition_Slider)
 
         self.y += 45
         
@@ -191,7 +191,7 @@ class View(QMainWindow):
         self.GoTo_Button = QPushButton(self)
         self.GoTo_Button.setGeometry(390, self.y - 10, 105, 33)
         self.GoTo_Button.setText("Move to Start")
-        self.GoTo_Button.clicked.connect(lambda: self.controller.handleGoToPoint(self.AvgIntervalPosition_SpinBox.value()))
+        self.GoTo_Button.clicked.connect(lambda: self.controller.handleGoToPoint(self.StationarySamplePosition_SpinBox.value()))
 
         self.y -= 15
 
@@ -211,8 +211,7 @@ class View(QMainWindow):
         self.ClearGraph_Button = QPushButton(self)
         self.ClearGraph_Button.setGeometry(1075, self.y, 105, 33)
         self.ClearGraph_Button.setText("Clear Samples")
-        # self.ClearGraph_Button.clicked.connect(lambda: self.controller.handleClearSamples())
-        self.ClearGraph_Button.clicked.connect(lambda: self.clearGraphData())
+        self.ClearGraph_Button.clicked.connect(lambda: self.controller.sampleData.clearAllData())
 
         self.y += 100
 
@@ -232,7 +231,7 @@ class View(QMainWindow):
 
         l = QtWidgets.QVBoxLayout(self.graph_widget)
 
-        self.dc = DynamicMplCanvasPerformance(self.graph_widget, self.controller.samples, self.controller.times, self.controller.positions, width=5, height=4, dpi=100)
+        self.dc = DynamicMplCanvasPerformance(self.sampleData, self.graph_widget, width=5, height=4, dpi=100)
         l.addWidget(self.dc)
         self.dc.show()
 
@@ -263,13 +262,13 @@ class View(QMainWindow):
     #     self.SmpDuration_SpinBox.setValue(value)
 
     def updateLabels(self):
-        if (len(self.controller.times) > 0 and len(self.controller.times[self.controller.currentRow]) > 0):
-            self.TimeElapsed_Label.setText("Time Elapsed: " + str( self.controller.secondsToRTC(self.controller.times[self.controller.currentRow][-1])))
+        if (len(self.sampleData.linePlotData.times) > 0 and len(self.sampleData.linePlotData.times[self.sampleData.linePlotData.getLineIndex()]) > 0):
+            self.TimeElapsed_Label.setText("Time Elapsed: " + str( self.controller.secondsToRTC(self.sampleData.linePlotData.times[self.sampleData.linePlotData.getLineIndex()][-1])))
         else:
             self.TimeElapsed_Label.setText("Time Elapsed:")
 
-        if (len(self.controller.positions) > 0 and len(self.controller.positions[self.controller.currentRow]) > 0):
-            self.CurrentPosition_Label.setText("Current Position: " + str(round(self.controller.positions[self.controller.currentRow][-1], 3)))
+        if (len(self.sampleData.linePlotData.positions) > 0 and len(self.sampleData.linePlotData.positions[self.sampleData.linePlotData.getLineIndex()]) > 0):
+            self.CurrentPosition_Label.setText("Current Position: " + str(round(self.sampleData.linePlotData.positions[self.sampleData.linePlotData.getLineIndex()][-1], 3)))
         else:
             self.CurrentPosition_Label.setText("Current Position:")
 
@@ -299,10 +298,10 @@ class View(QMainWindow):
     def __updateAvgIntervalSpinBox(self, value):
         self.AvgInterval_SpinBox.setValue(value)
 
-    def __updateAverageIntervalPosition_SpinBox(self, value):
-        self.AvgIntervalPosition_SpinBox.setValue(value)
+    def __updateStationarySamplePosition_SpinBox(self, value):
+        self.StationarySamplePosition_SpinBox.setValue(value)
 
-    def __updateAverageIntervalPosition_Slider(self, value):
+    def __updateStationarySamplePosition_Slider(self, value):
         value = round(value, 1)
         if (value - int(value) == 0):
             self.AvgIntervalPosition_Slider.setValue(int(value))
@@ -324,9 +323,6 @@ class View(QMainWindow):
             self.P2_Slider.setValue(int(value))
 
     def handleScanBetween(self):
-        
-        self.dc.addLine()
-        self.controller.moveToNextSampleSet()
         self.controller.handleScanBetween(self.P1_Slider.value(), self.P2_Slider.value(), self.SmpDuration_LineEdit.text(), self.StepLength_LineEdit.text(), self.StepMode_ComboBox.currentText())
 
     def toggleStop(self):
@@ -349,24 +345,26 @@ class View(QMainWindow):
                 fileName = fileName + ".csv"
             with open(fileName, 'w+' ) as newFile:
                 newFile.write("Sample, Time, Position\n")
-                for i in range(len(self.controller.samples)):
+                for i in range(len(self.sampleData.samples)):
                     newFile.write("Line " + str(i + 1) + "\n")
-                    for j in range(len(self.controller.samples[i])):
-                        newFile.write(str(self.controller.samples[i][j]) + ", ")
-                        newFile.write(str(self.controller.times[i][j])+ ", ")
-                        newFile.write(str(self.controller.positions[i][j])+ ", ")
+                    for j in range(len(self.sampleData.samples[i])):
+                        newFile.write(str(self.sampleData.samples[i][j]) + ", ")
+                        newFile.write(str(self.sampleData.times[i][j])+ ", ")
+                        newFile.write(str(self.sampleData.positions[i][j])+ ", ")
                         newFile.write('\n')
     
     def loadProgram(self):
         pass
 
     def clearGraphData(self):
-        self.controller.samples = []
-        self.controller.times = []
-        self.controller.positions = []
-        self.dc.currentRow = -1
-        self.controller.currentRow = -1
-        self.dc.resetSamples(self.controller.samples, self.controller.times, self.controller.positions)
+        #self.sampleData.samples = []
+        #self.sampleData.times = []
+        #self.sampleData.positions = []
+        #self.dc.currentRow = -1
+        #self.controller.currentRow = -1
+        self.sampleData.clearData() 
+
+        self.dc.resetCanvas(self.sampleData.samples, self.sampleData.times, self.sampleData.positions)
         # self.dc.compute_initial_figure()
         # self.dc.update_figure()
 

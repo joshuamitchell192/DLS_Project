@@ -9,7 +9,7 @@
 #define TIVA_CLOCK_SPEED 16000000.0
 
 MotorDriver::MotorDriver(){
-    stepsPerMM = 0.0;
+    stepsPerMM = 40.0;
     currentPosition = 0;
     sampleDuration = 0.0017;
     motorStepDelay = MIN_SAMPLE_DURATION;
@@ -97,7 +97,6 @@ void MotorDriver::RunSampleDurationTimer() {
     the number of steps.
 */
 void MotorDriver::Calibrate(bool &stop){
-
     SetStepMode(0);
     GPIO_PORTA_DATA_R  |= 0x8;
 
@@ -136,7 +135,7 @@ void MotorDriver::StartSamplingHere(bool &stop){
         sampleTotal = 0;
         numSamples = 1;
         
-        Serial::WriteFlag(Serial::Sample);
+        Serial::WriteFlag(Serial::StationarySample);
         // Change to average interval
         SetSampleDurationTimer(averageInterval);
         RunSampleDurationTimer();
@@ -231,18 +230,20 @@ void MotorDriver::ScanBetween(bool &stop, int dest) {
 
     if (direction == 1) {
         while (currentPosition < dest && !stop && !IsSwitchB2On()){
-            Serial::WriteFlag(Serial::Sample);
+            Serial::WriteFlag(Serial::ScanBetweenSample);
             WaitForSamples();
             GoToPosition(stop, currentPosition + stepsBetweenSamples);
         }
     }
     else if (direction == -1) {
         while (currentPosition > dest && !stop && !IsSwitchB1On()){
-            Serial::WriteFlag(Serial::Sample);
+            Serial::WriteFlag(Serial::ScanBetweenSample);
             WaitForSamples();
             GoToPosition(stop, currentPosition + (stepsBetweenSamples * direction));
         }
     }
+    
+    Serial::WriteFlag(Serial::Idle);
 
 }
 

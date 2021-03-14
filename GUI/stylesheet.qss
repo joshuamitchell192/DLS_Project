@@ -20,7 +20,6 @@ QPushButton:hover {
 QLineEdit {
     font-family: "Roboto";
     font-weight: medium;
-    color: #575757;
 }
 QSpinBox {
     font-family: "Roboto";

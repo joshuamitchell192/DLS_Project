@@ -17,28 +17,25 @@ import time
 import matplotlib.colors as mcolors
 from threading import Timer
 
+from Models.sampleData import SampleData
+
 class MplCanvas(FigureCanvas):
 
     """ Creates the matplotlib canvas to setup the basic figure base class so that it can be extended to be either static or dynamic.
 
     """
 
-    def __init__(self, parent=None, samples=[], times=[], positions=[], width=5, height=4, dpi=90):
+    def __init__(self, parent=None, width=5, height=4, dpi=90):
 
         """ Creates a matplot lib figure, subplot and links the data samples list.
 
         """
-        #self.fig = Figure(figsize=(width, height), dpi=dpi)
         self.fig = figure.Figure(figsize=(width, height), dpi=dpi)
         self.ax = self.fig.add_subplot(111)
         self.setCanvasAxes()
-        # self.background = self.fig.canvas.copy_from_bbox(self.ax.bbox)
-        self.currentRow = 0
-        self.lines = [self.ax.plot(0,0)[0]]
+        self.lines = [self.ax.plot(0,0, marker='o')[0]]
+        self.scatterPlot = self.ax.plot([0],[0], color='black', linestyle = 'None', marker='o', markersize=5)[0]
 
-        self.samples = samples
-        self.times = times
-        self.positions = positions
         self.noColours = 40
         self.maxLineCount = self.noColours * 3
         cm_subsection = linspace(0.0, 1.0, self.noColours)
@@ -84,18 +81,20 @@ class DynamicMplCanvasPerformance(QtWidgets.QWidget):
 
     """
 
-    def __init__(self, parent=None, samples=[], times=[], positions=[], width=5, height=4, dpi=90):
+    def __init__(self, sampleData, parent=None, width=5, height=4, dpi=90):
 
         """ Initialises the basic canvas from the super class and setups of the timer for updating the graph
 
         """
         QtWidgets.QMainWindow.__init__(self)
         vbox = QVBoxLayout()
-        self.canvas = MplCanvas(parent=parent, samples=samples, times=times, positions=positions, width=width, height=height, dpi=dpi)
+        self.canvas = MplCanvas(parent=parent, width=width, height=height, dpi=dpi)
+        self.sampleData = sampleData
+
         vbox.addWidget(self.canvas)
         self.setLayout(vbox)
-        self.currentRow = -1
         self.lines = [self.canvas.ax.plot(0,0, color=self.canvas.colourMap[i % self.canvas.noColours], label="Line")[0] for i in range(self.canvas.maxLineCount)]
+        self.scatterPlot = self.canvas.ax.plot(0, 0, color='black', linestyle = 'None', marker='o', markersize=5)[0]
 
         self.startTimer()
 
@@ -104,65 +103,33 @@ class DynamicMplCanvasPerformance(QtWidgets.QWidget):
         timer.timeout. connect(self.callback)
         timer.start(32)
 
-    def addLine(self):
-
-        print(f'Before: {self.canvas.positions}')
-        self.canvas.positions.append([])
-        self.canvas.times.append([])
-        self.canvas.samples.append([])
-
-        self.currentRow = self.currentRow + 1
-        print(self.currentRow)
-        print(f'After: {self.canvas.positions}')
-
-
     def callback(self):
 
-
-        if (len(self.canvas.samples) > 0):
-            self.lines[self.currentRow].set_data(self.canvas.positions[self.currentRow ], self.canvas.samples[self.currentRow])
-
         try:
-            self.canvas.ax.draw_artist(self.lines[self.currentRow])
+            if (self.sampleData.linePlotData.getLineIndex() > 0):
+
+                self.lines[self.sampleData.linePlotData.getLineIndex()].set_data(self.sampleData.linePlotData.positions[self.sampleData.linePlotData.getLineIndex()], self.sampleData.linePlotData.samples[self.sampleData.linePlotData.getLineIndex()])
+                self.canvas.ax.draw_artist(self.lines[self.sampleData.linePlotData.getLineIndex()])
+
+            if (self.sampleData.scatterPlotData.getSampleCount() > 0):
+
+                self.scatterPlot.set_data(self.sampleData.scatterPlotData.positions, self.sampleData.scatterPlotData.samples)
+                self.canvas.ax.draw_artist(self.scatterPlot)
+
             # blit the axes
             self.canvas.fig.canvas.blit(self.canvas.ax.bbox)
+
         except:
             pass
 
-    def resetSamples(self, newSamples, newTimes, newPositions):
+    def resetCanvas(self):
 
         """ Relinks the samples list for when the user clicks the clear samples button
 
             :param: newSamples - the samples list after it's been reinitialised to an empty list.
 
         """
-        self.canvas.times = newTimes
-        self.canvas.samples = newSamples
-        self.canvas.positions = newPositions
         
         self.canvas.ax.clear()
         self.canvas.setCanvasAxes()
-
-    def timeIntervals(self, time_tick_ints):
-        timeInts = []
-        if len(self.times) < 9:
-            intNum = len(self.times)
-        else:
-            intNum = 9
-        for t in range(intNum):
-            timeInts.append(self.times[int(t*len(self.times)/intNum)])
-        return timeInts
-
-
-    def positionIntervals(self, position_tick_ints):
-        positionInts = []
-        if len(self.positions) < 9:
-            intNum = len(self.positions)
-        else:
-            intNum = 9
-
-        for pos in range(intNum):
-            positionInts.append(self.positions[int(pos * len(self.positions) / intNum)])
-
-        return positionInts
 

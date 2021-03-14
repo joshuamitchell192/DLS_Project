@@ -16,6 +16,7 @@ from numpy import linspace
 import time
 import matplotlib.colors as mcolors
 from threading import Timer
+from Models.sampleData import SampleData
 
 class MplCanvas(FigureCanvas):
 
@@ -23,7 +24,7 @@ class MplCanvas(FigureCanvas):
 
     """
 
-    def __init__(self, parent=None, samples=[], times=[], positions=[], width=5, height=4, dpi=90):
+    def __init__(self, parent=None, sampleData=SampleData(), width=5, height=4, dpi=90):
 
         """ Creates a matplot lib figure, subplot and links the data samples list.
 
@@ -36,9 +37,10 @@ class MplCanvas(FigureCanvas):
         self.currentRow = 0
         self.lines = [self.ax.plot(0,0)[0]]
 
-        self.samples = samples
-        self.times = times
-        self.positions = positions
+        # self.samples = samples
+        # self.times = times
+        # self.positions = positions
+        self.sampleData = sampleData
         self.noColours = 40
         self.maxLineCount = self.noColours * 3
         cm_subsection = linspace(0.0, 1.0, self.noColours)

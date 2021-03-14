@@ -3,7 +3,9 @@ class Serial
     public:
 
         enum MessageType {
-            Sample = 0xFF,
+            ScanBetweenSample = 0xFF,
+            Idle = 0xFE,
+            StationarySample = 0xFD,
             Calibration = 0xFC
         };
 

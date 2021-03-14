@@ -7,20 +7,27 @@ import pycrc.algorithms
 import tracemalloc
 import  os
 from settings import Settings
+from enum import Enum
+
+class State(Enum):
+    Idle = 0
+    ScanBetween = 1
+    StationarySample = 2
+    Calibration = 3
+
 class Controller:
     def __init__(self):
         pass
-    def __init__(self, serialConnection, Instructions):
+    def __init__(self, serialConnection, Instructions, sampleData):
         self.serialConnection = serialConnection
         self.Instructions = Instructions
-        self.samples = []
-        self.times = []
-        self.positions = []
         self.pause = False
         self.stepsPerMM = 0.018
         self.isSampling = False
         self.crc = pycrc.algorithms.Crc(width=16, poly=0x8005, reflect_in=True, xor_in= 0x0000, reflect_out=True, xor_out = 0x0000)
-        self.currentRow = -1
+        self.state = State.Idle
+        self.sampleData = sampleData
+        
 
     def handleCalibrate(self):
         self.isSampling = False
@@ -82,11 +89,20 @@ class Controller:
         while True:
             messageType = self.serialConnection.ser.read(2)
             if messageType == b'\xff\xff':
+                if (self.state != State.ScanBetween):
+                    self.sampleData.linePlotData.addLine()
+                    self.state = State.ScanBetween
+                self.readSampleData()
 
+            if messageType == b'\xff\xfe':
+                self.state = State.Idle
+
+            if messageType == b'\xff\xfd':
+                self.state = State.StationarySample
                 self.readSampleData()
 
             elif(messageType == b'\xff\xfc'):
-                
+                self.state = State.Calibration
                 stepsPerMMBytes = self.serialConnection.readInt()
                 stageCalibrationStepsPerMM = struct.unpack('h', stepsPerMMBytes)[0]
 
@@ -115,10 +131,17 @@ class Controller:
         position = struct.unpack('f', positionBytes)[0]
 
         #time = self.secondsToRTC(time)
+        if (self.state == State.ScanBetween):
 
-        self.samples[self.currentRow].append(round(sample, 4))
-        self.times[self.currentRow].append(time)
-        self.positions[self.currentRow].append(round(position, 4))
+            self.sampleData.linePlotData.samples[self.sampleData.linePlotData.getLineIndex()].append(round(sample, 4))
+            self.sampleData.linePlotData.times[self.sampleData.linePlotData.getLineIndex()].append(time)
+            self.sampleData.linePlotData.positions[self.sampleData.linePlotData.getLineIndex()].append(round(position, 4))
+
+        elif (self.state == State.StationarySample):
+            
+            self.sampleData.scatterPlotData.samples.append(round(sample, 4))
+            self.sampleData.scatterPlotData.times.append(round(time, 4))
+            self.sampleData.scatterPlotData.positions.append(round(position, 4))
 
     def secondsToRTC(self, time):
         minutes = time // 60
@@ -134,21 +157,9 @@ class Controller:
 
         return self.crc.table_driven(crcData)
 
-    def handleClearSamples(self):
-        """
-            Clear the samples list for the controller. [ Need to relink the list on the view. ]
-        """
-        self.samples = []
-        self.times = []
-        self.positions = []
-
     def handleClearQueue(self):
 
         self.isSampling = False
         self.serialConnection.sendInstruction(self.Instructions.Pause)
         self.serialConnection.sendInstruction(self.Instructions.Clear)
         self.serialConnection.sendInstruction(self.Instructions.Resume)
-
-    def moveToNextSampleSet(self):
-        if (len(self.samples) > 0):
-            self.currentRow += 1

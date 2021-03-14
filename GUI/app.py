@@ -10,16 +10,22 @@ from view import View
 from serialConnection import SerialConnection
 from controller import Controller
 from instructions import Instructions
+from Models.sampleData import SampleData
 class App (QApplication):
     
     def __init__(self, sys_argv):
         super(App, self).__init__(sys_argv)
 
         port = self.loadConfigComPort()
-
+        self.sampleData = SampleData() 
+        # TODO: refactor sample data out of controller and dc
+        # TODO: pass sample data to controller and DynamicCanvas.
+        # TODO: CurrentRow should be able to be replaced by list length
+        # TODO: Implement State Flags
+        # TODO: Organise GUI files into folders
         self.serialConnection = SerialConnection(port)
-        self.controller = Controller(self.serialConnection, Instructions)
-        self.view = View(self.serialConnection, self.controller)
+        self.controller = Controller(self.serialConnection, Instructions, self.sampleData)
+        self.view = View(self.serialConnection, self.controller, self.sampleData)
         self.view.show()
 
         thread = threading.Thread(target=self.controller.readLoop, args=())
