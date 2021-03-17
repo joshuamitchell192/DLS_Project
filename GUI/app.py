@@ -5,6 +5,7 @@ import serial.tools.list_ports as port_list
 import sys, threading, configparser
 from pycrc.models import CrcModels
 from pathlib import Path
+import os
 
 from view import View
 from serialConnection import SerialConnection
@@ -15,10 +16,10 @@ class App (QApplication):
     
     def __init__(self, sys_argv):
         super(App, self).__init__(sys_argv)
+        self.absoluteInstallationPath = os.path.dirname(os.path.abspath(__file__))
+        self.sampleData = SampleData()
 
         port = self.loadConfigComPort()
-        self.sampleData = SampleData() 
-        # TODO: refactor sample data out of controller and dc
         # TODO: pass sample data to controller and DynamicCanvas.
         # TODO: CurrentRow should be able to be replaced by list length
         # TODO: Implement State Flags
@@ -38,7 +39,7 @@ class App (QApplication):
 
     def loadConfigComPort(self):
         config = configparser.ConfigParser()
-        config.read('./GUI/settings.ini')
+        config.read(self.absoluteInstallationPath + '/settings.ini')
 
         if ('Default' in config):
             if ('Port' in config['Default']):
@@ -47,7 +48,7 @@ class App (QApplication):
 
     def loadConfig(self):
         config = configparser.ConfigParser()
-        config.read('./GUI/settings.ini')
+        config.read(self.absoluteInstallationPath + '/settings.ini')
 
         if ('Default' in config):
 
@@ -82,8 +83,16 @@ if __name__ == '__main__':
 
     app = App(sys.argv)
 
-    ssFile = "./GUI/stylesheet.qss"
+    dirname = os.path.dirname(os.path.abspath(__file__))
+    ssFile = os.path.join(dirname, "stylesheet.qss")
+    dropDownPath = os.path.join(dirname, "Assets/baseline_arrow_drop_down_black_18dp.png").replace('\\', '/')
     with open(ssFile) as fh:
-        app.setStyleSheet(fh.read())
+        styleSheet = fh.read()
+        styleSheet += """
+            QComboBox::down-arrow {
+                image: url(""" + dropDownPath + """);
+            }
+        """
+        app.setStyleSheet(styleSheet)
 
     sys.exit(app.exec_())

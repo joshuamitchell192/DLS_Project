@@ -2,6 +2,7 @@ from PyQt5.QtWidgets import (QDialog, QDialogButtonBox, QVBoxLayout, QLineEdit, 
 from PyQt5 import QtWidgets
 
 import serial.tools.list_ports as port_list
+import os
 
 class PortDialog(QDialog):
 
@@ -10,8 +11,9 @@ class PortDialog(QDialog):
         
         self.setWindowTitle("Serial Port")
         self.setFixedSize(250, 110)
-
-        ssFile = "./GUI/stylesheet.qss"
+        dirname = os.path.dirname(os.path.abspath(__file__))
+        ssFile = os.path.join(dirname, "./stylesheet.qss")
+        dropDownPath = os.path.join(dirname, "Assets/baseline_arrow_drop_down_black_18dp.png").replace('\\', '/')
         with open(ssFile) as fh:
             styleSheet = fh.read()
             styleSheet += """
@@ -25,7 +27,13 @@ class PortDialog(QDialog):
                 
                 height: 33px;
                 width: 85px;
-            }"""
+            }
+            QComboBox::down-arrow {
+                image: url(""" + dropDownPath + """);
+            }
+            """
+
+            
             self.setStyleSheet(styleSheet)
 
         self.PortList = QComboBox()

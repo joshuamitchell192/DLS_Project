@@ -16,9 +16,11 @@ class Settings:
         self.xAxisRange = (0, 65)
         self.yAxisRange = (0, 4000)
 
+        self.absoluteInstallationPath = os.path.dirname(os.path.abspath(__file__))
+
     def loadSettings(self):
         config = configparser.ConfigParser()
-        config.read('./GUI/settings.ini')
+        config.read(self.absoluteInstallationPath + '/settings.ini')
 
         if ('Default' in config):
 
