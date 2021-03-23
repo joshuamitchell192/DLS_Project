@@ -12,7 +12,7 @@ class Settings:
         self.terminalMode = False
 
         self.stepsPerMm = 99
-        self.usePerformanceGraph = True
+        self.usePerformanceGraph = False
         self.xAxisRange = (0, 65)
         self.yAxisRange = (0, 4000)
 

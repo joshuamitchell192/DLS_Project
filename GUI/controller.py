@@ -94,10 +94,10 @@ class Controller:
                     self.state = State.ScanBetween
                 self.readSampleData()
 
-            if messageType == b'\xff\xfe':
+            elif messageType == b'\xff\xfe':
                 self.state = State.Idle
 
-            if messageType == b'\xff\xfd':
+            elif messageType == b'\xff\xfd':
                 self.state = State.StationarySample
                 self.readSampleData()
 
@@ -153,9 +153,7 @@ class Controller:
 
     def readCrc(self, data):
         crc = self.serialConnection.ser.read(2)
-        crcData = data + crc
-
-        return self.crc.table_driven(crcData)
+        return self.crc.table_driven(data + crc)
 
     def handleClearQueue(self):
 

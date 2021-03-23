@@ -9,7 +9,6 @@ import math
 from matplotlib import animation
 
 from dynamicCanvas import DynamicMplCanvas
-from dynamicCanvasPerformance import DynamicMplCanvasPerformance
 
 class View(QMainWindow):
 
@@ -123,9 +122,9 @@ class View(QMainWindow):
         self.y += 30
 
         self.StepLength_LineEdit = QLineEdit(self)
-        #self.StepLength_LineEdit.setValidator(QDoubleValidator(self.controller.stepsPerMM,5.0, 7))
+        # self.StepLength_LineEdit.setValidator(QDoubleValidator(self.controller.stepsPerMM, 5.0, 7))
         self.StepLength_LineEdit.setGeometry(40, self.y, 150, 25)
-        self.StepLength_LineEdit.setText("0.1")
+        self.StepLength_LineEdit.setText("0.01")
         self.StepLength_LineEdit.editingFinished.connect(self.__updateStepLengthEditLine)
         self.StepLength_LineEdit.textChanged.connect(self.StepLengthUpdate)
 
@@ -211,7 +210,7 @@ class View(QMainWindow):
         self.ClearGraph_Button = QPushButton(self)
         self.ClearGraph_Button.setGeometry(1075, self.y, 105, 33)
         self.ClearGraph_Button.setText("Clear Samples")
-        self.ClearGraph_Button.clicked.connect(lambda: self.controller.sampleData.clearAllData())
+        self.ClearGraph_Button.clicked.connect(lambda: self.clearGraphData())
 
         self.y += 100
 
@@ -231,7 +230,7 @@ class View(QMainWindow):
 
         l = QtWidgets.QVBoxLayout(self.graph_widget)
 
-        self.dc = DynamicMplCanvasPerformance(self.sampleData, self.graph_widget, width=5, height=4, dpi=100)
+        self.dc = DynamicMplCanvas(self.sampleData, self.graph_widget, width=5, height=4, dpi=100)
         l.addWidget(self.dc)
         self.dc.show()
 
@@ -282,7 +281,8 @@ class View(QMainWindow):
         if (value == ""):
             return
         #self.StepLength_LineEdit.setValidator(QDoubleValidator(self.controller.stepsPerMM,5.0, 7))
-
+        if (type(value) != int or float):
+            return
         value = self.roundNearest(value, self.currentStepsPerMM)
         self.StepLength_LineEdit.setText(value)
 
@@ -345,28 +345,20 @@ class View(QMainWindow):
                 fileName = fileName + ".csv"
             with open(fileName, 'w+' ) as newFile:
                 newFile.write("Sample, Time, Position\n")
-                for i in range(len(self.sampleData.samples)):
+                for i in range(len(self.sampleData.linePlotData.samples)):
                     newFile.write("Line " + str(i + 1) + "\n")
-                    for j in range(len(self.sampleData.samples[i])):
-                        newFile.write(str(self.sampleData.samples[i][j]) + ", ")
-                        newFile.write(str(self.sampleData.times[i][j])+ ", ")
-                        newFile.write(str(self.sampleData.positions[i][j])+ ", ")
+                    for j in range(len(self.sampleData.linePlotData.samples[i])):
+                        newFile.write(str(self.sampleData.linePlotData.samples[i][j]) + ", ")
+                        newFile.write(str(self.sampleData.linePlotData.times[i][j])+ ", ")
+                        newFile.write(str(self.sampleData.linePlotData.positions[i][j])+ ", ")
                         newFile.write('\n')
     
     def loadProgram(self):
         pass
 
     def clearGraphData(self):
-        #self.sampleData.samples = []
-        #self.sampleData.times = []
-        #self.sampleData.positions = []
-        #self.dc.currentRow = -1
-        #self.controller.currentRow = -1
-        self.sampleData.clearData() 
-
-        self.dc.resetCanvas(self.sampleData.samples, self.sampleData.times, self.sampleData.positions)
-        # self.dc.compute_initial_figure()
-        # self.dc.update_figure()
+        self.controller.sampleData.clearAllData() 
+        self.dc.resetCanvas()
 
     def closeEvent(self, ce):
         self.fileQuit()

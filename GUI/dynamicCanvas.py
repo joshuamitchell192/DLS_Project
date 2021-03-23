@@ -16,6 +16,7 @@ from numpy import linspace
 import time
 import matplotlib.colors as mcolors
 from threading import Timer
+
 from Models.sampleData import SampleData
 
 class MplCanvas(FigureCanvas):
@@ -24,40 +25,22 @@ class MplCanvas(FigureCanvas):
 
     """
 
-    def __init__(self, parent=None, sampleData=SampleData(), width=5, height=4, dpi=90):
+    def __init__(self, parent=None, width=5, height=4, dpi=90):
 
         """ Creates a matplot lib figure, subplot and links the data samples list.
 
         """
-        #self.fig = Figure(figsize=(width, height), dpi=dpi)
         self.fig = figure.Figure(figsize=(width, height), dpi=dpi)
         self.ax = self.fig.add_subplot(111)
         self.setCanvasAxes()
-        # self.background = self.fig.canvas.copy_from_bbox(self.ax.bbox)
-        self.currentRow = 0
-        self.lines = [self.ax.plot(0,0)[0]]
 
-        # self.samples = samples
-        # self.times = times
-        # self.positions = positions
-        self.sampleData = sampleData
         self.noColours = 40
-        self.maxLineCount = self.noColours * 3
-        cm_subsection = linspace(0.0, 1.0, self.noColours)
-        tabbMap = [ cm.tab20b(x) for x in cm_subsection ]
-        tabcMap = [ cm.tab20c(x) for x in cm_subsection ]
-        random.shuffle(tabbMap)
-        random.shuffle(tabcMap)
-        m1 = lambda m: tabbMap[m]
-        m2 = lambda m: tabcMap[m]
-        self.lineLabels = ["Line " + str(i) for i in range(self.maxLineCount)]
-        self.colourMap = [m(i) for i in range(self.noColours) for m in (m1, m2)]
-        print(self.colourMap)
-
-
-        self.compute_initial_figure()
-
+        self.noColourRepitions = 3
+        self.maxLineCount = self.noColours * self.noColourRepitions
+        
         FigureCanvas.__init__(self, self.fig)
+
+        self.createColourMap()
         self.setParent(parent)
 
         FigureCanvas.setSizePolicy(self,
@@ -67,7 +50,8 @@ class MplCanvas(FigureCanvas):
 
     def setCanvasAxes(self):
 
-        self.ax.set_xlim((0, 65))
+        self.ax.set_xlim((0, 10))
+        self.ax.set_ylim(0, 10)
         
         self.ax.grid(color='darkgrey', linestyle='dashed', axis='both', linewidth=1)
         self.ax.set_xlabel("Position")
@@ -75,9 +59,21 @@ class MplCanvas(FigureCanvas):
 
         self.fig.canvas.draw()
 
+    def createColourMap(self):
 
-    def compute_initial_figure(self):
-        pass
+        cm_subsection = linspace(0.0, 1.0, self.noColours)
+
+        tabbMap = [ cm.tab20b(x) for x in cm_subsection ]
+        tabcMap = [ cm.tab20c(x) for x in cm_subsection ]
+
+        colours = (tabbMap + tabcMap) 
+        random.shuffle(colours)
+
+        self.colourMap = colours
+
+        for i in range(self.noColourRepitions):
+            random.shuffle(colours)
+            self.colourMap += colours
 
 
 
@@ -87,84 +83,121 @@ class DynamicMplCanvas(QtWidgets.QWidget):
 
     """
 
-    def __init__(self, parent=None, samples=[], times=[], positions=[], width=5, height=4, dpi=90):
+    def __init__(self, sampleData, parent=None, width=5, height=4, dpi=90):
 
         """ Initialises the basic canvas from the super class and setups of the timer for updating the graph
 
         """
         QtWidgets.QMainWindow.__init__(self)
         vbox = QVBoxLayout()
-        self.canvas = MplCanvas(parent=parent, samples=samples, times=times, positions=positions, width=width, height=height, dpi=dpi)
+        self.canvas = MplCanvas(parent=parent, width=width, height=height, dpi=dpi)
+        self.sampleData = sampleData
+
+        self.xAxisRange = AxisRange()
+        self.yAxisRange = AxisRange()
+
         vbox.addWidget(self.canvas)
         self.setLayout(vbox)
-        self.currentRow = 0
-        self.lines = [self.canvas.ax.plot([], [])[0]]
+        self.lines = [self.canvas.ax.plot(0, 0, color=self.canvas.colourMap[i % self.canvas.noColours], label="Line")[0] for i in range(self.canvas.maxLineCount)]
+        self.scatterPlot = self.canvas.ax.plot(-10, -10, color='black', linestyle = 'None', marker='o', markersize=5)[0]
 
+        self.startTimer()
+
+        self.dataExists = False
+
+    def startTimer(self):
         timer = QtCore.QTimer(self)
-        timer.timeout. connect(self.update_figure)
-        timer.start(100)
+        timer.timeout. connect(self.callback)
+        timer.start(64)
+
+    def callback(self):
+
+        try:
+            if (self.sampleData.linePlotData.getLineIndex() >= 0):
+                self.dataExists = True
+                self.lines[self.sampleData.linePlotData.getLineIndex()].set_data(self.sampleData.linePlotData.positions[self.sampleData.linePlotData.getLineIndex()], self.sampleData.linePlotData.samples[self.sampleData.linePlotData.getLineIndex()])
+
+            if (self.sampleData.scatterPlotData.getSampleCount() > 0):
+                self.dataExists = True
+                self.scatterPlot.set_data(self.sampleData.scatterPlotData.positions, self.sampleData.scatterPlotData.samples)
 
 
+            if (self.dataExists):
 
-    def resetSamples(self, newSamples, newTimes, newPositions):
+                self.canvas.draw()
+                self.computeXAxisLimits()
+                self.computeYAxisLimits()
+
+        except:
+            pass
+
+    def computeXAxisLimits(self):
+
+        if (self.sampleData.scatterPlotData.getSampleCount() > 0):
+            latestScatterPosition = self.sampleData.scatterPlotData.positions[-1]
+            if (latestScatterPosition < self.xAxisRange.minValue):
+                self.xAxisRange.setMinValue(latestScatterPosition - 2)
+
+        lastRowMin = np.amin(self.sampleData.linePlotData.positions[-1])
+        if (lastRowMin < self.xAxisRange.minValue):
+            self.xAxisRange.setMinValue(lastRowMin - 2)
+
+        if (self.sampleData.scatterPlotData.getSampleCount() > 0):
+            latestScatterPosition = self.sampleData.scatterPlotData.positions[-1]
+            if (latestScatterPosition > self.xAxisRange.maxValue):
+                self.xAxisRange.maxValue = latestScatterPosition
+
+        lastRowMax = np.amax(self.sampleData.linePlotData.positions[-1])
+        if (lastRowMax > self.xAxisRange.maxValue):
+            self.xAxisRange.maxValue = lastRowMax
+
+        self.canvas.ax.set_xlim(self.xAxisRange.minValue, self.xAxisRange.maxValue + 2)
+
+    def computeYAxisLimits(self):
+
+        if (self.sampleData.scatterPlotData.getSampleCount() > 0):
+            latestScatterSample = self.sampleData.scatterPlotData.samples[-1]
+            if (latestScatterSample < self.yAxisRange.minValue):
+                self.yAxisRange.setMinValue(latestScatterSample - 10)
+
+        lastRowMin = np.amin(self.sampleData.linePlotData.samples[-1])
+        if (lastRowMin < self.yAxisRange.minValue):
+            self.yAxisRange.setMinValue(lastRowMin - 10)
+
+        if (self.sampleData.scatterPlotData.getSampleCount() > 0):
+            latestScatterSample = self.sampleData.scatterPlotData.samples[-1]
+            if (latestScatterSample > self.yAxisRange.maxValue):
+                self.yAxisRange.maxValue = latestScatterSample
+
+        lastRowMax = np.amax(self.sampleData.linePlotData.samples[-1])
+        if (lastRowMax > self.yAxisRange.maxValue):
+            self.yAxisRange.maxValue = lastRowMax
+
+        self.canvas.ax.set_ylim(self.yAxisRange.minValue, self.yAxisRange.maxValue + 10)
+
+    def resetCanvas(self):
 
         """ Relinks the samples list for when the user clicks the clear samples button
 
             :param: newSamples - the samples list after it's been reinitialised to an empty list.
 
         """
-        self.canvas.times = newTimes
-        self.canvas.samples = newSamples
-        self.canvas.positions = newPositions
         
         self.canvas.ax.clear()
         self.canvas.setCanvasAxes()
+        self.lines = [self.canvas.ax.plot(0,0, color=self.canvas.colourMap[i % self.canvas.noColours], label="Line")[0] for i in range(self.canvas.maxLineCount)]
+        self.scatterPlot = self.canvas.ax.plot(0, 0, color='black', linestyle = 'None', marker='o', markersize=5)[0]
+        
+        self.canvas.createColourMap()
 
-    def compute_initial_figure(self):
+class AxisRange:
 
-        """ Plots the initial list when the DynamicMPLCanvas object is created.
-
-        """
-        self.lines.append(self.ax.plot(self.positions[self.currentRow], self.samples[self.currentRow]))
-        # self.axes.append(plt.plot(self.positions[self.currentRow], self.samples[self.currentRow], color=self.colourMap[self.currentRow % self.noColours], label=f'Scan {self.currentRow + 1}', animated=True))
-
-    def timeIntervals(self, time_tick_ints):
-        timeInts = []
-        if len(self.times) < 9:
-            intNum = len(self.times)
+    def __init__(self):
+        self.minValue = 5000
+        self.maxValue = 0
+    
+    def setMinValue(self, value):
+        if (value < 0):
+            self.minValue = 0
         else:
-            intNum = 9
-        for t in range(intNum):
-            timeInts.append(self.times[int(t*len(self.times)/intNum)])
-        return timeInts
-
-
-    def positionIntervals(self, position_tick_ints):
-        positionInts = []
-        if len(self.positions) < 9:
-            intNum = len(self.positions)
-        else:
-            intNum = 9
-
-        for pos in range(intNum):
-            positionInts.append(self.positions[int(pos * len(self.positions) / intNum)])
-
-        return positionInts
-
-    def addDataRow(self):
-        self.canvas.positions.append([])
-        self.canvas.times.append([])
-        self.canvas.samples.append([])
-        # if (len(self.canvas.samples) > 1):
-        self.currentRow = self.currentRow + 1
-        self.lines.append(self.canvas.ax.plot([], [], animated=True, color=self.canvas.colourMap[self.currentRow % self.canvas.noColours])[0])
-
-    def update_figure(self):
-        """ Replots the samples list when the timer reaches zero, updating it on the GUI.
-
-        """
-
-        self.lines[self.currentRow] = self.canvas.ax.plot(self.canvas.positions[self.currentRow ], self.canvas.samples[self.currentRow], color=self.canvas.colourMap[self.currentRow % self.canvas.noColours])
-        self.canvas.draw()
-        return self.canvas.lines
-
+            self.minValue = value

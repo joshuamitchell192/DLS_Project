@@ -34,6 +34,9 @@ class ScatterPlotData:
         self.times = []
         self.positions = []
 
+    def __repr__(self):
+        return f'{self.samples}, {self.times}, {self.positions}'
+
 class SampleData:
 
     def __init__(self):
