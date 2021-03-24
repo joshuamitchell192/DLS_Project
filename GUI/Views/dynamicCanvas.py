@@ -1,23 +1,21 @@
-# Make sure that we are using QT5
-import sys
-import os
 import random
+
 import matplotlib
-from PyQt5.QtWidgets import QVBoxLayout
-from PyQt5 import QtCore, QtWidgets
 import numpy as np
+from PyQt5 import QtCore, QtWidgets
+from PyQt5.QtWidgets import QVBoxLayout
+
+# Make sure that we are using QT5Agg
 matplotlib.use('Qt5Agg')
 
-from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
-# from matplotlib.figure import Figure
-from matplotlib import cm, animation, figure
-import matplotlib.pyplot as plt
-from numpy import linspace
-import time
 import matplotlib.colors as mcolors
-from threading import Timer
+from matplotlib import cm, figure
+from matplotlib.backends.backend_qt5agg import \
+    FigureCanvasQTAgg as FigureCanvas
+from numpy import linspace
 
 from Models.sampleData import SampleData
+
 
 class MplCanvas(FigureCanvas):
 

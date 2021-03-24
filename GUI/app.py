@@ -1,17 +1,18 @@
-from PyQt5.QtWidgets import (QApplication, QDialog, QErrorMessage)
-from PyQt5.QtCore import Qt, QTimer
-from PyQt5.QtGui import QFont
-import serial.tools.list_ports as port_list
-import sys, threading, configparser
-from pycrc.models import CrcModels
-from pathlib import Path
+import configparser
 import os
+import sys
+import threading
 
-from view import View
-from serialConnection import SerialConnection
-from controller import Controller
-from instructions import Instructions
+from PyQt5.QtCore import Qt
+from PyQt5.QtWidgets import QApplication
+
+from Controllers.controller import Controller
+from Models.instructions import Instructions
 from Models.sampleData import SampleData
+from Services.serialConnection import SerialConnection
+from Views.mainView import View
+
+
 class App (QApplication):
     
     def __init__(self, sys_argv):

@@ -137,10 +137,10 @@ void MotorDriver::StartSamplingHere(bool &stop){
         
         Serial::WriteFlag(Serial::StationarySample);
         // Change to average interval
-        SetSampleDurationTimer(averageInterval);
-        RunSampleDurationTimer();
+        // SetSampleDurationTimer(averageInterval);
+        // RunSampleDurationTimer();
 
-        WaitForSamples();
+        WaitForSamples(averageInterval);
 }
 
 /**
@@ -231,20 +231,20 @@ void MotorDriver::ScanBetween(bool &stop, int dest) {
     if (direction == 1) {
         while (currentPosition < dest && !stop && !IsSwitchB2On()){
             Serial::WriteFlag(Serial::ScanBetweenSample);
-            WaitForSamples();
+            WaitForSamples(sampleDuration);
             GoToPosition(stop, currentPosition + stepsBetweenSamples);
         }
     }
     else if (direction == -1) {
         while (currentPosition > dest && !stop && !IsSwitchB1On()){
             Serial::WriteFlag(Serial::ScanBetweenSample);
-            WaitForSamples();
+            WaitForSamples(sampleDuration);
             GoToPosition(stop, currentPosition + (stepsBetweenSamples * direction));
         }
     }
-    
-    Serial::WriteFlag(Serial::Idle);
-
+    if (!stop){
+        Serial::WriteFlag(Serial::Idle);
+    }
 }
 
 /**
@@ -255,26 +255,24 @@ void MotorDriver::ScanBetween(bool &stop, int dest) {
  */ 
 void MotorDriver::OffSetStage(bool &stop, int direction)
 {
-        //while (!IsSwitchB2On());
         int returnPosition = currentPosition;
-        int dest = currentPosition - stepAmount * direction * 100;
+        int dest = currentPosition - stepAmount * direction * 2;
         SetDirection(dest);
         GoToPosition(stop, dest);
         SetDirection(returnPosition);
         GoToPosition(stop, returnPosition);
-        //while (!IsSwitchB1On());
 }
 
 /**
  * Retrieves and calculates each part of the ADC sample and writes it back to the serial connection.
  * (Sample average, time when sample was averaged, and the current position where the sample was taken).
  */
-void MotorDriver::WaitForSamples() {
+void MotorDriver::WaitForSamples(double duration) {
 
     sampleTotal = 0;
     numSamples = 1;
 
-    SetSampleDurationTimer(sampleDuration);
+    SetSampleDurationTimer(duration);
     RunSampleDurationTimer();
 
     int sampleAvg = Serial::CalculateSampleAverage(sampleTotal, numSamples);

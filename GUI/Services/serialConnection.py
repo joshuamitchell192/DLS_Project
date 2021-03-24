@@ -1,14 +1,10 @@
-from PyQt5.QtWidgets import (QDialog)
-from pycrc.models import CrcModels
-from instructions import Instructions
-import serial
-import serial.tools.list_ports as port_list
-import time
 import sys
-import struct
-import binascii
-import pycrc.algorithms
-from portDialog import PortDialog
+import time
+
+import serial
+from PyQt5.QtWidgets import QDialog
+
+from Views.portDialog import PortDialog
 
 
 class SerialConnection:
@@ -24,9 +20,6 @@ class SerialConnection:
 
         else:
             while (not self.connectionTest(port)):
-                # error_dialog = QErrorMessage()
-                # error_dialog.setWindowTitle("Connection Failed")
-                # error_dialog.showMessage('Failed to connect to the given port')
                 port = self.openPortModal()
 
             self.establishConnection(port)

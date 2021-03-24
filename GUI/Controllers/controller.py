@@ -1,13 +1,11 @@
-from view import View
-from serialConnection import SerialConnection
-from PyQt5.QtWidgets import QApplication
-import time, configparser
+
 import struct
-import pycrc.algorithms
-import tracemalloc
-import  os
-from settings import Settings
 from enum import Enum
+
+import pycrc.algorithms
+
+from Services.settings import Settings
+
 
 class State(Enum):
     Idle = 0

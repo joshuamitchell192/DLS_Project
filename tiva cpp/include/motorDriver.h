@@ -12,7 +12,7 @@ class MotorDriver{
         // This is a double to retain precision
         double stepsPerMM;
         int currentPosition;
-        volatile double sampleDuration;
+        double sampleDuration;
         double motorStepDelay;
         // The distance to move between sampling during scanbetween.
         double stepSize;
@@ -22,7 +22,7 @@ class MotorDriver{
         int numSamples;
         int stepsBetweenSamples;
         float totalTimeElapsed;
-        float averageInterval;
+        double averageInterval;
         int calibrationStepCount;
 
         void Calibrate(bool &stop);
@@ -40,7 +40,7 @@ class MotorDriver{
         void SetSampleDuration(double sampleDuration);
         void Move(bool &stop, double dest);
         int SetDirection(int dest);
-        void WaitForSamples();
+        void WaitForSamples(double duration);
         float CalculateCurrentTime();
         void OffSetStage(bool &stop, int direction);
         

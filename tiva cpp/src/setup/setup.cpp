@@ -267,9 +267,9 @@ void Setup::Uart0TerminalSetup(void)
 	// Disable UART 0 for setup
 	UART0_CTL_R &= ~0x1;
 	
-	// Set baud rate for 115200
-	UART0_IBRD_R = 34;
-	UART0_FBRD_R = 45;
+	// Set baud rate for (115200 - 17.23) (57600 - 34.45
+	UART0_IBRD_R = 17;
+	UART0_FBRD_R = 23;
 	
 	// Set line control register to odd parity, 2 stop bits, and word length of 8 bits
 	UART0_LCRH_R |= 0x6A;

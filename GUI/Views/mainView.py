@@ -1,14 +1,12 @@
-from PyQt5.QtWidgets import (QMainWindow, QSlider,
-    QLabel, QApplication, QSpinBox, QDoubleSpinBox, QPushButton, QComboBox, QFrame, QMenu, QWidget, QFileDialog, QLineEdit, QFormLayout)
-from PyQt5.QtCore import Qt, QSize, QRect, QTimer
 from PyQt5 import QtWidgets
-from PyQt5.QtGui import QPixmap, QDoubleValidator, QIcon
-import sys
-import csv
-import math
-from matplotlib import animation
+from PyQt5.QtCore import QRect, QSize, Qt, QTimer
+from PyQt5.QtGui import QDoubleValidator, QIcon
+from PyQt5.QtWidgets import (QComboBox, QDoubleSpinBox, QFileDialog, QFrame,
+                             QLabel, QLineEdit, QMainWindow, QMenu,
+                             QPushButton, QSlider, QWidget)
 
-from dynamicCanvas import DynamicMplCanvas
+from Views.dynamicCanvas import DynamicMplCanvas
+
 
 class View(QMainWindow):
 

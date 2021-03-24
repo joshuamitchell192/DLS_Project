@@ -12,9 +12,6 @@ class Settings:
         self.terminalMode = False
 
         self.stepsPerMm = 99
-        self.usePerformanceGraph = False
-        self.xAxisRange = (0, 65)
-        self.yAxisRange = (0, 4000)
 
         self.absoluteInstallationPath = os.path.dirname(os.path.abspath(__file__))
 
