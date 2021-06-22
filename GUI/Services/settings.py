@@ -1,4 +1,5 @@
 import configparser, os
+from pathlib import Path
 
 class Settings:
 
@@ -13,11 +14,11 @@ class Settings:
 
         self.stepsPerMm = 99
 
-        self.absoluteInstallationPath = os.path.dirname(os.path.abspath(__file__))
+        self.absoluteInstallationPath = Path(os.path.dirname(os.path.abspath(__file__))).parent.absolute()
 
     def loadSettings(self):
         config = configparser.ConfigParser()
-        config.read(self.absoluteInstallationPath + '/settings.ini')
+        config.read(os.path.join(self.absoluteInstallationPath , 'settings.ini'))
 
         if ('Default' in config):
 
@@ -68,12 +69,12 @@ class Settings:
             # if ("AverageInterval" in defaultSettings):
             #     self.view.AvgInterval_SpinBox.setValue(int(defaultSettings["AverageInterval"]))
 
-    @staticmethod
-    def saveSetting(section, field, value):
+    def saveSetting(self, section, field, value):
         config = configparser.ConfigParser()
-        config.read(os.getcwd() + '/GUI/settings.ini')
+        
+        config.read(os.path.join(self.absoluteInstallationPath , 'settings.ini'))
 
         config[section][field] = value
 
-        with open(os.getcwd() + '/GUI/settings.ini', 'w') as configFile:
+        with open(os.path.join(self.absoluteInstallationPath , 'settings.ini'), 'w') as configFile:
             config.write(configFile)

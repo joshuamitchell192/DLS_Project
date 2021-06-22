@@ -21,10 +21,7 @@ class App (QApplication):
         self.sampleData = SampleData()
 
         port = self.loadConfigComPort()
-        # TODO: pass sample data to controller and DynamicCanvas.
-        # TODO: CurrentRow should be able to be replaced by list length
-        # TODO: Implement State Flags
-        # TODO: Organise GUI files into folders
+
         self.serialConnection = SerialConnection(port)
         self.controller = Controller(self.serialConnection, Instructions, self.sampleData)
         self.view = View(self.serialConnection, self.controller, self.sampleData)
@@ -81,6 +78,7 @@ if __name__ == '__main__':
         QApplication.setAttribute(Qt.AA_EnableHighDpiScaling, True)
 
     QApplication.setAttribute(Qt.AA_DisableWindowContextHelpButton)
+    QApplication.setAttribute(Qt.AA_UseStyleSheetPropagationInWidgetStyles, True)
 
     app = App(sys.argv)
 

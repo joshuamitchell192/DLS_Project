@@ -25,6 +25,8 @@ class Controller:
         self.crc = pycrc.algorithms.Crc(width=16, poly=0x8005, reflect_in=True, xor_in= 0x0000, reflect_out=True, xor_out = 0x0000)
         self.state = State.Idle
         self.sampleData = sampleData
+        self.settings = Settings()
+        self.settings.loadSettings()
         
 
     def handleCalibrate(self):
@@ -103,8 +105,9 @@ class Controller:
                 self.state = State.Calibration
                 stepsPerMMBytes = self.serialConnection.readInt()
                 stageCalibrationStepsPerMM = struct.unpack('h', stepsPerMMBytes)[0]
+                self.stepsPerMM = 1/stageCalibrationStepsPerMM
 
-                Settings.saveSetting("Calibration", "stepspermm", str(stageCalibrationStepsPerMM))
+                self.settings.saveSetting("Calibration", "stepspermm", str(stageCalibrationStepsPerMM))
 
 
     def readSampleData(self):

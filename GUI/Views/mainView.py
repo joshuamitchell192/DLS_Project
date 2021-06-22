@@ -1,9 +1,11 @@
 from PyQt5 import QtWidgets
 from PyQt5.QtCore import QRect, QSize, Qt, QTimer
 from PyQt5.QtGui import QDoubleValidator, QIcon
-from PyQt5.QtWidgets import (QComboBox, QDoubleSpinBox, QFileDialog, QFrame,
+from PyQt5.QtWidgets import (QComboBox, QDoubleSpinBox, QFileDialog, QFrame, QHBoxLayout,
                              QLabel, QLineEdit, QMainWindow, QMenu,
-                             QPushButton, QSlider, QWidget)
+                             QPushButton, QSizePolicy, QSlider, QWidget, QGridLayout)
+
+from screeninfo import get_monitors
 
 from Views.dynamicCanvas import DynamicMplCanvas
 
@@ -25,6 +27,8 @@ class View(QMainWindow):
         self.Calibrate_Button.setGeometry(40, self.y, 85, 33)
         self.Calibrate_Button.setText("Calibrate")
         self.Calibrate_Button.clicked.connect(lambda: self.controller.handleCalibrate())
+        self.Calibrate_Button.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
+        # self.leftControlGrid.addWidget(self.Calibrate_Button, *(1, 2))
 
         self.y += 60
 
@@ -36,7 +40,7 @@ class View(QMainWindow):
 
         self.P1_Slider = QSlider(Qt.Horizontal, self)
         self.P1_Slider.setFocusPolicy(Qt.NoFocus)
-        self.P1_Slider.setGeometry(40, self.y, 400, 15)
+        self.P1_Slider.setGeometry(40, self.y, 350, 15)
         self.P1_Slider.setRange(0, 65)
         self.P1_Slider.setTickInterval(5)
         self.P1_Slider.TickPosition(self.P1_Slider.TicksBelow)
@@ -45,14 +49,14 @@ class View(QMainWindow):
         self.y -= 5
 
         self.P1_SpinBox = QDoubleSpinBox(self)
-        self.P1_SpinBox.setGeometry(460, self.y, 70, 25)
+        self.P1_SpinBox.setGeometry(410, self.y, 70, 25)
         self.P1_SpinBox.setRange(0, 65)
         self.P1_SpinBox.setDecimals(1)
         self.P1_SpinBox.setSingleStep(0.1)
         self.P1_SpinBox.setSuffix(" mm")
         self.P1_SpinBox.valueChanged[float].connect(self.__updateP1Slider)
 
-        self.y += 50
+        self.y += 25
 
         self.P2_Label = QLabel(self)
         self.P2_Label.setGeometry(40, self.y, 100, 30)
@@ -63,14 +67,14 @@ class View(QMainWindow):
         self.P2_Slider = QSlider(Qt.Horizontal, self)
         self.P2_Slider.setFocusPolicy(Qt.NoFocus)
         self.P2_Slider.setRange(0, 65)
-        self.P2_Slider.setGeometry(40, self.y, 400, 15)
+        self.P2_Slider.setGeometry(40, self.y, 350, 15)
         self.P2_Slider.setValue(10)
         self.P2_Slider.valueChanged[int].connect(self.__updateP2SpinBox)
 
         self.y -= 5
 
         self.P2_SpinBox = QDoubleSpinBox(self)
-        self.P2_SpinBox.setGeometry(460, self.y, 70, 25)
+        self.P2_SpinBox.setGeometry(410, self.y, 70, 25)
         self.P2_SpinBox.setRange(0, 65)
         self.P2_SpinBox.setValue(10)
         self.P2_SpinBox.setDecimals(1)
@@ -78,7 +82,7 @@ class View(QMainWindow):
         self.P2_SpinBox.setSuffix(" mm")
         self.P2_SpinBox.valueChanged[float].connect(self.__updateP2Slider)
 
-        self.y += 80
+        self.y += 50
 
         self.SmpDuration_Label = QLabel(self)
         self.SmpDuration_Label.setGeometry(40, self.y, 250, 30)
@@ -109,7 +113,7 @@ class View(QMainWindow):
         self.StepMode_ComboBox.setCurrentIndex(2)
         self.StepMode_ComboBox.currentIndexChanged.connect(self.__updateStepModeComboBox)
 
-        self.y += 40
+        self.y += 30
 
         self.StepLength_Label = QLabel(self)
         self.StepLength_Label.setGeometry(40, self.y, 150, 30)
@@ -135,7 +139,7 @@ class View(QMainWindow):
 
         self.seperator = QFrame(self)
         self.seperator.setObjectName("Seperator")
-        self.seperator.setGeometry(QRect(30, self.y, 550, 5))
+        self.seperator.setGeometry(QRect(30, self.y, 500, 5))
         self.seperator.setFrameShape(QFrame.HLine)
         self.seperator.setFrameShadow(QFrame.Raised)
 
@@ -149,7 +153,7 @@ class View(QMainWindow):
 
         self.AvgIntervalPosition_Slider = QSlider(Qt.Horizontal, self)
         self.AvgIntervalPosition_Slider.setFocusPolicy(Qt.NoFocus)
-        self.AvgIntervalPosition_Slider.setGeometry(40, self.y, 400, 15)
+        self.AvgIntervalPosition_Slider.setGeometry(40, self.y, 350, 15)
         self.AvgIntervalPosition_Slider.setRange(0, 65)
         self.AvgIntervalPosition_Slider.setTickInterval(5)
         self.AvgIntervalPosition_Slider.TickPosition(self.AvgIntervalPosition_Slider.TicksBelow)
@@ -158,14 +162,14 @@ class View(QMainWindow):
         self.y -= 5
 
         self.StationarySamplePosition_SpinBox = QDoubleSpinBox(self)
-        self.StationarySamplePosition_SpinBox.setGeometry(460, self.y, 70, 25)
+        self.StationarySamplePosition_SpinBox.setGeometry(410, self.y, 70, 25)
         self.StationarySamplePosition_SpinBox.setRange(0, 65)
         self.StationarySamplePosition_SpinBox.setDecimals(1)
         self.StationarySamplePosition_SpinBox.setSingleStep(0.1)
         self.StationarySamplePosition_SpinBox.setSuffix(" mm")
         self.StationarySamplePosition_SpinBox.valueChanged[float].connect(self.__updateStationarySamplePosition_Slider)
 
-        self.y += 45
+        self.y += 35
         
         self.AvgInterval_Label = QLabel(self)
         self.AvgInterval_Label.setGeometry(40, self.y, 200, 30)
@@ -193,24 +197,24 @@ class View(QMainWindow):
         self.y -= 15
 
         self.TimeElapsed_Label = QLabel(self)
-        self.TimeElapsed_Label.setGeometry(650, self.y, 150, 30)
+        self.TimeElapsed_Label.setGeometry(610, self.y, 150, 30)
         self.TimeElapsed_Label.setText("Time Elapsed: ")
 
         self.CurrentPosition_Label = QLabel(self)
-        self.CurrentPosition_Label.setGeometry(650, self.y + 30, 150, 30)
+        self.CurrentPosition_Label.setGeometry(610, self.y + 30, 150, 30)
         self.CurrentPosition_Label.setText("Current Position:")
 
         self.ExpectedDuration_Label = QLabel(self)
-        self.ExpectedDuration_Label.setGeometry(650, self.y + 60, 150, 30)
+        self.ExpectedDuration_Label.setGeometry(610, self.y + 60, 150, 30)
         self.ExpectedDuration_Label.setText("Expected Duration:")
 
 
         self.ClearGraph_Button = QPushButton(self)
-        self.ClearGraph_Button.setGeometry(1075, self.y, 105, 33)
+        self.ClearGraph_Button.setGeometry(980, self.y, 105, 33)
         self.ClearGraph_Button.setText("Clear Samples")
         self.ClearGraph_Button.clicked.connect(lambda: self.clearGraphData())
 
-        self.y += 100
+        self.y += 90
 
         self.Stop_Button = QPushButton(self)
         self.Stop_Button.setGeometry(40, self.y, 85, 33)
@@ -232,7 +236,7 @@ class View(QMainWindow):
         l.addWidget(self.dc)
         self.dc.show()
 
-        self.graph_widget.setGeometry(575, 30, 700, 500)
+        self.graph_widget.setGeometry(520, 0, 650, 460)
 
 
         self.file_menu = QMenu('&File', self)
@@ -247,10 +251,7 @@ class View(QMainWindow):
         self.timer.timeout.connect(self.updateLabels)
         self.timer.start(32)
 
-        #self.setBaseSize(QSize(1280, 720))
-        self.setMinimumSize(QSize(704, 480))
-        self.setMaximumSize(QSize(1920, 1080))
-        self.setGeometry(300, 300, 1280, 720)
+        self.setFixedSize(QSize(1120, 630))
         self.setWindowFlags(Qt.WindowCloseButtonHint | Qt.WindowMinimizeButtonHint)
         self.setWindowTitle('Linear Stage Controller')
         self.setWindowIcon(QIcon())
@@ -276,6 +277,7 @@ class View(QMainWindow):
 
     def __updateStepLengthEditLine(self):
         value = self.StepLength_LineEdit.text()
+        print(value,self.currentStepsPerMM)
         if (value == ""):
             return
         #self.StepLength_LineEdit.setValidator(QDoubleValidator(self.controller.stepsPerMM,5.0, 7))

@@ -19,8 +19,8 @@ class SerialConnection:
             self.establishConnection(port)
 
         else:
-            while (not self.connectionTest(port)):
-                port = self.openPortModal()
+            #while (not self.connectionTest(port)):
+            port = self.openPortModal()
 
             self.establishConnection(port)
 

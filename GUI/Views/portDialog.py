@@ -12,8 +12,8 @@ class PortDialog(QDialog):
         
         self.setWindowTitle("Serial Port")
         self.setFixedSize(250, 110)
-        dirname = os.path.dirname(os.path.abspath(__file__))
-        ssFile = os.path.join(Path(dirname).parent.absolute(), "stylesheet.qss")
+        dirname = Path(os.path.dirname(os.path.abspath(__file__))).parent.absolute()
+        ssFile = os.path.join(dirname, "stylesheet.qss")
         dropDownPath = os.path.join(dirname, "Assets/baseline_arrow_drop_down_black_18dp.png").replace('\\', '/')
         with open(ssFile) as fh:
             styleSheet = fh.read()
@@ -49,6 +49,3 @@ class PortDialog(QDialog):
         self.layout.addWidget(self.PortList)
         self.layout.addWidget(self.buttonBox)
         self.setLayout(self.layout)
-
-
-
