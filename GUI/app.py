@@ -53,12 +53,12 @@ class App (QApplication):
             defaultSettings = config['Default']
 
             if ("SampleDuration" in defaultSettings):
-                self.view.SmpDuration_LineEdit.setText(defaultSettings['SampleDuration'])
+                self.view.SmpDuration_SpinBox.setValue(float(defaultSettings['SampleDuration']))
             else:
                 print("Failed to load 'SampleDuration' from 'Default' section from settings")
 
             if ("mmBetweenSamples" in defaultSettings):
-                self.view.StepLength_LineEdit.setText(defaultSettings['mmBetweenSamples'])
+                self.view.StepLength_LineEdit.setValue(float(defaultSettings['mmBetweenSamples']))
             
             if ("StartPosition" in defaultSettings):
                 self.view.P1_Slider.setValue(int(defaultSettings["StartPosition"]))

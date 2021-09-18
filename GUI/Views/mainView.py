@@ -86,7 +86,7 @@ class View(QMainWindow):
 
         self.SmpDuration_Label = QLabel(self)
         self.SmpDuration_Label.setGeometry(40, self.y, 250, 30)
-        self.SmpDuration_Label.setText("Sample Duration (ms)")
+        self.SmpDuration_Label.setText("Sample Duration (s)")
         
         self.StepMode_Combo = QLabel(self)
         self.StepMode_Combo.setGeometry(250, self.y, 150, 30)
@@ -94,12 +94,15 @@ class View(QMainWindow):
 
         self.y += 30
 
-        self.SmpDuration_LineEdit = QLineEdit(self)
-        self.SmpDuration_LineEdit.setValidator(QDoubleValidator(0.018,5.0, 3))
-        self.SmpDuration_LineEdit.setGeometry(40, self.y, 150, 25)
-        self.SmpDuration_LineEdit.setText("0.001")
-        self.SmpDuration_LineEdit.editingFinished.connect(self.__updateSmpDurationEditLine)
-        self.SmpDuration_LineEdit.textChanged.connect(self.SampleDurationUpdate)
+        self.SmpDuration_SpinBox = QDoubleSpinBox(self)
+        # self.SmpDuration_SpinBox.setValidator(QDoubleValidator(0.018, 5.0, 3))
+        self.SmpDuration_SpinBox.setRange(0.001, 10)
+        # self.SmpDuration_SpinBox.setButtonSymbols(QAbstractSpinBox.NoButtons)
+        self.SmpDuration_SpinBox.setDecimals(3)
+        self.SmpDuration_SpinBox.setSingleStep(0.005)
+        self.SmpDuration_SpinBox.setGeometry(40, self.y, 150, 25)
+        # self.SmpDuration_SpinBox.editingFinished.connect(self.__updateSmpDurationEditLine)
+        self.SmpDuration_SpinBox.valueChanged[float].connect(self.SampleDurationUpdate)
         
         self.StepMode_ComboBox_Widget = QWidget(self)
         self.StepMode_ComboBox_Widget.setGeometry(250, self.y, 120, 35)
@@ -123,12 +126,15 @@ class View(QMainWindow):
 
         self.y += 30
 
-        self.StepLength_LineEdit = QLineEdit(self)
+        self.StepLength_LineEdit = QDoubleSpinBox(self)
         # self.StepLength_LineEdit.setValidator(QDoubleValidator(self.controller.stepsPerMM, 5.0, 7))
         self.StepLength_LineEdit.setGeometry(40, self.y, 150, 25)
-        self.StepLength_LineEdit.setText("0.01")
-        self.StepLength_LineEdit.editingFinished.connect(self.__updateStepLengthEditLine)
-        self.StepLength_LineEdit.textChanged.connect(self.StepLengthUpdate)
+        self.StepLength_LineEdit.setRange(self.controller.stepsPerMM, 5.0)
+        self.StepLength_LineEdit.setDecimals(3)
+        self.StepLength_LineEdit.setSingleStep(0.018)
+        # self.StepLength_LineEdit.setText("0.01")
+        # self.StepLength_LineEdit.editingFinished.connect(self.__updateStepLengthEditLine)
+        self.StepLength_LineEdit.valueChanged[float].connect(self.StepLengthUpdate)
 
         self.ScanBetween_Button = QPushButton(self)
         self.ScanBetween_Button.setGeometry(250, self.y - 10, 110, 33)
@@ -173,14 +179,15 @@ class View(QMainWindow):
         
         self.AvgInterval_Label = QLabel(self)
         self.AvgInterval_Label.setGeometry(40, self.y, 200, 30)
-        self.AvgInterval_Label.setText("Averaging Interval")
+        self.AvgInterval_Label.setText("Averaging Interval (s)")
 
         self.y += 25
 
         self.AvgInterval_SpinBox = QDoubleSpinBox(self)
         self.AvgInterval_SpinBox.setGeometry(40, self.y, 120, 25)
-        self.AvgInterval_SpinBox.setRange(1, 1000)
-        self.AvgInterval_SpinBox.setValue(5.0)
+        self.AvgInterval_SpinBox.setRange(0.001, 1000)
+        self.AvgInterval_SpinBox.setDecimals(3)
+        self.AvgInterval_SpinBox.setSingleStep(0.005)
         self.AvgInterval_SpinBox.valueChanged[float].connect(self.__updateAvgIntervalSpinBox)
 
         
@@ -271,7 +278,7 @@ class View(QMainWindow):
             self.CurrentPosition_Label.setText("Current Position:")
 
     def __updateSmpDurationEditLine(self):
-        value = self.SmpDuration_LineEdit.text()
+        value = self.SmpDuration_SpinBox.text()
         if (value == ""):
             return
 
@@ -323,7 +330,7 @@ class View(QMainWindow):
             self.P2_Slider.setValue(int(value))
 
     def handleScanBetween(self):
-        self.controller.handleScanBetween(self.P1_Slider.value(), self.P2_Slider.value(), self.SmpDuration_LineEdit.text(), self.StepLength_LineEdit.text(), self.StepMode_ComboBox.currentText())
+        self.controller.handleScanBetween(self.P1_Slider.value(), self.P2_Slider.value(), self.SmpDuration_SpinBox.text(), self.StepLength_LineEdit.text(), self.StepMode_ComboBox.currentText())
 
     def toggleStop(self):
         self.controller.handlePause()
@@ -364,7 +371,7 @@ class View(QMainWindow):
         self.fileQuit()
 
     def roundNearest(self, value, a, prec=5):
-        print(round(a * round(float(value)/a),prec))
+        #print(round(a * round(float(value)/a),prec))
         return str(max(round(a * round(float(value)/a),prec),round(a,5)))
 
     def SampleDurationUpdate(self):
@@ -373,14 +380,22 @@ class View(QMainWindow):
     def StepLengthUpdate(self):
         self.calculateExpectedDuration()
 
+    def isFloat(self, value):
+        try:
+            float(value)
+            return True
+        except ValueError:
+            return False
+
     def calculateExpectedDuration(self):
-        stepLength = self.StepLength_LineEdit.text()
-        if (stepLength == ""):
+        stepLength = self.StepLength_LineEdit.text() 
+        sampleDuration = self.SmpDuration_SpinBox.text()
+
+        if (not self.isFloat(stepLength) or not self.isFloat(sampleDuration)):
             return
+
         stepLength = float(stepLength)
-        sampleDuration = float(self.SmpDuration_LineEdit.text())
-        if (stepLength == "" or stepLength == 0 or sampleDuration == "" or sampleDuration == 0):
-            return
+        sampleDuration = float(sampleDuration)
 
         startPosition = float(self.P1_SpinBox.value())
         endPosition = float(self.P2_SpinBox.value())
